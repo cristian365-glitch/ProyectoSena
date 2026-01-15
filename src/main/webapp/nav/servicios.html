@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicios a los que puedes acceder</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="../recursos/imagen icon/favicon-16x16.png">
+    <link rel="stylesheet" href="../indexCSS.css">
+    <link rel="stylesheet" href="../auth-ui.css">
+    <script src="../auth-session.js"></script>
+    <link rel="stylesheet" href="serviciosCSS.css">
+</head>
+
+<body>
+    <header>
+    <ul>
+        <li class="logo">
+            <a href="../index.html">
+                <img src="../recursos/logo armonia n1.png" width="89px" alt="logo">
+            </a>
+        </li>
+
+        <li><a href="../nav/disponibilidad.html">Habitaciones</a></li>
+        <li><a href="../nav/experiencias.html">Experiencias</a></li>
+        <li><a href="../nav/servicios.html">Servicios</a></li>
+
+        <!-- 🔴 AQUÍ SE INYECTA TODO -->
+        <li class="registro" id="auth-container"></li>
+    </ul>
+</header>
+    <br><br><br>
+    <!-- TÍTULO -->
+    <div class="servicios">
+        <h2>Recuerda que nuestros servicios aplican para todos los ambientes</h2>
+        <br><br>
+    </div>
+
+    <!-- CONTENEDOR DE TARJETAS -->
+    <div class="actividades-inmersivas">
+
+        <div class="tarjeta-actividad">
+            <img src="https://images.unsplash.com/photo-1583417267826-aebc4d1542e1?auto=format&fit=crop&q=80&w=1200" alt="Sauna">
+            <div class="info-actividad">
+                <h3>🫧 Sauna</h3>
+                <p>Sumérgete en un ambiente de relajación total con nuestro sauna aromático, calor suave ayuda a liberar tensiones físicas y emocionales. 
+                   Los aceites esenciales naturales estimulan tus sentidos, mejoran tu respiración ación renovada de tranquilidad.
+                   Ideal para descansar después de un día de actividades o simplemente para o de paz absoluta.</p>
+            </div>
+        </div>
+
+        <div class="tarjeta-actividad">
+            <img src="https://images.unsplash.com/photo-1650433943275-55097457ebeb?auto=format&fit=crop&q=80&w=1200" alt="Cabalgatas">
+            <div class="info-actividad">
+                <h3>🐎 Cabalgatas guiadas</h3>
+                <p>Disfruta un recorrido inolvidable a través de senderos naturales guiado por expertos
+                    que conocen cada rincón de la zona. Podrás explorar paisajes abiertos, montañas suaves y caminos rodeados de
+                    vegetación mientras te conectas con la nobleza del caballo. Nuestra experiencia está diseñada para todos los 
+                    niveles, desde principiantes hasta jinetes avanzados, garantizando una aventura cómoda, segura y enriquecedora.</p>
+            </div>
+        </div>
+
+        <div class="tarjeta-actividad">
+            <img src="https://plus.unsplash.com/premium_photo-1663091154505-95be72cf7d9b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Gastronomía">
+            <div class="info-actividad">
+                <h3>🍽️ Gastronomía</h3>
+                <p>Déjate sorprender por una propuesta culinaria que combina tradición y autenticidad.
+                    Cada plato es preparado con ingredientes frescos de la región, seleccionados
+                    directamente de productores locales y huertas naturales.Nuestro chef especializado
+                    ofrece recetas que exaltan los sabores del territorio, acompañadas de texturas y 
+                    aromas que hacen de cada comida una experiencia sensorial única.Perfecto para compartir, disfrutar y descubrir la identidad de nuestra tierra.</p>
+            </div>
+        </div>
+
+        <div class="tarjeta-actividad">
+            <img src="https://plus.unsplash.com/premium_photo-1661950108626-48a2f245b544?auto=format&fit=crop&q=80&w=1200" alt="Fogata">
+            <div class="info-actividad">
+                <h3>🔥 Noches de fogata</h3>
+                <p>Vive una velada mágica alrededor del fuego, donde el ambiente cálido invita a la
+                    conversación, a las risas y a la tranquilidad. Podrás disfrutar de música suave, 
+                    narraciones tradicionales, bebidas calientes y un cielo estrellado que completa 
+                    la experiencia. Es el espacio ideal para compartir con familia, amigos o pareja y 
+                    dejarse envolver por la armonía del entorno natural.</p>
+            </div>
+        </div>
+
+        <div class="tarjeta-actividad">
+            <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=1220&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Yoga">
+            <div class="info-actividad">
+                <h3>🧘 Yoga al amanecer</h3>
+                <p>Comienza tu día con una sesión de yoga guiada mientras el sol ilumina suavemente 
+                    el paisaje. Respira aire puro, estira tu cuerpo y libera tensiones en un espacio 
+                    tranquilo que te invita a conectar contigo mismo. La combinación del silencio 
+                    matutino, el clima fresco y los movimientos conscientes favorece la claridad 
+                    mental, la calma interior y el equilibrio físico. Una experiencia renovadora para todos los niveles..</p>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
+

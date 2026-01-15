@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Habitación - Admin</title>
+    <link rel="stylesheet" href="admin-habitacionesCSS.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="recursos/imagen icon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="recursos/imagen icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="recursos/imagen icon/favicon-16x16.png">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✏️ Editar Habitación</h1>
+            <p>Actualiza la información de la habitación</p>
+        </div>
+        
+        <div class="form-container">
+            <div id="message" class="message"></div>
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Cargando datos...</p>
+            </div>
+            
+            <form id="roomForm" action="/ProyectoSena/EditarHabitacionServlet" method="POST" style="display: none;">
+                <input type="hidden" id="id" name="id">
+                
+                <div class="row">
+                    <div class="form-group">
+                        <label for="codigo">Código de Habitación *</label>
+                        <input type="text" id="codigo" name="codigo" required placeholder="Ej: BOS-101" disabled>
+                        <small style="color: #666;">El código no se puede modificar</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="experiencia">Experiencia *</label>
+                        <select id="experiencia" name="experiencia" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="bosque">🌲 Bosque</option>
+                            <option value="mar">🌊 Mar</option>
+                            <option value="campo">🌾 Campo</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="nombre">Nombre de la Habitación *</label>
+                    <input type="text" id="nombre" name="nombre" required placeholder="Ej: Cabaña del Roble">
+                </div>
+                
+                <div class="form-group">
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" name="descripcion" placeholder="Describe las características y atractivos..."></textarea>
+                </div>
+                
+                <div class="row">
+                    <div class="form-group">
+                        <label for="precio">Precio por Noche (COP) *</label>
+                        <input type="number" id="precio" name="precio" required min="0" placeholder="150000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="capacidad">Capacidad (personas) *</label>
+                        <input type="number" id="capacidad" name="capacidad" required min="1" max="10" value="2">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label for="metros">Metros Cuadrados</label>
+                        <input type="number" id="metros" name="metros" min="10" placeholder="35">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="vista">Vista</label>
+                        <select id="vista" name="vista">
+                            <option value="">Seleccionar...</option>
+                            <option value="Mar">Mar</option>
+                            <option value="Montaña">Montaña</option>
+                            <option value="Bosque">Bosque</option>
+                            <option value="Jardín">Jardín</option>
+                            <option value="Ciudad">Ciudad</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="camas">Configuración de Camas</label>
+                    <input type="text" id="camas" name="camas" placeholder="Ej: 1 cama King o 2 camas Queen">
+                </div>
+
+                <!-- Comodidades -->
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 10px;">Comodidades</label>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                            <input type="checkbox" id="wifi" name="wifi"> WiFi
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                            <input type="checkbox" id="aire" name="aire"> Aire Acondicionado
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                            <input type="checkbox" id="tv" name="tv"> TV
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                            <input type="checkbox" id="minibar" name="minibar"> Minibar
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                            <input type="checkbox" id="balcon" name="balcon"> Balcón
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                            <input type="checkbox" id="desayuno" name="desayuno"> Desayuno Incluido
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Sección de Imágenes -->
+                <div class="image-upload-section">
+                    <h3>📸 Imágenes Actuales</h3>
+                    <div id="currentImagesContainer" class="preview-container"></div>
+                    
+                    <h3 style="margin-top: 20px;">📸 Cambiar Imágenes (Opcional)</h3>
+                    <p style="color: #666; font-size: 13px; margin-bottom: 15px;">
+                        Si subes nuevas imágenes, reemplazarán las actuales.
+                    </p>
+                    
+                    <div class="file-input-wrapper">
+                        <input type="file" id="imageInput" accept="image/*" multiple>
+                        <label for="imageInput" class="file-input-label">
+                            📁 Seleccionar Nuevas Imágenes
+                        </label>
+                    </div>
+                    
+                    <div id="previewContainer" class="preview-container"></div>
+                    
+                    <input type="hidden" id="imagenes" name="imagenes" value="">
+                </div>
+                
+                <div class="btn-container">
+                    <button type="button" class="btn btn-secondary" onclick="cancelar()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Actualizar Habitación</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURACIÓN DE CLOUDINARY
+        const CLOUDINARY_CONFIG = {
+            CLOUD_NAME: 'dcam9ickm',
+            UPLOAD_PRESET: 'ml_default'
+        };
+        
+        let selectedImages = [];
+        let habitacionId = null;
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            habitacionId = params.get('id');
+            
+            if (!habitacionId) {
+                showMessage('ID de habitación no válido', 'error');
+                setTimeout(() => {
+                    window.location.href = '/habitacionesCRUD/gestionar-habitaciones.html';
+                }, 2000);
+                return;
+            }
+            
+            cargarDatosHabitacion(habitacionId);
+            configurarFormulario();
+        });
+
+        async function cargarDatosHabitacion(id) {
+            const loading = document.getElementById('loading');
+            const form = document.getElementById('roomForm');
+            
+            loading.style.display = 'block';
+            form.style.display = 'none';
+            
+            try {
+                const response = await fetch(`/ProyectoSena/ObtenerHabitacionServletCRUD?id=${id}`);
+                
+                if (!response.ok) {
+                    throw new Error('Habitación no encontrada');
+                }
+                
+                const habitacion = await response.json();
+                llenarFormulario(habitacion);
+                
+                loading.style.display = 'none';
+                form.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('Error al cargar los datos de la habitación', 'error');
+                setTimeout(() => {
+                    window.location.href = '/habitacionesCRUD/gestionar-habitaciones.html';
+                }, 2000);
+            }
+        }
+
+        function llenarFormulario(habitacion) {
+            document.getElementById('id').value = habitacion.id;
+            document.getElementById('codigo').value = habitacion.codigo;
+            document.getElementById('nombre').value = habitacion.nombre;
+            document.getElementById('experiencia').value = habitacion.experiencia;
+            document.getElementById('descripcion').value = habitacion.descripcion || '';
+            document.getElementById('precio').value = habitacion.precio_noche;
+            document.getElementById('capacidad').value = habitacion.capacidad;
+            document.getElementById('metros').value = habitacion.metros_cuadrados || '';
+            document.getElementById('vista').value = habitacion.vista || '';
+            document.getElementById('camas').value = habitacion.camas_info || '';
+            
+            // Checkboxes
+            document.getElementById('wifi').checked = habitacion.wifi;
+            document.getElementById('aire').checked = habitacion.aire_acondicionado;
+            document.getElementById('tv').checked = habitacion.tv;
+            document.getElementById('minibar').checked = habitacion.minibar;
+            document.getElementById('balcon').checked = habitacion.balcon;
+            document.getElementById('desayuno').checked = habitacion.desayuno_incluido;
+            
+            // Mostrar imágenes actuales
+            if (habitacion.imagenes && habitacion.imagenes.length > 0) {
+                const container = document.getElementById('currentImagesContainer');
+                container.innerHTML = '';
+                
+                habitacion.imagenes.forEach((img, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
+                    div.innerHTML = `
+                        <img src="${img.url_cloudinary}" alt="Imagen ${index + 1}">
+                        ${img.es_principal ? '<span class="principal-badge">Principal</span>' : ''}
+                    `;
+                    container.appendChild(div);
+                });
+            }
+        }
+
+        function configurarFormulario() {
+            // Manejar selección de imágenes
+            document.getElementById('imageInput').addEventListener('change', function(e) {
+                const files = Array.from(e.target.files);
+                
+                files.forEach(file => {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            selectedImages.push({
+                                file: file,
+                                preview: event.target.result,
+                                url: null
+                            });
+                            renderPreviews();
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+                
+                e.target.value = '';
+            });
+            
+            // Enviar formulario
+            document.getElementById('roomForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const loading = document.getElementById('loading');
+                loading.style.display = 'block';
+                
+                try {
+                    // Si hay nuevas imágenes, subirlas
+                    if (selectedImages.length > 0) {
+                        const imageUrls = [];
+                        for (let i = 0; i < selectedImages.length; i++) {
+                            const url = await uploadToCloudinary(selectedImages[i].file);
+                            imageUrls.push(url);
+                        }
+                        document.getElementById('imagenes').value = JSON.stringify(imageUrls);
+                    }
+                    
+                    // Enviar formulario
+                    this.submit();
+                    
+                } catch (error) {
+                    showMessage('Error: ' + error.message, 'error');
+                    loading.style.display = 'none';
+                }
+            });
+        }
+        
+        function renderPreviews() {
+            const container = document.getElementById('previewContainer');
+            container.innerHTML = '';
+            
+            selectedImages.forEach((img, index) => {
+                const div = document.createElement('div');
+                div.className = 'preview-item';
+                
+                div.innerHTML = `
+                    <img src="${img.preview}" alt="Preview ${index + 1}">
+                    <button class="remove-btn" onclick="removeImage(${index})" type="button">×</button>
+                    ${index === 0 ? '<span class="principal-badge">Principal</span>' : ''}
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+        
+        function removeImage(index) {
+            selectedImages.splice(index, 1);
+            renderPreviews();
+        }
+        
+        async function uploadToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_CONFIG.UPLOAD_PRESET);
+            
+            const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.CLOUD_NAME}/image/upload`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) throw new Error('Error en Cloudinary');
+                
+                const data = await response.json();
+                return data.secure_url;
+            } catch (error) {
+                console.error('Error:', error);
+                throw new Error('No se pudo subir la imagen a Cloudinary');
+            }
+        }
+        
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type} active`;
+            
+            setTimeout(() => {
+                message.classList.remove('active');
+            }, 5000);
+        }
+        
+        function cancelar() {
+            if (confirm('¿Seguro que deseas cancelar? Los cambios no guardados se perderán.')) {
+                window.location.href = '/habitacionesCRUD/gestionar-habitaciones.html';
+            }
+        }
+    </script>
+</body>
+</html>

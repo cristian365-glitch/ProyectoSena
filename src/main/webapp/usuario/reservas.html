@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Reservas - Armonía</title>
+    <link rel="stylesheet" href="../indexCSS.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="../recursos/imagen icon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../recursos/imagen icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../recursos/imagen icon/favicon-16x16.png">
+    <link rel="stylesheet" href="../auth-ui.css">
+    <script src="../auth-session.js"></script>
+    
+    <style>
+        .reservas-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 110px 5% 80px;
+            min-height: 100vh;
+        }
+
+        .reservas-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            text-align: center;
+            color: #1a1a1a;
+            margin: 0px 20px 40px;
+            margin-bottom: 20px;
+            font-weight: 400;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .reservas-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, #d4af37, #b8860b);
+            transform: translateX(-50%);
+        }
+
+        .reservas-subtitle {
+            text-align: center;
+            font-size: 1.15rem;
+            color: #666;
+            margin-bottom: 60px;
+        }
+
+        .reservas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .reserva-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+            border: 1px solid #f0f0f0;
+        }
+
+        .reserva-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .reserva-imagen {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .reserva-card:hover .reserva-imagen {
+            transform: scale(1.05);
+        }
+
+        .reserva-content {
+            padding: 25px;
+        }
+
+        .reserva-header {
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f8f8f8;
+            padding-bottom: 15px;
+        }
+
+        .habitacion-codigo {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: #d4af37;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        .habitacion-nombre {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: #1a1a1a;
+            margin: 0 0 8px 0;
+            font-weight: 600;
+        }
+
+        .experiencia-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+        }
+
+        .reserva-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .fechas-container {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .fecha-item {
+            text-align: center;
+        }
+
+        .fecha-label {
+            font-size: 0.75rem;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .fecha-value {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 0.95rem;
+        }
+
+        .fecha-divider {
+            color: #d4af37;
+            font-size: 1.2rem;
+        }
+
+        .noches-badge {
+            text-align: center;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .reserva-footer {
+            border-top: 2px solid #f8f8f8;
+            padding-top: 20px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .precio-total {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .precio-label {
+            font-size: 0.8rem;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .precio-valor {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .estado-badge {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .estado-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .estado-confirmada {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .estado-cancelada {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .estado-pendiente_verificacion {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .acciones-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+
+        .btn-pagar {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-pagar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-cancelar {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            color: #dc3545;
+            border: 2px solid #dc3545;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-cancelar:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        .fecha-reserva {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        .sin-reservas {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .sin-reservas-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .sin-reservas h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: #1a1a1a;
+            margin-bottom: 15px;
+        }
+
+        .sin-reservas p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .btn-explorar {
+            display: inline-block;
+            padding: 14px 35px;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-explorar:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .reservas-container {
+                padding: 120px 20px 60px;
+            }
+
+            .reservas-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .reserva-footer {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <ul>
+            <li class="logo">
+                <a href="../index.html">
+                    <img src="../recursos/logo armonia n1.png" width="89px" alt="logo">
+                </a>
+            </li>
+            <li><a href="../nav/disponibilidad.html">Habitaciones disponibles</a></li>
+            <li><a href="../nav/experiencias.html">EXPERIENCIAS</a></li>
+            <li><a href="../nav/servicios.html">SERVICIOS</a></li>
+            <li><a href="reservas.html" class="active">MIS RESERVAS</a></li>
+            <li class="registro" id="auth-container"></li>
+        </ul>
+    </header>
+
+    <div class="reservas-container">
+        <h1 class="reservas-title">Mis Reservas</h1>
+        <p class="reservas-subtitle">Gestiona tus experiencias reservadas en Armonía</p>
+
+        <div id="lista-reservas" class="loading">
+            Cargando tus reservas...
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Armonía. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+            await cargarReservas();
+        });
+
+        async function cargarReservas() {
+            try {
+                const response = await fetch('../ReservasServlet', {
+                    credentials: 'include' // ⭐ Mantener sesión
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    mostrarReservas(data.reservas);
+                } else {
+                    document.getElementById('lista-reservas').innerHTML = 
+                        `<div class="sin-reservas">
+                            <div class="sin-reservas-icon">🏨</div>
+                            <h3>Error al cargar reservas</h3>
+                            <p>${data.error}</p>
+                        </div>`;
+                }
+            } catch (error) {
+                console.error('Error al cargar reservas:', error);
+                document.getElementById('lista-reservas').innerHTML = 
+                    `<div class="sin-reservas">
+                        <div class="sin-reservas-icon">⚠️</div>
+                        <h3>Error de conexión</h3>
+                        <p>No se pudieron cargar tus reservas. Por favor, intenta de nuevo.</p>
+                    </div>`;
+            }
+        }
+
+        function mostrarReservas(reservas) {
+            const contenedor = document.getElementById('lista-reservas');
+
+            if (reservas.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="sin-reservas">
+                        <div class="sin-reservas-icon">🔭</div>
+                        <h3>No tienes reservas aún</h3>
+                        <p>Descubre nuestras experiencias únicas y reserva tu próxima aventura</p>
+                        <a href="../index.html#habitaciones" class="btn-explorar">Explorar Habitaciones</a>
+                    </div>`;
+                return;
+            }
+
+            let html = '<div class="reservas-grid">';
+
+            reservas.forEach(reserva => {
+                const checkin = new Date(reserva.fecha_checkin);
+                const checkout = new Date(reserva.fecha_checkout);
+                const noches = Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24));
+
+                const iconoExp = reserva.habitacion_experiencia === 'bosque' ? '🌲' : 
+                                reserva.habitacion_experiencia === 'mar' ? '🌊' : '🌾';
+
+                const mostrarBotonPago = reserva.estado === 'pendiente';
+                const mostrarBotonCancelar = reserva.estado !== 'cancelada';
+
+                html += `
+                    <div class="reserva-card">
+                        <img src="${reserva.imagen_principal}" 
+                             alt="${reserva.habitacion_nombre}" 
+                             class="reserva-imagen"
+                             onerror="this.src='../recursos/placeholder.jpg'">
+                        
+                        <div class="reserva-content">
+                            <div class="reserva-header">
+                                <div class="habitacion-codigo">${reserva.habitacion_codigo}</div>
+                                <h3 class="habitacion-nombre">${reserva.habitacion_nombre}</h3>
+                                <span class="experiencia-tag">
+                                    ${iconoExp} ${capitalizar(reserva.habitacion_experiencia)}
+                                </span>
+                            </div>
+                            
+                            <div class="fechas-container">
+                                <div class="fecha-item">
+                                    <div class="fecha-label">Check-in</div>
+                                    <div class="fecha-value">${formatearFecha(reserva.fecha_checkin)}</div>
+                                </div>
+                                <div class="fecha-divider">→</div>
+                                <div class="fecha-item">
+                                    <div class="fecha-label">Check-out</div>
+                                    <div class="fecha-value">${formatearFecha(reserva.fecha_checkout)}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="noches-badge">
+                                ${noches} ${noches === 1 ? 'noche' : 'noches'}
+                            </div>
+                            
+                            <div class="reserva-info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">Huéspedes</span>
+                                    <span class="info-value">👥 ${reserva.num_personas} ${reserva.num_personas === 1 ? 'persona' : 'personas'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Cliente</span>
+                                    <span class="info-value">${reserva.nombre_cliente}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Email</span>
+                                    <span class="info-value">${reserva.email}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Teléfono</span>
+                                    <span class="info-value">${reserva.telefono}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="reserva-footer">
+                                <div class="precio-total">
+                                    <span class="precio-label">${reserva.estado === 'confirmada' ? 'Total pagado' : 'Total a pagar'}</span>
+                                    <span class="precio-valor">$${Number(reserva.total).toLocaleString('es-CO')}</span>
+                                </div>
+                                <span class="estado-badge estado-${reserva.estado}">
+                                    ${obtenerTextoEstado(reserva.estado)}
+                                </span>
+                            </div>
+
+                            ${mostrarBotonPago || mostrarBotonCancelar ? `
+                                <div class="acciones-container">
+                                    ${mostrarBotonPago ? `
+                                        <button class="btn-pagar" onclick="irAPagar(${reserva.id})">
+                                            💳 Pagar Ahora
+                                        </button>
+                                    ` : ''}
+                                    ${mostrarBotonCancelar ? `
+                                        <button class="btn-cancelar" onclick="cancelarReserva(${reserva.id})">
+                                            ✕ Cancelar Reserva
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            ` : ''}
+                            
+                            <div class="fecha-reserva">
+                                Reservado el ${formatearFechaHora(reserva.fecha_reserva)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            contenedor.innerHTML = html;
+        }
+
+        function irAPagar(reservaId) {
+            window.location.href = `../confirmacion-reserva.html?id=${reservaId}`;
+        }
+
+        async function cancelarReserva(reservaId) {
+            const confirmar = confirm('¿Estás seguro de que deseas cancelar esta reserva?\n\nEsta acción no se puede deshacer.');
+            
+            if (!confirmar) return;
+
+            try {
+                const response = await fetch('../ActualizarEstadoReservaServlet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    credentials: 'include', // ⭐ Mantener sesión
+                    body: `reserva_id=${reservaId}&estado=cancelada`
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    if (typeof notify !== 'undefined') {
+                        notify.success('Reserva Cancelada', 'La reserva ha sido cancelada exitosamente');
+                    } else {
+                        alert('✅ Reserva cancelada exitosamente');
+                    }
+                    await cargarReservas();
+                } else {
+                    if (typeof notify !== 'undefined') {
+                        notify.error('Error', 'No se pudo cancelar la reserva: ' + result.error);
+                    } else {
+                        alert('❌ Error al cancelar la reserva: ' + result.error);
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                if (typeof notify !== 'undefined') {
+                    notify.error('Error', 'No se pudo cancelar la reserva');
+                } else {
+                    alert('❌ Error al cancelar la reserva');
+                }
+            }
+        }
+
+        function obtenerTextoEstado(estado) {
+            const estados = {
+                'pendiente': 'Pendiente de Pago',
+                'confirmada': 'Confirmada',
+                'cancelada': 'Cancelada',
+                'pendiente_verificacion': 'Verificando Pago'
+            };
+            return estados[estado] || capitalizar(estado);
+        }
+
+        function formatearFecha(fecha) {
+            const date = new Date(fecha);
+            return date.toLocaleDateString('es-CO', { 
+                day: '2-digit', 
+                month: 'short', 
+                year: 'numeric' 
+            });
+        }
+
+        function formatearFechaHora(fecha) {
+            const date = new Date(fecha);
+            return date.toLocaleDateString('es-CO', { 
+                day: '2-digit', 
+                month: 'short', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function capitalizar(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+        }
+    </script>
+</body>
+</html>

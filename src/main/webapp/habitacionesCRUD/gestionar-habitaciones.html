@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Habitaciones - Admin</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="recursos/imagen icon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="recursos/imagen icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="recursos/imagen icon/favicon-16x16.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.2rem;
+        }
+
+        .user-info {
+            background: #f8f9ff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 8px;
+            font-size: 14px;
+            color: #667eea;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 8px 15px;
+            font-size: 13px;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Buscador y filtros */
+        .search-filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .filter-select {
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Tabla de habitaciones */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #f8f9ff;
+        }
+
+        .room-image {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .badge-bosque {
+            background: linear-gradient(135deg, #2d5016 0%, #558b2f 100%);
+        }
+
+        .badge-mar {
+            background: linear-gradient(135deg, #1e88e5 0%, #42a5f5 100%);
+        }
+
+        .badge-campo {
+            background: linear-gradient(135deg, #558b2f 0%, #8bc34a 100%);
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Message */
+        .message {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .message.active {
+            display: block;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .message.warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .search-filter-bar {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+
+            .room-image {
+                width: 60px;
+                height: 45px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>🏨 Gestión de Habitaciones</h1>
+                <p style="color: #666; margin-top: 5px;">Administra todas las habitaciones del hotel</p>
+                <div class="user-info" id="userInfo">
+                    👤 Administrador
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="admin-habitaciones.html" class="btn btn-success">
+                    ➕ Nueva Habitación
+                </a>
+                <a href="../index.html" class="btn btn-secondary">
+                    🏠 Inicio
+                </a>
+            </div>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <!-- Barra de búsqueda y filtros -->
+        <div class="search-filter-bar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Buscar por código, nombre...">
+            </div>
+            <select id="filterExperiencia" class="filter-select">
+                <option value="">Todas las experiencias</option>
+                <option value="bosque">🌲 Bosque</option>
+                <option value="mar">🌊 Mar</option>
+                <option value="campo">🌾 Campo</option>
+            </select>
+            <button class="btn btn-primary" onclick="cargarHabitaciones()">
+                🔄 Actualizar
+            </button>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Cargando habitaciones...</p>
+        </div>
+
+        <!-- Tabla de habitaciones -->
+        <div class="table-container">
+            <table id="habitacionesTable">
+                <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Experiencia</th>
+                        <th>Capacidad</th>
+                        <th>Precio/Noche</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="habitacionesBody">
+                    <!-- Se llena dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación de eliminación -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚠️ Confirmar Eliminación</h2>
+                <button class="close-btn" onclick="cerrarModal()">&times;</button>
+            </div>
+            <p>¿Estás seguro de que deseas eliminar la habitación <strong id="deleteRoomName"></strong>?</p>
+            <p style="color: #dc3545; margin-top: 10px; font-size: 14px;">Esta acción no se puede deshacer.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn btn-danger" onclick="confirmarEliminacion()">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let habitaciones = [];
+        let habitacionAEliminar = null;
+
+        // Cargar habitaciones al iniciar
+        document.addEventListener('DOMContentLoaded', async function() {
+            const sesionValida = await verificarSesion();
+            if (!sesionValida) {
+                return; // Detener ejecución si no hay sesión válida
+            }
+            
+            mostrarInfoUsuario();
+            cargarHabitaciones();
+            configurarBuscador();
+            configurarFiltros();
+            mostrarMensajesURL();
+        });
+
+        async function verificarSesion() {
+            try {
+                const response = await fetch('../VerificaSesionServlet?action=verificarSesion');
+                
+                if (!response.ok) {
+                    throw new Error('Error al verificar sesión');
+                }
+                
+                const data = await response.json();
+                
+                console.log('📋 Estado de sesión:', data);
+                
+                // Si está logueado, verificar permisos
+                if (data.logueado) {
+                    sessionStorage.setItem('usuario', data.nombre);
+                    sessionStorage.setItem('esAdmin', data.esAdmin);
+                    
+                    // Verificar que sea admin
+                    if (!data.esAdmin) {
+                        mostrarMensaje('⚠️ No tienes permisos de administrador', 'warning');
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 2000);
+                        return false;
+                    }
+                    
+                    console.log('✅ Acceso permitido para administrador:', data.nombre);
+                    return true;
+                } else {
+                    // No hay sesión válida
+                    mostrarMensaje('⚠️ Debes iniciar sesión como administrador', 'warning');
+                    setTimeout(() => {
+                        window.location.href = 'Login.html';
+                    }, 2000);
+                    return false;
+                }
+                
+            } catch (error) {
+                console.error('❌ Error al verificar sesión:', error);
+                mostrarMensaje('⚠️ Error al verificar sesión. Redirigiendo...', 'error');
+                setTimeout(() => {
+                    window.location.href = 'Login.html';
+                }, 2000);
+                return false;
+            }
+        }
+
+        function mostrarInfoUsuario() {
+            const usuario = sessionStorage.getItem('usuario');
+            const userInfo = document.getElementById('userInfo');
+            
+            if (usuario) {
+                userInfo.textContent = `👤 Bienvenido, ${usuario}`;
+            }
+        }
+
+        async function cargarHabitaciones() {
+            const loading = document.getElementById('loading');
+            const tbody = document.getElementById('habitacionesBody');
+            
+            loading.classList.add('active');
+            tbody.innerHTML = '';
+
+            try {
+                const response = await fetch('../ObtenerHabitacionesServlet');
+                
+                if (!response.ok) {
+                    throw new Error('Error al cargar habitaciones');
+                }
+
+                habitaciones = await response.json();
+                mostrarHabitaciones(habitaciones);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al cargar las habitaciones. Por favor, intenta de nuevo.', 'error');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <h3>❌ Error al cargar</h3>
+                            <p>No se pudieron cargar las habitaciones</p>
+                            <button class="btn btn-primary" onclick="cargarHabitaciones()" style="margin-top: 15px;">
+                                🔄 Reintentar
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        function mostrarHabitaciones(lista) {
+            const tbody = document.getElementById('habitacionesBody');
+            tbody.innerHTML = '';
+
+            if (lista.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <h3>📭 No hay habitaciones</h3>
+                            <p>Comienza creando tu primera habitación</p>
+                            <a href="admin-habitaciones.html" class="btn btn-success" style="margin-top: 15px;">
+                                ➕ Crear Habitación
+                            </a>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            lista.forEach(hab => {
+                const tr = document.createElement('tr');
+                
+                const icono = hab.experiencia === 'bosque' ? '🌲' : 
+                             hab.experiencia === 'mar' ? '🌊' : '🌾';
+
+                tr.innerHTML = `
+                    <td>
+                        <img src="${hab.imagen_principal || 'recursos/placeholder.jpg'}" 
+                             alt="${hab.nombre}" 
+                             class="room-image"
+                             onerror="this.src='recursos/placeholder.jpg'">
+                    </td>
+                    <td><strong>${hab.codigo}</strong></td>
+                    <td>${hab.nombre}</td>
+                    <td>
+                        <span class="badge badge-${hab.experiencia}">
+                            ${icono} ${hab.experiencia.toUpperCase()}
+                        </span>
+                    </td>
+                    <td>👥 ${hab.capacidad} personas</td>
+                    <td><strong>$${hab.precio_noche.toLocaleString('es-CO')}</strong></td>
+                    <td class="actions">
+                        <button class="btn btn-warning" onclick="editarHabitacion(${hab.id})" title="Editar">
+                            ✏️
+                        </button>
+                        <button class="btn btn-danger" onclick="abrirModalEliminar(${hab.id}, '${hab.nombre.replace(/'/g, "\\'")}')" title="Eliminar">
+                            🗑️
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function configurarBuscador() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', filtrarHabitaciones);
+        }
+
+        function configurarFiltros() {
+            const filterExperiencia = document.getElementById('filterExperiencia');
+            filterExperiencia.addEventListener('change', filtrarHabitaciones);
+        }
+
+        function filtrarHabitaciones() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const experienciaFilter = document.getElementById('filterExperiencia').value;
+
+            let filtradas = habitaciones;
+
+            // Filtrar por búsqueda
+            if (searchTerm) {
+                filtradas = filtradas.filter(hab => 
+                    hab.codigo.toLowerCase().includes(searchTerm) ||
+                    hab.nombre.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // Filtrar por experiencia
+            if (experienciaFilter) {
+                filtradas = filtradas.filter(hab => hab.experiencia === experienciaFilter);
+            }
+
+            mostrarHabitaciones(filtradas);
+        }
+
+        function editarHabitacion(id) {
+            window.location.href = `editar-habitacion.html?id=${id}`;
+        }
+
+        function abrirModalEliminar(id, nombre) {
+            habitacionAEliminar = id;
+            document.getElementById('deleteRoomName').textContent = nombre;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function cerrarModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            habitacionAEliminar = null;
+        }
+
+        async function confirmarEliminacion() {
+            if (!habitacionAEliminar) return;
+
+            try {
+                const response = await fetch(`/CRUDS/EliminarHabitacionServlet?id=${habitacionAEliminar}`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    mostrarMensaje('✅ Habitación eliminada correctamente', 'success');
+                    cerrarModal();
+                    cargarHabitaciones();
+                } else {
+                    throw new Error('Error al eliminar');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarMensaje('❌ Error al eliminar la habitación. Por favor, intenta de nuevo.', 'error');
+            }
+        }
+
+        function mostrarMensaje(texto, tipo) {
+            const message = document.getElementById('message');
+            message.textContent = texto;
+            message.className = `message ${tipo} active`;
+
+            setTimeout(() => {
+                message.classList.remove('active');
+            }, 5000);
+        }
+
+        function mostrarMensajesURL() {
+            const params = new URLSearchParams(window.location.search);
+            
+            if (params.get('eliminado') === 'exito') {
+                mostrarMensaje('✅ Habitación eliminada correctamente', 'success');
+                // Limpiar URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (params.get('error')) {
+                mostrarMensaje('❌ Error: ' + params.get('error'), 'error');
+                // Limpiar URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else if (params.get('guardado') === 'exito') {
+                mostrarMensaje('✅ Habitación guardada correctamente', 'success');
+                // Limpiar URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                cerrarModal();
+            }
+        });
+    </script>
+</body>
+</html>

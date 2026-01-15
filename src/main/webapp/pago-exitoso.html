@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago Exitoso - Hotel Armonía</title>
+    <link rel="stylesheet" href="indexCSS.css">
+    <link rel="stylesheet" href="auth-ui.css">
+    <script src="auth-session.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        .confirmacion-container {
+            max-width: 700px;
+            margin: 140px auto 60px;
+            padding: 0 20px;
+        }
+
+        .exito-card {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .check-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            animation: scaleIn 0.5s ease 0.3s backwards;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .check-icon::before {
+            content: "✓";
+            color: white;
+            font-size: 50px;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.3rem;
+            color: #4CAF50;
+            margin: 0 0 15px 0;
+        }
+
+        .mensaje {
+            color: #666;
+            font-size: 1.1rem;
+            margin: 0 0 30px 0;
+            line-height: 1.6;
+        }
+
+        .loading {
+            font-style: italic;
+            color: #999;
+        }
+
+        .reserva-info {
+            background: #f0fdf4;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+            border-left: 4px solid #4CAF50;
+            text-align: left;
+            display: none;
+        }
+
+        .reserva-info p {
+            margin: 8px 0;
+            color: #065f46;
+            font-size: 0.95rem;
+        }
+
+        .reserva-info strong {
+            color: #047857;
+        }
+
+        .botones-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            display: inline-block;
+            padding: 16px 40px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-reservas {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: white;
+        }
+
+        .btn-reservas:hover {
+            background: linear-gradient(135deg, #b8860b, #9a7209);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-inicio {
+            background: white;
+            color: #666;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-inicio:hover {
+            background: #f8f9fa;
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        .error-msg {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .countdown {
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .confirmacion-container {
+                margin: 100px auto 40px;
+            }
+
+            h1 {
+                font-size: 1.9rem;
+            }
+
+            .botones-container {
+                flex-direction: column;
+            }
+
+            .btn-action {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <ul>
+            <li class="logo">
+                <a href="index.html">
+                    <img src="recursos/logo armonia n1.png" width="85px" alt="logo">
+                </a>
+            </li>
+            <li><a href="index.html">INICIO</a></li>
+            <li><a href="nav/experiencias.html">EXPERIENCIAS</a></li>
+            <li><a href="nav/servicios.html">SERVICIOS</a></li>
+            <li class="registro" id="auth-container"></li>
+        </ul>
+    </header>
+
+    <div class="confirmacion-container">
+        <div class="exito-card">
+            <div class="check-icon"></div>
+            <h1>¡Pago Exitoso!</h1>
+            <p class="mensaje loading" id="mensaje">⏳ Confirmando tu reserva...</p>
+            
+            <div class="spinner" id="spinner"></div>
+            
+            <div class="reserva-info" id="reservaInfo">
+                <p><strong>Reserva:</strong> <span id="reservaId">-</span></p>
+                <p><strong>Payment ID:</strong> <span id="paymentId">-</span></p>
+                <p><strong>Estado:</strong> Confirmada ✓</p>
+                <p style="margin-top: 15px; color: #666;">Recibirás un email con todos los detalles de tu reserva.</p>
+            </div>
+
+            <div class="error-msg" id="errorMsg"></div>
+
+            <div class="botones-container" id="botonesContainer" style="display: none;">
+                <a href="usuario/reservas.html" class="btn-action btn-reservas" id="btnReservas">
+                    📋 Ver Mis Reservas
+                </a>
+                <a href="index.html" class="btn-action btn-inicio">
+                    🏠 Volver al Inicio
+                </a>
+            </div>
+
+            <div class="countdown" id="countdown"></div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🔵 pago-exitoso.html cargado');
+        
+        let countdownInterval;
+        let redirectSeconds = 5;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🔵 DOMContentLoaded');
+            
+            const params = new URLSearchParams(window.location.search);
+            
+            console.log('🔵 Parámetros recibidos:');
+            for (let [key, value] of params.entries()) {
+                console.log(`   ${key}: ${value}`);
+            }
+            
+            // ⭐ PASO 1: Restaurar sesión con token
+            const token = params.get('token');
+            if (token) {
+                await restaurarSesion(token);
+            }
+            
+            // Extraer parámetros de MercadoPago
+            const collectionId = params.get('collection_id');
+            const collectionStatus = params.get('collection_status');
+            const paymentId = params.get('payment_id');
+            const externalReference = params.get('external_reference');
+            const status = params.get('status');
+            
+            // Extraer reserva_id
+            let reservaId = params.get('reserva') || params.get('reserva_id');
+            if (!reservaId && externalReference) {
+                reservaId = externalReference.replace('RESERVA_', '');
+            }
+            
+            const finalPaymentId = collectionId || paymentId || 'PENDING';
+            const finalStatus = collectionStatus || status || 'approved';
+            
+            console.log('✅ Valores finales:');
+            console.log('   Reserva:', reservaId);
+            console.log('   Payment:', finalPaymentId);
+            console.log('   Status:', finalStatus);
+            
+            if (reservaId) {
+                await procesarPago(reservaId, finalPaymentId, finalStatus);
+            } else {
+                mostrarError('No se pudo identificar la reserva');
+            }
+        });
+
+        async function restaurarSesion(token) {
+            try {
+                console.log('🔄 Restaurando sesión con token:', token);
+                
+                // ⭐ Usar CrearPreferenciaMPServlet que tiene el tokenStorage
+                const response = await fetch(`CrearPreferenciaMPServlet?action=validarToken&token=${token}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    cache: 'no-cache'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success !== false) {
+                    console.log('✅ Sesión restaurada:', data.usuario);
+                    
+                    // Recargar el auth manager
+                    if (typeof auth !== 'undefined') {
+                        await auth.init();
+                    }
+                } else {
+                    console.warn('⚠️ No se pudo restaurar sesión:', data.error);
+                }
+            } catch (error) {
+                console.error('❌ Error al restaurar sesión:', error);
+            }
+        }
+
+        async function procesarPago(reservaId, paymentId, status) {
+            try {
+                const url = 'ActualizarPagoMPServlet';
+                const body = `reserva_id=${reservaId}&payment_id=${paymentId}&status=${status}`;
+                
+                console.log('📤 Enviando a:', url);
+                console.log('📤 Body:', body);
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    credentials: 'include',
+                    body: body
+                });
+                
+                console.log('📥 Status:', response.status);
+                
+                const result = await response.json();
+                console.log('📥 Resultado:', result);
+                
+                if (result.success) {
+                    mostrarExito(reservaId, paymentId);
+                } else {
+                    mostrarAdvertencia(result.error || 'La reserva será confirmada en breve');
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                mostrarAdvertencia('La confirmación puede tardar unos minutos');
+            }
+        }
+
+        function mostrarExito(reservaId, paymentId) {
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('mensaje').textContent = 'Tu reserva ha sido confirmada y pagada correctamente';
+            document.getElementById('mensaje').classList.remove('loading');
+            document.getElementById('reservaId').textContent = '#' + String(reservaId).padStart(6, '0');
+            document.getElementById('paymentId').textContent = paymentId;
+            document.getElementById('reservaInfo').style.display = 'block';
+            document.getElementById('botonesContainer').style.display = 'flex';
+            
+            iniciarCuentaRegresiva();
+            
+            if (typeof notify !== 'undefined') {
+                notify.success(
+                    '¡Reserva Confirmada!',
+                    'Tu pago ha sido procesado exitosamente.',
+                    6000
+                );
+            }
+        }
+
+        function mostrarAdvertencia(mensaje) {
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('mensaje').textContent = 'Pago recibido correctamente';
+            document.getElementById('mensaje').classList.remove('loading');
+            document.getElementById('errorMsg').textContent = '⚠️ ' + mensaje;
+            document.getElementById('errorMsg').style.display = 'block';
+            document.getElementById('botonesContainer').style.display = 'flex';
+        }
+
+        function mostrarError(mensaje) {
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('mensaje').textContent = 'Pago procesado';
+            document.getElementById('errorMsg').textContent = '⚠️ ' + mensaje;
+            document.getElementById('errorMsg').style.display = 'block';
+            document.getElementById('botonesContainer').style.display = 'flex';
+        }
+
+        function iniciarCuentaRegresiva() {
+            const countdownEl = document.getElementById('countdown');
+            countdownEl.style.display = 'block';
+            
+            countdownInterval = setInterval(() => {
+                if (redirectSeconds > 0) {
+                    countdownEl.textContent = `Redirigiendo a tus reservas en ${redirectSeconds} segundo${redirectSeconds !== 1 ? 's' : ''}...`;
+                    redirectSeconds--;
+                } else {
+                    clearInterval(countdownInterval);
+                    window.location.href = 'usuario/reservas.html';
+                }
+            }, 1000);
+        }
+
+        document.getElementById('botonesContainer').addEventListener('click', function() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                document.getElementById('countdown').textContent = '';
+            }
+        });
+
+        window.addEventListener('beforeunload', function() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Hotel Armonía</title>
+    <link rel="stylesheet" href="../indexCSS.css">
+    <link rel="stylesheet" href="../auth-ui.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========================================
+           RESET Y BASE
+        ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding-top: 100px;
+        }
+        
+        /* ========================================
+           HEADER CONSISTENTE CON EL SITIO
+        ======================================== */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 1000;
+            padding: 0 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        header ul {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: nowrap;
+            list-style: none;
+            min-height: 80px;
+            gap: 0;
+            padding: 0 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            margin-right: auto;
+            padding: 0;
+        }
+
+        .logo img {
+            height: 60px;
+            width: auto;
+        }
+
+        header ul li:not(.logo):not(.registro) {
+            margin: 0 15px;
+        }
+
+        .registro {
+            margin-left: auto;
+            padding: 0;
+        }
+
+        header a {
+            text-decoration: none;
+            color: #1a1a1a;
+            font-weight: 500;
+            letter-spacing: 1.2px;
+            position: relative;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+            background-color: transparent;
+            padding: 10px 15px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            font-family: 'Lato', sans-serif;
+        }
+
+        header a::before {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #d4af37, #b8860b);
+            transform: translateX(-50%);
+            transition: width 0.3s;
+        }
+
+        header a:hover,
+        header a.active {
+            color: #d4af37;
+        }
+
+        header a:hover::before,
+        header a.active::before {
+            width: 60%;
+        }
+        
+        /* ========================================
+           CONTENEDOR PRINCIPAL
+        ======================================== */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        /* ========================================
+           TÍTULO DE PÁGINA
+        ======================================== */
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            color: #1a1a1a;
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 40px;
+            position: relative;
+            padding-bottom: 20px;
+            font-weight: 400;
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, #d4af37, #b8860b);
+            transform: translateX(-50%);
+        }
+        
+        /* ========================================
+           HEADER DEL PERFIL
+        ======================================== */
+        .profile-header {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            position: relative;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+        
+        .avatar-container {
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .avatar-main {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #d4af37;
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3);
+            object-fit: cover;
+            background: white;
+        }
+        
+        .avatar-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 3px solid white;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .avatar-badge:hover {
+            transform: scale(1.15) rotate(15deg);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.5);
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        
+        .user-email {
+            font-size: 15px;
+            color: #6c757d;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 12px;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #a0aec0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .stat-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-top: 4px;
+        }
+        
+        /* ========================================
+           SECCIONES DEL PERFIL
+        ======================================== */
+        .profile-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f5f5f5;
+        }
+        
+        .section-title {
+            font-family: 'Lato', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .section-icon {
+            font-size: 20px;
+        }
+        
+        /* ========================================
+           GRID DE INFORMACIÓN
+        ======================================== */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .info-value-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #1a1a1a;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        /* ========================================
+           BOTONES
+        ======================================== */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Lato', sans-serif;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: white;
+            box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #b8860b, #9a7209);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c82333, #bd2130);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+        
+        .btn-icon {
+            padding: 10px 16px;
+            font-size: 16px;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        /* ========================================
+           MODALES
+        ======================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.2s;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 35px;
+            max-width: 520px;
+            width: calc(100% - 40px);
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border: 2px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                transform: scale(0.9) translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f5f5f5;
+        }
+        
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #a0aec0;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .modal-close:hover {
+            background: #f8f9fa;
+            color: #495057;
+            transform: rotate(90deg);
+        }
+        
+        /* ========================================
+           FORMULARIOS
+        ======================================== */
+        .form-group {
+            margin-bottom: 22px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-family: 'Lato', sans-serif;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+        
+        .form-help {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 6px;
+            font-style: italic;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+        
+        .modal-actions .btn {
+            flex: 1;
+        }
+        
+        /* ========================================
+           ALERTAS
+        ======================================== */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            border: 1px solid;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+        
+        /* ========================================
+           LOADING SPINNER
+        ======================================== */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ========================================
+           FOOTER
+        ======================================== */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            background: white;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            color: #6c757d;
+            font-size: 14px;
+            margin-top: 60px;
+        }
+        
+        /* ========================================
+           RESPONSIVE
+        ======================================== */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 140px;
+            }
+            
+            header ul {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 12px;
+                padding: 15px;
+            }
+
+            .logo {
+                order: -1;
+                flex-basis: 100%;
+                text-align: center;
+                margin: 0 0 10px 0;
+            }
+            
+            .registro {
+                order: 1;
+                margin: 10px 0 0 0;
+                flex-basis: 100%;
+                text-align: center;
+            }
+
+            header a {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                padding: 30px 20px;
+            }
+            
+            .user-stats {
+                justify-content: center;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .modal {
+                padding: 25px 20px;
+            }
+            
+            .page-title {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .avatar-main {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .user-name {
+                font-size: 22px;
+            }
+            
+            .stat-value {
+                font-size: 14px;
+            }
+            
+            .btn {
+                padding: 10px 18px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER CONSISTENTE -->
+ <header>
+    <ul>
+        <li class="logo">
+            <a href="../index.html">
+                <img src="../recursos/logo armonia n1.png" width="89px" alt="logo">
+            </a>
+        </li>
+
+        <li><a href="../nav/disponibilidad.html">Habitaciones</a></li>
+        <li><a href="../nav/experiencias.html">Experiencias</a></li>
+        <li><a href="../nav/servicios.html">Servicios</a></li>
+
+        <!-- 🔴 AQUÍ SE INYECTA TODO -->
+        <li class="registro" id="auth-container"></li>
+    </ul>
+</header>
+
+    <div class="container">
+        <h1 class="page-title">Mi Perfil</h1>
+        
+        <!-- HEADER DEL PERFIL -->
+        <div class="profile-header">
+            <div class="avatar-container">
+                <img id="avatar-main" class="avatar-main" 
+                     src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200" 
+                     alt="Avatar"
+                     onerror="this.src='https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200'">
+                <div class="avatar-badge" onclick="abrirModalAvatar()" title="Cambiar avatar">
+                    ✎
+                </div>
+            </div>
+            
+            <div class="user-info">
+                <h2 class="user-name" id="user-name">Cargando...</h2>
+                <div class="user-email" id="user-email">
+                    📧 Cargando...
+                </div>
+                <div class="user-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Miembro desde</span>
+                        <span class="stat-value" id="fecha-registro">--/--/----</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Teléfono</span>
+                        <span class="stat-value" id="user-telefono">---</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- INFORMACIÓN PERSONAL -->
+        <div class="profile-section">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="section-icon">👤</span>
+                    Información Personal
+                </div>
+                <button class="btn btn-primary" onclick="abrirModalEditarDatos()">
+                    ✏️ Editar
+                </button>
+            </div>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <label class="info-label">Nombre Completo</label>
+                    <div class="info-value-display" id="display-nombre">---</div>
+                </div>
+                
+                <div class="info-item">
+                    <label class="info-label">Teléfono</label>
+                    <div class="info-value-display" id="display-telefono">---</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CUENTA Y SEGURIDAD -->
+        <div class="profile-section">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="section-icon">🔒</span>
+                    Cuenta y Seguridad
+                </div>
+            </div>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <label class="info-label">Email</label>
+                    <div class="info-value-display">
+                        <span id="display-email">---</span>
+                        <button class="btn btn-secondary btn-icon" onclick="abrirModalCambiarEmail()" title="Cambiar email">
+                            ✏️
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <label class="info-label">Contraseña</label>
+                    <div class="info-value-display">
+                        <span>••••••••••</span>
+                        <button class="btn btn-secondary btn-icon" onclick="abrirModalCambiarPassword()" title="Cambiar contraseña">
+                            🔑
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MODAL: Editar Datos Personales -->
+    <div id="modal-editar-datos" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Editar Información Personal</h2>
+                <button class="modal-close" onclick="cerrarModal('modal-editar-datos')">×</button>
+            </div>
+            
+            <form id="form-editar-datos" onsubmit="guardarDatosPersonales(event)">
+                <div class="form-group">
+                    <label class="form-label">Nombre Completo</label>
+                    <input type="text" id="input-nombre" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Teléfono</label>
+                    <input type="tel" id="input-telefono" class="form-input" required>
+                    <p class="form-help">Incluye código de país si es necesario (ej: +57)</p>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-editar-datos')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="btn-guardar-datos">
+                        💾 Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- MODAL: Cambiar Email -->
+    <div id="modal-cambiar-email" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Cambiar Email</h2>
+                <button class="modal-close" onclick="cerrarModal('modal-cambiar-email')">×</button>
+            </div>
+            
+            <div class="alert alert-info">
+                ⚠️ Al cambiar tu email, tu foto de perfil (Gravatar) también cambiará.
+            </div>
+            
+            <form id="form-cambiar-email" onsubmit="guardarNuevoEmail(event)">
+                <div class="form-group">
+                    <label class="form-label">Nuevo Email</label>
+                    <input type="email" id="input-nuevo-email" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Confirma tu Contraseña</label>
+                    <input type="password" id="input-password-email" class="form-input" required>
+                    <p class="form-help">Por seguridad, confirma tu contraseña actual</p>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-cambiar-email')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="btn-guardar-email">
+                        📧 Cambiar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- MODAL: Cambiar Contraseña -->
+    <div id="modal-cambiar-password" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Cambiar Contraseña</h2>
+                <button class="modal-close" onclick="cerrarModal('modal-cambiar-password')">×</button>
+            </div>
+            
+            <form id="form-cambiar-password" onsubmit="guardarNuevaPassword(event)">
+                <div class="form-group">
+                    <label class="form-label">Contraseña Actual</label>
+                    <input type="password" id="input-password-actual" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Nueva Contraseña</label>
+                    <input type="password" id="input-password-nueva" class="form-input" required minlength="6">
+                    <p class="form-help">Mínimo 6 caracteres</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Confirmar Nueva Contraseña</label>
+                    <input type="password" id="input-password-confirmar" class="form-input" required>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-cambiar-password')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-danger" id="btn-guardar-password">
+                        🔒 Cambiar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- MODAL: Información Avatar -->
+    <div id="modal-avatar" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Foto de Perfil</h2>
+                <button class="modal-close" onclick="cerrarModal('modal-avatar')">×</button>
+            </div>
+            
+            <div class="alert alert-info">
+                ℹ️ Tu avatar se obtiene de <strong>Gravatar</strong> usando tu email.
+            </div>
+            
+            <div style="text-align: center; padding: 20px;">
+                <img id="modal-avatar-preview" class="avatar-main" style="margin: 0 auto;" 
+                     src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200" 
+                     alt="Avatar preview">
+            </div>
+            
+            <p style="font-size: 14px; color: #6c757d; line-height: 1.7; margin-bottom: 20px;">
+                <strong>¿Cómo cambiar tu foto?</strong><br>
+                1. Ve a <a href="https://gravatar.com" target="_blank" style="color: #d4af37; font-weight: 600; text-decoration: none;">gravatar.com</a><br>
+                2. Crea una cuenta con tu email: <strong id="modal-avatar-email">---</strong><br>
+                3. Sube tu foto preferida<br>
+                4. Recarga esta página para ver el cambio
+            </p>
+            
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="cerrarModal('modal-avatar')">
+                    Cerrar
+                </button>
+                <a href="https://gravatar.com" target="_blank" class="btn btn-primary" style="text-decoration: none;">
+                    🌐 Ir a Gravatar
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2024 Hotel Armonía. Todos los derechos reservados.</p>
+    </footer>
+    
+    <!-- SCRIPTS -->
+    <script src="../auth-session.js"></script>
+    <script>
+        // ============================================
+        // CONFIGURACIÓN BASE
+        // ============================================
+        const BASE_PATH = '/ProyectoSena/';
+        let perfilData = null;
+        
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🔄 Inicializando página de perfil...');
+            
+            // Esperar a que auth esté disponible y completamente inicializado
+            await esperarAuthCompleto();
+            
+            // Verificar sesión
+            if (!auth || !auth.estaLogueado()) {
+                console.warn('⚠️ Usuario no logueado, redirigiendo...');
+                window.location.href = BASE_PATH + 'Login.html';
+                return;
+            }
+            
+            console.log('✅ Usuario autenticado:', {
+                usuario: auth.usuario,
+                email: auth.email,
+                esAdmin: auth.esAdmin
+            });
+            
+            // Cargar perfil
+            await cargarPerfil();
+        });
+        
+        // Esperar a que el objeto auth esté disponible Y completamente inicializado
+        function esperarAuthCompleto() {
+            return new Promise((resolve) => {
+                // Función para verificar si auth está listo
+                function checkAuth() {
+                    // Verificar que auth existe Y que ya terminó de inicializarse
+                    if (typeof auth !== 'undefined' && auth.usuario !== null) {
+                        console.log('✅ Auth completamente inicializado');
+                        resolve();
+                        return true;
+                    }
+                    return false;
+                }
+                
+                // Si ya está listo, resolver inmediatamente
+                if (checkAuth()) return;
+                
+                // Si no, esperar a que se inicialice
+                console.log('⏳ Esperando inicialización de auth...');
+                let intentos = 0;
+                const maxIntentos = 50; // 5 segundos máximo
+                
+                const interval = setInterval(() => {
+                    intentos++;
+                    
+                    if (checkAuth()) {
+                        clearInterval(interval);
+                    } else if (intentos >= maxIntentos) {
+                        // Timeout: verificar sesión directamente con el servidor
+                        console.warn('⚠️ Timeout esperando auth, verificando con servidor...');
+                        clearInterval(interval);
+                        verificarSesionDirecta().then(resolve);
+                    }
+                }, 100);
+            });
+        }
+        
+        // Verificación directa con el servidor (fallback)
+        async function verificarSesionDirecta() {
+            try {
+                const response = await fetch(BASE_PATH + 'RegistroServlet?action=verificarSesion', {
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (!data.logueado) {
+                    console.warn('⚠️ Servidor confirma: no hay sesión activa');
+                    window.location.href = BASE_PATH + 'Login.html';
+                } else {
+                    console.log('✅ Servidor confirma sesión activa:', data);
+                    // Crear objeto auth temporal si no existe
+                    if (typeof auth === 'undefined' || !auth.usuario) {
+                        window.auth = {
+                            usuario: data.nombre,
+                            email: data.email,
+                            esAdmin: data.esAdmin,
+                            estaLogueado: () => true
+                        };
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error verificando sesión:', error);
+                window.location.href = BASE_PATH + 'Login.html';
+            }
+        }
+        
+        // ============================================
+        // CARGAR DATOS DEL PERFIL
+        // ============================================
+        async function cargarPerfil() {
+            try {
+                console.log('📥 Cargando datos del perfil...');
+                
+                const response = await fetch(BASE_PATH + 'PerfilServlet?action=obtenerPerfil', {
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error HTTP: ' + response.status);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    perfilData = data.usuario;
+                    mostrarPerfil(perfilData);
+                    console.log('✅ Perfil cargado exitosamente:', perfilData);
+                } else {
+                    console.error('❌ Error del servidor:', data.error);
+                    if (typeof notify !== 'undefined') {
+                        notify.error('Error', data.error || 'No se pudo cargar el perfil');
+                    } else {
+                        alert('Error: ' + (data.error || 'No se pudo cargar el perfil'));
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error al cargar perfil:', error);
+                if (typeof notify !== 'undefined') {
+                    notify.error('Error', 'Hubo un problema al cargar tu perfil');
+                } else {
+                    alert('Error: Hubo un problema al cargar tu perfil');
+                }
+            }
+        }
+        
+        function mostrarPerfil(data) {
+            console.log('🎨 Mostrando datos en la UI...');
+            
+            // Avatar
+            const avatarImg = document.getElementById('avatar-main');
+            if (avatarImg && data.avatarUrl) {
+                avatarImg.src = data.avatarUrl;
+                console.log('✅ Avatar cargado:', data.avatarUrl);
+            }
+            
+            // Header
+            const userName = document.getElementById('user-name');
+            if (userName) userName.textContent = data.nombre;
+            
+            const userEmail = document.getElementById('user-email');
+            if (userEmail) userEmail.innerHTML = `📧 ${data.email}`;
+            
+            const userTelefono = document.getElementById('user-telefono');
+            if (userTelefono) userTelefono.textContent = data.telefono;
+            
+            // Fecha de registro
+            if (data.fechaRegistro) {
+                const fecha = new Date(data.fechaRegistro + 'T00:00:00');
+                const fechaFormateada = fecha.toLocaleDateString('es-ES', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                const fechaRegistro = document.getElementById('fecha-registro');
+                if (fechaRegistro) fechaRegistro.textContent = fechaFormateada;
+            }
+            
+            // Información personal
+            const displayNombre = document.getElementById('display-nombre');
+            if (displayNombre) displayNombre.textContent = data.nombre;
+            
+            const displayTelefono = document.getElementById('display-telefono');
+            if (displayTelefono) displayTelefono.textContent = data.telefono;
+            
+            const displayEmail = document.getElementById('display-email');
+            if (displayEmail) displayEmail.textContent = data.email;
+            
+            console.log('✅ UI actualizada correctamente');
+        }
+        
+        // ============================================
+        // GESTIÓN DE MODALES
+        // ============================================
+        function abrirModalEditarDatos() {
+            if (!perfilData) {
+                console.warn('⚠️ No hay datos de perfil disponibles');
+                return;
+            }
+            
+            document.getElementById('input-nombre').value = perfilData.nombre;
+            document.getElementById('input-telefono').value = perfilData.telefono;
+            
+            document.getElementById('modal-editar-datos').classList.add('active');
+            console.log('📝 Modal de edición abierto');
+        }
+        
+        function abrirModalCambiarEmail() {
+            document.getElementById('input-nuevo-email').value = '';
+            document.getElementById('input-password-email').value = '';
+            document.getElementById('modal-cambiar-email').classList.add('active');
+            console.log('📧 Modal de cambio de email abierto');
+        }
+        
+        function abrirModalCambiarPassword() {
+            document.getElementById('input-password-actual').value = '';
+            document.getElementById('input-password-nueva').value = '';
+            document.getElementById('input-password-confirmar').value = '';
+            document.getElementById('modal-cambiar-password').classList.add('active');
+            console.log('🔒 Modal de cambio de contraseña abierto');
+        }
+        
+        function abrirModalAvatar() {
+            if (perfilData) {
+                const previewImg = document.getElementById('modal-avatar-preview');
+                if (previewImg) previewImg.src = perfilData.avatarUrl;
+                
+                const emailSpan = document.getElementById('modal-avatar-email');
+                if (emailSpan) emailSpan.textContent = perfilData.email;
+            }
+            document.getElementById('modal-avatar').classList.add('active');
+            console.log('🖼️ Modal de avatar abierto');
+        }
+        
+        function cerrarModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                console.log('✖️ Modal cerrado:', modalId);
+            }
+        }
+        
+        // Cerrar modal al hacer clic fuera
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    cerrarModal(this.id);
+                }
+            });
+        });
+        
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                    cerrarModal(modal.id);
+                });
+            }
+        });
+        
+        // ============================================
+        // GUARDAR DATOS PERSONALES
+        // ============================================
+        async function guardarDatosPersonales(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('btn-guardar-datos');
+            const btnText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Guardando...';
+            
+            const nombre = document.getElementById('input-nombre').value.trim();
+            const telefono = document.getElementById('input-telefono').value.trim();
+            
+            console.log('💾 Guardando datos personales...', { nombre, telefono });
+            
+            try {
+                const response = await fetch(BASE_PATH + 'PerfilServlet?action=actualizarDatos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    credentials: 'include',
+                    body: `nombre=${encodeURIComponent(nombre)}&telefono=${encodeURIComponent(telefono)}`
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (typeof notify !== 'undefined') {
+                        notify.success('¡Actualizado!', 'Tus datos se han actualizado correctamente');
+                    } else {
+                        alert('¡Datos actualizados correctamente!');
+                    }
+                    cerrarModal('modal-editar-datos');
+                    await cargarPerfil(); // Recargar datos
+                    console.log('✅ Datos actualizados');
+                } else {
+                    console.error('❌ Error:', data.error);
+                    if (typeof notify !== 'undefined') {
+                        notify.error('Error', data.error || 'No se pudieron guardar los cambios');
+                    } else {
+                        alert('Error: ' + (data.error || 'No se pudieron guardar los cambios'));
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                if (typeof notify !== 'undefined') {
+                    notify.error('Error', 'Hubo un problema al guardar los cambios');
+                } else {
+                    alert('Error: Hubo un problema al guardar los cambios');
+                }
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = btnText;
+            }
+        }
+        
+        // ============================================
+        // CAMBIAR EMAIL
+        // ============================================
+        async function guardarNuevoEmail(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('btn-guardar-email');
+            const btnText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Cambiando...';
+            
+            const email = document.getElementById('input-nuevo-email').value.trim();
+            const password = document.getElementById('input-password-email').value;
+            
+            console.log('📧 Cambiando email a:', email);
+            
+            try {
+                const response = await fetch(BASE_PATH + 'PerfilServlet?action=actualizarEmail', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    credentials: 'include',
+                    body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (typeof notify !== 'undefined') {
+                        notify.success('¡Email Actualizado!', 'Tu email y avatar han sido actualizados');
+                    } else {
+                        alert('¡Email actualizado correctamente!');
+                    }
+                    cerrarModal('modal-cambiar-email');
+                    
+                    console.log('✅ Email actualizado, recargando página...');
+                    // Recargar página para actualizar avatar
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    console.error('❌ Error:', data.error);
+                    if (typeof notify !== 'undefined') {
+                        notify.error('Error', data.error || 'No se pudo cambiar el email');
+                    } else {
+                        alert('Error: ' + (data.error || 'No se pudo cambiar el email'));
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                if (typeof notify !== 'undefined') {
+                    notify.error('Error', 'Hubo un problema al cambiar el email');
+                } else {
+                    alert('Error: Hubo un problema al cambiar el email');
+                }
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = btnText;
+            }
+        }
+        
+        // ============================================
+        // CAMBIAR CONTRASEÑA
+        // ============================================
+        async function guardarNuevaPassword(event) {
+            event.preventDefault();
+            
+            const passwordNueva = document.getElementById('input-password-nueva').value;
+            const passwordConfirmar = document.getElementById('input-password-confirmar').value;
+            
+            // Validar que coincidan
+            if (passwordNueva !== passwordConfirmar) {
+                console.warn('⚠️ Las contraseñas no coinciden');
+                if (typeof notify !== 'undefined') {
+                    notify.error('Error', 'Las contraseñas no coinciden');
+                } else {
+                    alert('Error: Las contraseñas no coinciden');
+                }
+                return;
+            }
+            
+            const btn = document.getElementById('btn-guardar-password');
+            const btnText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Cambiando...';
+            
+            const passwordActual = document.getElementById('input-password-actual').value;
+            
+            console.log('🔒 Cambiando contraseña...');
+            
+            try {
+                const response = await fetch(BASE_PATH + 'PerfilServlet?action=cambiarPassword', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    credentials: 'include',
+                    body: `passwordActual=${encodeURIComponent(passwordActual)}&passwordNueva=${encodeURIComponent(passwordNueva)}`
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (typeof notify !== 'undefined') {
+                        notify.success('¡Contraseña Cambiada!', 'Tu contraseña se ha actualizado correctamente');
+                    } else {
+                        alert('¡Contraseña cambiada correctamente!');
+                    }
+                    cerrarModal('modal-cambiar-password');
+                    document.getElementById('form-cambiar-password').reset();
+                    console.log('✅ Contraseña actualizada');
+                } else {
+                    console.error('❌ Error:', data.error);
+                    if (typeof notify !== 'undefined') {
+                        notify.error('Error', data.error || 'No se pudo cambiar la contraseña');
+                    } else {
+                        alert('Error: ' + (data.error || 'No se pudo cambiar la contraseña'));
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                if (typeof notify !== 'undefined') {
+                    notify.error('Error', 'Hubo un problema al cambiar la contraseña');
+                } else {
+                    alert('Error: Hubo un problema al cambiar la contraseña');
+                }
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = btnText;
+            }
+        }
+        
+        console.log('✅ Script de perfil cargado correctamente');
+        
+        // ============================================
+        // DEBUG: Verificar estado de autenticación
+        // ============================================
+        
+        // Log cada 2 segundos para debugging (comentar en producción)
+        if (window.location.hostname === 'localhost') {
+            setInterval(() => {
+                if (typeof auth !== 'undefined') {
+                    console.log('📊 Estado Auth:', {
+                        logueado: auth.estaLogueado(),
+                        usuario: auth.usuario,
+                        email: auth.email,
+                        esAdmin: auth.esAdmin
+                    });
+                } else {
+                    console.log('⚠️ Auth no está definido');
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

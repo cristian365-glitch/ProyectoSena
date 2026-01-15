@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Reserva - Hotel Armonía</title>
+    <link rel="stylesheet" href="indexCSS.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .confirmacion-container {
+            max-width: 900px;
+            margin: 120px auto 60px;
+            padding: 0 20px;
+        }
+
+        .exito-badge {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .check-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: scaleIn 0.5s ease 0.3s backwards;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .check-icon::before {
+            content: "✓";
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+        }
+
+        .exito-badge h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: #000;
+            margin: 0 0 15px 0;
+        }
+
+        .exito-badge p {
+            color: #666;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .codigo-reserva {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 15px 30px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #d4af37;
+            letter-spacing: 2px;
+        }
+
+        .detalles-reserva {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .detalles-reserva h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin: 0 0 25px 0;
+            color: #000;
+        }
+
+        .detalle-fila {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .detalle-fila:last-child {
+            border-bottom: none;
+        }
+
+        .detalle-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .detalle-valor {
+            color: #000;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .metodos-pago {
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .metodos-pago h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin: 0 0 10px 0;
+            color: #000;
+        }
+
+        .metodos-pago .subtitulo {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .metodo-option {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .metodo-option:hover {
+            border-color: #d4af37;
+            background: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+        }
+
+        .metodo-option.selected {
+            border-color: #d4af37;
+            background: #fffbf0;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+        }
+
+        .metodo-icon {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .metodo-info {
+            flex: 1;
+        }
+
+        .metodo-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+            color: #000;
+        }
+
+        .metodo-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .radio-custom {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .metodo-option.selected .radio-custom {
+            border-color: #d4af37;
+        }
+
+        .metodo-option.selected .radio-custom::after {
+            content: "";
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #d4af37;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .btn-pagar {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-pagar:hover:not(:disabled) {
+            background: linear-gradient(135deg, #b8860b, #9a7209);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-pagar:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secundario {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            color: #000;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .btn-secundario:hover {
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        .info-seguridad {
+            background: #f0f8ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .estado-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .estado-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        @media (max-width: 768px) {
+            .confirmacion-container {
+                margin: 80px auto 40px;
+            }
+
+            .exito-badge h1 {
+                font-size: 1.8rem;
+            }
+
+            .metodo-option {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <ul>
+            <li class="logo">
+                <a href="index.html">
+                    <img src="recursos/logo armonia n1.png" width="85px" alt="logo">
+                </a>
+            </li>
+            <li><a href="index.html">INICIO</a></li>
+            <li><a href="/nav/Experiencias.html">EXPERIENCIAS</a></li>
+            <li><a href="/nav/Hoteles.html">HOTELES</a></li>
+        </ul>
+    </header>
+
+    <div class="confirmacion-container">
+        <!-- Badge de éxito -->
+        <div class="exito-badge">
+            <div class="check-icon"></div>
+            <h1>¡Reserva Creada Exitosamente!</h1>
+            <p>Tu reserva ha sido registrada. Completa el pago para confirmarla.</p>
+            <div class="codigo-reserva" id="codigoReserva">-</div>
+            <span class="estado-badge estado-pendiente">Pendiente de Pago</span>
+        </div>
+
+        <!-- Detalles de la reserva -->
+        <div class="detalles-reserva">
+            <h2>Detalles de tu Reserva</h2>
+            
+            <div class="detalle-fila">
+                <span class="detalle-label">Habitación</span>
+                <span class="detalle-valor" id="nombreHabitacion">-</span>
+            </div>
+
+            <div class="detalle-fila">
+                <span class="detalle-label">Nombre</span>
+                <span class="detalle-valor" id="nombreCliente">-</span>
+            </div>
+
+            <div class="detalle-fila">
+                <span class="detalle-label">Email</span>
+                <span class="detalle-valor" id="emailCliente">-</span>
+            </div>
+
+            <div class="detalle-fila">
+                <span class="detalle-label">Check-in</span>
+                <span class="detalle-valor" id="fechaCheckin">-</span>
+            </div>
+
+            <div class="detalle-fila">
+                <span class="detalle-label">Check-out</span>
+                <span class="detalle-valor" id="fechaCheckout">-</span>
+            </div>
+
+            <div class="detalle-fila">
+                <span class="detalle-label">Noches</span>
+                <span class="detalle-valor" id="numNoches">-</span>
+            </div>
+
+            <div class="detalle-fila">
+                <span class="detalle-label">Personas</span>
+                <span class="detalle-valor" id="numPersonas">-</span>
+            </div>
+
+            <div class="detalle-fila" style="padding-top: 20px; border-top: 2px solid #d4af37;">
+                <span class="detalle-label" style="font-size: 1.2rem; color: #d4af37;">Total a Pagar</span>
+                <span class="detalle-valor" style="font-size: 1.5rem; font-weight: 700; color: #d4af37;" id="totalPagar">$0</span>
+            </div>
+        </div>
+
+        <!-- Métodos de pago -->
+        <!-- REEMPLAZA la sección de métodos de pago con esto: -->
+
+<div class="metodos-pago">
+    <h2>Pagar tu Reserva</h2>
+    <p class="subtitulo">Elige cómo deseas completar el pago</p>
+
+    <!-- Mercado Pago (incluye todo) -->
+    <div class="metodo-option" data-metodo="mercadopago">
+        <div class="metodo-icon">💳</div>
+        <div class="metodo-info">
+            <h3>Pagar con Mercado Pago</h3>
+            <p>Tarjetas, PSE, Nequi, Daviplata, Efectivo (Efecty/Baloto)</p>
+        </div>
+        <div class="radio-custom"></div>
+    </div>
+
+    <!-- Pagar en el hotel -->
+    <div class="metodo-option" data-metodo="hotel">
+        <div class="metodo-icon">🏨</div>
+        <div class="metodo-info">
+            <h3>Pagar en el Hotel</h3>
+            <p>Paga al momento del check-in (sujeto a disponibilidad)</p>
+        </div>
+        <div class="radio-custom"></div>
+    </div>
+
+    <div class="info-seguridad">
+        🔒 <strong>Pago 100% Seguro:</strong> Tus datos están protegidos con encriptación SSL.
+    </div>
+
+    <button class="btn-pagar" id="btnPagar" disabled>Proceder al Pago</button>
+    <button class="btn-secundario" onclick="window.location.href='index.html'">Volver al Inicio</button>
+</div>
+    </div>
+
+    <script>
+// Script para confirmacion-reserva.html
+let reservaData = null;
+let metodoSeleccionado = null;
+
+document.addEventListener('DOMContentLoaded', async function() {
+    const params = new URLSearchParams(window.location.search);
+    const reservaId = params.get('id');
+
+    if (!reservaId) {
+        alert('No se encontró la reserva');
+        window.location.href = 'index.html';
+        return;
+    }
+
+    await cargarReserva(reservaId);
+    configurarMetodosPago();
+});
+
+async function cargarReserva(id) {
+    try {
+        const response = await fetch(`ObtenerReservaServlet?id=${id}`, {
+            credentials: 'include' // ⭐ AGREGADO
+        });
+        reservaData = await response.json();
+
+        if (!reservaData || reservaData.error) {
+            alert('Error al cargar la reserva');
+            window.location.href = 'index.html';
+            return;
+        }
+
+        // Mostrar datos
+        document.getElementById('codigoReserva').textContent = '#' + reservaData.id.toString().padStart(6, '0');
+        document.getElementById('nombreHabitacion').textContent = reservaData.habitacion_nombre;
+        document.getElementById('nombreCliente').textContent = reservaData.nombre_cliente;
+        document.getElementById('emailCliente').textContent = reservaData.email;
+        document.getElementById('fechaCheckin').textContent = formatearFecha(reservaData.fecha_checkin);
+        document.getElementById('fechaCheckout').textContent = formatearFecha(reservaData.fecha_checkout);
+        document.getElementById('numNoches').textContent = reservaData.num_noches + ' noches';
+        document.getElementById('numPersonas').textContent = reservaData.num_personas;
+        document.getElementById('totalPagar').textContent = '$' + reservaData.total.toLocaleString('es-CO');
+
+        console.log('✅ Reserva cargada:', reservaData.id);
+
+    } catch (error) {
+        console.error('❌ Error al cargar reserva:', error);
+        alert('Error al cargar los datos de la reserva');
+    }
+}
+
+function formatearFecha(fecha) {
+    const date = new Date(fecha);
+    return date.toLocaleDateString('es-CO', { 
+        weekday: 'short', 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+    });
+}
+
+function configurarMetodosPago() {
+    const opciones = document.querySelectorAll('.metodo-option');
+    const btnPagar = document.getElementById('btnPagar');
+
+    opciones.forEach(opcion => {
+        opcion.addEventListener('click', function() {
+            // Remover selección anterior
+            opciones.forEach(o => o.classList.remove('selected'));
+            
+            // Seleccionar actual
+            this.classList.add('selected');
+            metodoSeleccionado = this.dataset.metodo;
+            
+            // Habilitar botón
+            btnPagar.disabled = false;
+            
+            console.log('✅ Método seleccionado:', metodoSeleccionado);
+        });
+    });
+
+    btnPagar.addEventListener('click', procesarPago);
+}
+
+async function procesarPago() {
+    if (!metodoSeleccionado || !reservaData) {
+        alert('Por favor selecciona un método de pago');
+        return;
+    }
+
+    const btnPagar = document.getElementById('btnPagar');
+    btnPagar.disabled = true;
+    btnPagar.textContent = 'Procesando...';
+
+    console.log('💳 Procesando pago...');
+    console.log('   Método:', metodoSeleccionado);
+    console.log('   Reserva:', reservaData.id);
+
+    if (metodoSeleccionado === 'hotel') {
+        // ====================================
+        // OPCIÓN 1: PAGAR EN EL HOTEL
+        // ====================================
+        try {
+            console.log('🏨 Procesando pago en hotel...');
+            
+            const response = await fetch('ActualizarEstadoReservaServlet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                credentials: 'include', // ⭐ AGREGADO
+                body: `reserva_id=${reservaData.id}&estado=confirmada`
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                console.log('✅ Reserva confirmada para pago en hotel');
+                
+                if (typeof notify !== 'undefined') {
+                    notify.success(
+                        '¡Reserva Confirmada!',
+                        'Podrás pagar en el hotel al hacer check-in.',
+                        5000
+                    );
+                } else {
+                    alert('✅ Reserva confirmada. Podrás pagar en el hotel al hacer check-in.');
+                }
+                
+                // Redirigir a mis reservas
+                setTimeout(() => {
+                    window.location.href = 'usuario/reservas.html';
+                }, 2000);
+            } else {
+                throw new Error(result.error || 'Error al confirmar');
+            }
+        } catch (error) {
+            console.error('❌ Error:', error);
+            
+            if (typeof notify !== 'undefined') {
+                notify.error('Error', 'No se pudo confirmar la reserva: ' + error.message);
+            } else {
+                alert('Error al confirmar: ' + error.message);
+            }
+            
+            btnPagar.disabled = false;
+            btnPagar.textContent = 'Proceder al Pago';
+        }
+        
+    } else if (metodoSeleccionado === 'mercadopago') {
+        // ====================================
+        // OPCIÓN 2: MERCADO PAGO
+        // ====================================
+        try {
+            console.log('💳 Creando preferencia de MercadoPago...');
+            console.log('   Reserva ID:', reservaData.id);
+            console.log('   Total:', reservaData.total);
+            
+            const response = await fetch('CrearPreferenciaMPServlet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                credentials: 'include', // ⭐ CRÍTICO - Mantiene la sesión
+                body: `reserva_id=${reservaData.id}`
+            });
+
+            console.log('📥 Respuesta recibida, status:', response.status);
+            
+            const result = await response.json();
+            console.log('📥 Datos de preferencia:', result);
+
+            if (result.success) {
+                console.log('✅ Preferencia creada exitosamente');
+                console.log('   Preference ID:', result.preference_id);
+                console.log('   Token de sesión:', result.token);
+                
+                // Usar sandbox_init_point en TEST, init_point en PRODUCCIÓN
+                const initPoint = result.sandbox_init_point || result.init_point;
+                
+                console.log('🔄 Redirigiendo a MercadoPago:', initPoint);
+                
+                // Pequeña pausa para que el usuario vea el mensaje
+                if (typeof notify !== 'undefined') {
+                    notify.info(
+                        'Redirigiendo...',
+                        'Serás redirigido a MercadoPago para completar el pago.',
+                        2000
+                    );
+                }
+                
+                setTimeout(() => {
+                    window.location.href = initPoint;
+                }, 1000);
+                
+            } else {
+                throw new Error(result.error || 'No se pudo crear el pago');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error al procesar con MercadoPago:', error);
+            
+            if (typeof notify !== 'undefined') {
+                notify.error(
+                    'Error de Pago',
+                    'No se pudo procesar el pago: ' + error.message,
+                    6000
+                );
+            } else {
+                alert('Error al procesar: ' + error.message);
+            }
+            
+            btnPagar.disabled = false;
+            btnPagar.textContent = 'Proceder al Pago';
+        }
+        
+    } else if (metodoSeleccionado === 'wompi') {
+        // ====================================
+        // OPCIÓN 3: WOMPI (Para implementar)
+        // ====================================
+        alert('Wompi estará disponible próximamente');
+        btnPagar.disabled = false;
+        btnPagar.textContent = 'Proceder al Pago';
+        
+    } else {
+        alert('Método de pago no válido');
+        btnPagar.disabled = false;
+        btnPagar.textContent = 'Proceder al Pago';
+    }
+}
+    </script>
+</body>
+</html>

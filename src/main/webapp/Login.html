@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Armonia - Login / Registro</title>
+    <link rel="stylesheet" href="LoginCSS.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="indexCSS.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="recursos/imagen icon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="recursos/imagen icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="recursos/imagen icon/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <style>
+        /* Sistema de notificaciones inline para Login.html */
+        .login-notification {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 320px;
+            max-width: 500px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            overflow: hidden;
+            animation: slideDown 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .login-notification.hiding {
+            animation: slideUp 0.3s ease-in forwards;
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(-50%) translateY(-100px);
+                opacity: 0;
+            }
+        }
+        
+        .notification-header {
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .notification-icon.error {
+            background: linear-gradient(135deg, #f56565, #c53030);
+            color: white;
+        }
+        
+        .notification-icon.warning {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: white;
+        }
+        
+        .notification-icon.info {
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            color: white;
+        }
+        
+        .notification-icon.success {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+        }
+        
+        .notification-title {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a202c;
+        }
+        
+        .notification-close {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a0aec0;
+            transition: all 0.2s;
+            font-size: 18px;
+        }
+        
+        .notification-close:hover {
+            background: #edf2f7;
+            color: #4a5568;
+        }
+        
+        .notification-body {
+            padding: 16px 24px 20px;
+        }
+        
+        .notification-message {
+            color: #4a5568;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Estilos para botón de Google */
+        .google-btn-container {
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 24px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .divider span {
+            padding: 0 16px;
+            color: #718096;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .google-btn {
+            width: 100%;
+            padding: 14px 16px;
+            background: white;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: inherit;
+        }
+
+        .google-btn:hover {
+            border-color: #d4af37;
+            background: #fefefe;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .google-btn:active {
+            transform: translateY(0);
+        }
+
+        .google-icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .login-notification {
+                left: 15px;
+                right: 15px;
+                transform: none;
+                min-width: auto;
+            }
+            
+            @keyframes slideDown {
+                from {
+                    transform: translateY(-100px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideUp {
+                from {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateY(-100px);
+                    opacity: 0;
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="hotel-title">HOTEL ARMONIA</h1>
+    
+    <div class="container">
+        <div class="toggle-container">
+            <button class="toggle-btn active" onclick="showForm(event, 'registro')">Registro</button>
+            <button class="toggle-btn" onclick="showForm(event, 'login')">Login</button>
+        </div>
+
+        <div class="form-container">
+            <!-- REGISTRO -->
+            <form class="formulario active" id="registro" action="RegistroServlet" method="POST">
+                <div class="input-wrapper">
+                    <label>Nombre:</label>
+                    <input type="text" name="nombre" required autocomplete="name">
+                </div>
+                <div class="input-wrapper">
+                    <label>Email:</label>
+                    <input type="email" name="email" required autocomplete="email">
+                </div>
+                <div class="input-wrapper">
+                    <label>Teléfono:</label>
+                    <input type="tel" name="telefono" required autocomplete="tel">
+                </div>
+                <div class="input-wrapper">
+                    <label>Contraseña:</label>
+                    <input type="password" name="password" id="password_registro" required autocomplete="new-password" minlength="6">
+                    <small style="color: #666; font-size: 0.85em;">Mínimo 6 caracteres</small>
+                </div>
+                <div class="input-wrapper">
+                    <label>Confirmar Contraseña:</label>
+                    <input type="password" id="password_confirm" required autocomplete="new-password">
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="terminos" required>
+                    <label for="terminos">Acepto los términos y condiciones</label>
+                </div>
+                <button type="submit" class="submit-btn" id="btn-registro">Registrarse</button>
+
+                <!-- Divider y botón de Google para Registro -->
+                <div class="divider">
+                    <span>O regístrate con</span>
+                </div>
+                <div class="google-btn-container">
+                    <button type="button" class="google-btn" onclick="loginConGoogle()">
+                        <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Continuar con Google
+                    </button>
+                </div>
+            </form>
+
+            <!-- LOGIN -->
+            <form class="formulario" id="login" action="LoginServlet" method="POST">
+                <div class="input-wrapper">
+                    <label>Email:</label>
+                    <input type="email" name="email" id="login_email" required autocomplete="username">
+                </div>
+                <div class="input-wrapper">
+                    <label>Contraseña:</label>
+                    <input type="password" name="password" id="login_password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="submit-btn" id="btn-login">Iniciar Sesión</button>
+                
+                <!-- Divider y botón de Google para Login -->
+                <div class="divider">
+                    <span>O inicia sesión con</span>
+                </div>
+                <div class="google-btn-container">
+                    <button type="button" class="google-btn" onclick="loginConGoogle()">
+                        <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Continuar con Google
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Función para iniciar login con Google
+        function loginConGoogle() {
+            window.location.href = 'GoogleLoginServlet';
+        }
+
+        // Sistema de notificaciones
+        function showNotification(type, title, message) {
+            const existing = document.querySelectorAll('.login-notification');
+            existing.forEach(n => n.remove());
+            
+            const icons = {
+                error: '✕',
+                warning: '⚠',
+                info: 'ℹ',
+                success: '✓'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = 'login-notification';
+            notification.innerHTML = `
+                <div class="notification-header">
+                    <div class="notification-icon ${type}">${icons[type]}</div>
+                    <div class="notification-title">${title}</div>
+                    <button class="notification-close">×</button>
+                </div>
+                <div class="notification-body">
+                    <div class="notification-message">${message}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            notification.querySelector('.notification-close').addEventListener('click', () => {
+                notification.classList.add('hiding');
+                setTimeout(() => notification.remove(), 300);
+            });
+            
+            setTimeout(() => {
+                notification.classList.add('hiding');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+        
+        // Alternar formularios
+        function showForm(event, type) {
+            const forms = document.querySelectorAll('.formulario');
+            const buttons = document.querySelectorAll('.toggle-btn');
+            const container = document.querySelector('.form-container');
+            
+            const activeForm = document.querySelector('.formulario.active');
+            if (activeForm && activeForm.id !== type) {
+                activeForm.classList.add('exit');
+                
+                const newForm = document.getElementById(type);
+                const tempActive = newForm.cloneNode(true);
+                tempActive.style.visibility = 'hidden';
+                tempActive.style.position = 'absolute';
+                tempActive.style.top = '-9999px';
+                tempActive.classList.add('active');
+                tempActive.classList.remove('exit');
+                document.body.appendChild(tempActive);
+                
+                const newHeight = tempActive.offsetHeight;
+                document.body.removeChild(tempActive);
+                
+                container.style.height = container.offsetHeight + 'px';
+                setTimeout(() => container.style.height = newHeight + 'px', 50);
+                setTimeout(() => container.style.height = 'auto', 450);
+            }
+            
+            buttons.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            setTimeout(() => {
+                forms.forEach(f => f.classList.remove('active', 'exit'));
+                document.getElementById(type).classList.add('active');
+            }, 150);
+        }
+        
+        // Validación de registro
+        document.getElementById('registro').addEventListener('submit', function(e) {
+            const nombre = this.querySelector('input[name="nombre"]').value.trim();
+            const email = this.querySelector('input[name="email"]').value.trim();
+            const telefono = this.querySelector('input[name="telefono"]').value.trim();
+            const password = document.getElementById('password_registro').value;
+            const passwordConfirm = document.getElementById('password_confirm').value;
+            const terminos = document.getElementById('terminos').checked;
+            
+            if (!nombre || !email || !telefono || !password) {
+                e.preventDefault();
+                showNotification('warning', 'Campos Incompletos', 'Por favor completa todos los campos requeridos.');
+                return false;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                e.preventDefault();
+                showNotification('error', 'Email Inválido', 'Por favor ingresa un email válido.');
+                return false;
+            }
+            
+            if (password.length < 6) {
+                e.preventDefault();
+                showNotification('warning', 'Contraseña Débil', 'La contraseña debe tener al menos 6 caracteres.');
+                return false;
+            }
+            
+            if (password !== passwordConfirm) {
+                e.preventDefault();
+                showNotification('error', 'Contraseñas Diferentes', 'Las contraseñas no coinciden. Verifica e intenta nuevamente.');
+                return false;
+            }
+            
+            if (!terminos) {
+                e.preventDefault();
+                showNotification('warning', 'Términos Requeridos', 'Debes aceptar los términos y condiciones para continuar.');
+                return false;
+            }
+            
+            document.getElementById('btn-registro').disabled = true;
+            document.getElementById('btn-registro').textContent = 'Registrando...';
+        });
+        
+        // Validación de login
+        document.getElementById('login').addEventListener('submit', function(e) {
+            const email = document.getElementById('login_email').value.trim();
+            const password = document.getElementById('login_password').value;
+            
+            if (!email || !password) {
+                e.preventDefault();
+                showNotification('warning', 'Campos Incompletos', 'Por favor ingresa tu email y contraseña.');
+                return false;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                e.preventDefault();
+                showNotification('error', 'Email Inválido', 'Por favor ingresa un email válido.');
+                return false;
+            }
+            
+            document.getElementById('btn-login').disabled = true;
+            document.getElementById('btn-login').textContent = 'Iniciando...';
+        });
+        
+        // Procesar errores de URL
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const error = params.get('error');
+            
+            if (error) {
+                let title, message, formToShow;
+                
+                switch (error) {
+                    case 'credenciales_incorrectas':
+                        title = 'Credenciales Incorrectas';
+                        message = 'El email o la contraseña son incorrectos. Verifica tus datos.';
+                        formToShow = 'login';
+                        break;
+                    case 'usuario_no_encontrado':
+                        title = 'Usuario No Encontrado';
+                        message = 'No existe una cuenta con ese email. ¿Deseas registrarte?';
+                        formToShow = 'login';
+                        break;
+                    case 'email_existe':
+                        title = 'Email Ya Registrado';
+                        message = 'Ya existe una cuenta con este email. Intenta iniciar sesión.';
+                        formToShow = 'login';
+                        break;
+                    case 'campos_vacios':
+                        title = 'Campos Vacíos';
+                        message = 'Por favor completa todos los campos del formulario.';
+                        break;
+                    case 'error_sistema':
+                        title = 'Error del Sistema';
+                        message = 'Ocurrió un error inesperado. Por favor intenta más tarde.';
+                        break;
+                    case 'email_invalido':
+                        title = 'Email Inválido';
+                        message = 'El formato del email no es válido.';
+                        formToShow = 'registro';
+                        break;
+                    case 'password_corta':
+                        title = 'Contraseña Muy Corta';
+                        message = 'La contraseña debe tener al menos 6 caracteres.';
+                        formToShow = 'registro';
+                        break;
+                    case 'demasiados_intentos':
+                        title = 'Demasiados Intentos';
+                        message = 'Has superado el límite de intentos. Espera 15 minutos e intenta nuevamente.';
+                        formToShow = 'login';
+                        break;
+                    // Errores de Google OAuth
+                    case 'google_auth_error':
+                        title = 'Error de Autenticación';
+                        message = 'No se pudo completar la autenticación con Google. Intenta nuevamente.';
+                        formToShow = 'login';
+                        break;
+                    case 'google_no_code':
+                        title = 'Error de Autorización';
+                        message = 'No se recibió el código de autorización de Google.';
+                        formToShow = 'login';
+                        break;
+                    case 'invalid_state':
+                        title = 'Token de Seguridad Inválido';
+                        message = 'El token de seguridad no es válido. Por favor intenta nuevamente.';
+                        formToShow = 'login';
+                        break;
+                    case 'session_expired':
+                        title = 'Sesión Expirada';
+                        message = 'Tu sesión ha expirado. Por favor intenta nuevamente.';
+                        formToShow = 'login';
+                        break;
+                    case 'google_token_error':
+                        title = 'Error de Token';
+                        message = 'No se pudo obtener el token de acceso de Google.';
+                        formToShow = 'login';
+                        break;
+                    case 'google_userinfo_error':
+                        title = 'Error de Información';
+                        message = 'No se pudo obtener tu información de Google.';
+                        formToShow = 'login';
+                        break;
+                    case 'google_process_error':
+                        title = 'Error de Procesamiento';
+                        message = 'Ocurrió un error al procesar tu cuenta de Google.';
+                        formToShow = 'login';
+                        break;
+                    default:
+                        title = 'Error';
+                        message = 'Ha ocurrido un error. Por favor intenta nuevamente.';
+                }
+                
+                setTimeout(() => {
+                    showNotification('error', title, message);
+                    if (formToShow) showFormDirect(formToShow);
+                }, 300);
+                
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            // Verificar si viene de login exitoso con Google
+            const login = params.get('login');
+            if (login === 'google') {
+                setTimeout(() => {
+                    showNotification('success', '¡Bienvenido!', 'Has iniciado sesión exitosamente con Google.');
+                }, 300);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        });
+        
+        function showFormDirect(type) {
+            const forms = document.querySelectorAll('.formulario');
+            const buttons = document.querySelectorAll('.toggle-btn');
+            
+            forms.forEach(f => f.classList.remove('active'));
+            buttons.forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(type).classList.add('active');
+            
+            if (type === 'login') {
+                document.querySelector('.toggle-btn:last-child').classList.add('active');
+            } else {
+                document.querySelector('.toggle-btn:first-child').classList.add('active');
+            }
+        }
+        
+        // Resetear botones si se vuelve atrás
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                document.getElementById('btn-registro').disabled = false;
+                document.getElementById('btn-registro').textContent = 'Registrarse';
+                document.getElementById('btn-login').disabled = false;
+                document.getElementById('btn-login').textContent = 'Iniciar Sesión';
+            }
+        });
+    </script>
+</body>
+</html>

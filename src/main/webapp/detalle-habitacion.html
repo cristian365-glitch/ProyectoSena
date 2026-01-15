@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Habitación - Hotel Armonía</title>
+    <link rel="stylesheet" href="indexCSS.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="indexCSS.css">
+    <link rel="stylesheet" href="auth-ui.css">
+    <script src="auth-session.js"></script>
+    <script>
+        window.APP_CONTEXT = '/Armonia';
+    </script>
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+
+        .detalle-container {
+            max-width: 1200px;
+            margin: 120px auto 60px;
+            padding: 0 20px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #000000;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            color: #d4af37;
+        }
+
+        /* Galería de imágenes */
+        .galeria {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            margin-bottom: 40px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .imagen-principal {
+            position: relative;
+            height: 500px;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .imagen-principal img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .imagen-principal:hover img {
+            transform: scale(1.05);
+        }
+
+        .imagenes-secundarias {
+            display: grid;
+            grid-template-rows: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .imagen-secundaria {
+            position: relative;
+            height: 242.5px;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .imagen-secundaria img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .imagen-secundaria:hover img {
+            transform: scale(1.05);
+        }
+
+        .ver-todas {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #000000;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .ver-todas:hover {
+            background: #d4af37;
+            color: white;
+        }
+
+        /* Info de la habitación */
+        .habitacion-contenido {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-principal h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            color: #000000;
+            margin-bottom: 15px;
+        }
+
+        .experiencia-tag {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .experiencia-tag.bosque { background: linear-gradient(135deg, #2d5016, #4a7c2a); }
+        .experiencia-tag.mar { background: linear-gradient(135deg, #1e88e5, #1565c0); }
+        .experiencia-tag.campo { background: linear-gradient(135deg, #558b2f, #7cb342); }
+
+        .descripcion {
+            color: #666666;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            font-size: 1.05rem;
+        }
+
+        .detalles-rapidos {
+            display: flex;
+            gap: 30px;
+            padding: 20px 0;
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .detalle-quick {
+            text-align: center;
+        }
+
+        .detalle-quick strong {
+            display: block;
+            font-size: 1.5rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+
+        .detalle-quick span {
+            color: #666666;
+            font-size: 0.9rem;
+        }
+
+        /* Panel de reserva */
+        .panel-reserva {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .precio-destacado {
+            font-size: 2.5rem;
+            color: #d4af37;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .precio-destacado small {
+            font-size: 1rem;
+            color: #999999;
+            font-weight: 400;
+        }
+
+        .btn-reservar-grande {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-reservar-grande:hover {
+            background: linear-gradient(135deg, #b8860b, #9a7209);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Modal de galería */
+        .modal-galeria {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .modal-galeria.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+
+        .cerrar-modal {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            z-index: 10001;
+        }
+
+        .navegacion-galeria {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            transform: translateY(-50%);
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .galeria {
+                grid-template-columns: 1fr;
+            }
+
+            .imagen-principal {
+                height: 300px;
+            }
+
+            .imagenes-secundarias {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: 1fr;
+            }
+
+            .imagen-secundaria {
+                height: 150px;
+            }
+
+            .habitacion-contenido {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .panel-reserva {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+        <header>
+    <ul>
+        <li class="logo">
+            <a href="../index.html">
+                <img src="recursos/logo armonia n1.png" width="89px" alt="logo">
+            </a>
+        </li>
+
+        <li><a href="nav/disponibilidad.html">Habitaciones</a></li>
+        <li><a href="nav/experiencias.html">Experiencias</a></li>
+        <li><a href="nav/servicios.html">Servicios</a></li>
+
+        <!-- 🔴 AQUÍ SE INYECTA TODO -->
+        <li class="registro" id="auth-container"></li>
+    </ul>
+</header>
+
+    <div class="detalle-container">
+        <a href="disponibilidad.html" class="back-btn">← Volver a habitaciones</a>
+
+        <!-- Galería de imágenes -->
+        <div class="galeria" id="galeria">
+            <!-- Se llena dinámicamente -->
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="habitacion-contenido">
+            <div class="info-principal">
+                <h1 id="nombre-habitacion"></h1>
+                <span id="experiencia-badge" class="experiencia-tag"></span>
+                
+                <p id="descripcion" class="descripcion"></p>
+
+                <div class="detalles-rapidos">
+                    <div class="detalle-quick">
+                        <strong>👥 <span id="capacidad">-</span></strong>
+                        <span>Personas</span>
+                    </div>
+                    <div class="detalle-quick" id="metros-container" style="display: none;">
+                        <strong>📐 <span id="metros">-</span></strong>m²
+                        <span>Superficie</span>
+                    </div>
+                    <div class="detalle-quick" id="vista-container" style="display: none;">
+                        <strong>🏞️ <span id="vista">-</span></strong>
+                        <span>Vista</span>
+                    </div>
+                </div>
+
+                <div id="camas-info" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; display: none;">
+                    <strong>🛏️ Camas:</strong> <span id="camas-texto"></span>
+                </div>
+
+                <!-- Comodidades -->
+                <div id="comodidades-container" style="margin: 20px 0;">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 15px;">Comodidades</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;" id="comodidades-lista">
+                        <!-- Se llenan dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-reserva">
+                <div class="precio-destacado">
+                    $<span id="precio">0</span>
+                    <small>/ noche</small>
+                </div>
+                
+                <button class="btn-reservar-grande" onclick="iniciarReserva()">
+                    Reservar Ahora
+                </button>
+
+                <p style="text-align: center; color: #999; font-size: 0.85rem; margin-top: 15px;">
+                    ✓ Cancelación gratuita<br>
+                    ✓ Mejor precio garantizado
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de galería -->
+    <div class="modal-galeria" id="modalGaleria">
+        <span class="cerrar-modal" onclick="cerrarModal()">×</span>
+        <div class="navegacion-galeria">
+            <button class="nav-btn" onclick="cambiarImagen(-1)">‹</button>
+            <button class="nav-btn" onclick="cambiarImagen(1)">›</button>
+        </div>
+        <div class="modal-content">
+            <img id="imagenModal" src="" alt="">
+        </div>
+    </div>
+
+    <script>
+        let habitacion = null;
+        let imagenes = [];
+        let imagenActual = 0;
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', async function() {
+            const params = new URLSearchParams(window.location.search);
+            const habitacionId = params.get('id');
+
+            if (!habitacionId) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            await cargarHabitacion(habitacionId);
+        });
+
+        async function cargarHabitacion(id) {
+            try {
+                const response = await fetch(`DetalleHabitacionServlet?id=${id}`);
+                habitacion = await response.json();
+
+                if (!habitacion || habitacion.error) {
+                    alert('Habitación no encontrada');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                mostrarHabitacion();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar la habitación');
+            }
+        }
+
+        function mostrarHabitacion() {
+            document.getElementById('nombre-habitacion').textContent = habitacion.nombre;
+            document.getElementById('descripcion').textContent = habitacion.descripcion || 'Disfruta de una experiencia única en esta magnífica habitación.';
+            document.getElementById('capacidad').textContent = habitacion.capacidad;
+            document.getElementById('precio').textContent = habitacion.precio_noche.toLocaleString('es-CO');
+
+            // Metros cuadrados
+            if (habitacion.metros_cuadrados) {
+                document.getElementById('metros').textContent = habitacion.metros_cuadrados;
+                document.getElementById('metros-container').style.display = 'block';
+            }
+
+            // Vista
+            if (habitacion.vista) {
+                document.getElementById('vista').textContent = habitacion.vista;
+                document.getElementById('vista-container').style.display = 'block';
+            }
+
+            // Camas
+            if (habitacion.camas_info) {
+                document.getElementById('camas-texto').textContent = habitacion.camas_info;
+                document.getElementById('camas-info').style.display = 'block';
+            }
+
+            const icono = habitacion.experiencia === 'bosque' ? '🌲' : 
+                         habitacion.experiencia === 'mar' ? '🌊' : '🌾';
+            
+            const badge = document.getElementById('experiencia-badge');
+            badge.textContent = icono + ' ' + habitacion.experiencia.toUpperCase();
+            badge.className = 'experiencia-tag ' + habitacion.experiencia;
+
+            // Mostrar comodidades
+            const comodidades = [];
+            if (habitacion.wifi) comodidades.push({ icono: '📶', texto: 'WiFi gratuito' });
+            if (habitacion.aire_acondicionado) comodidades.push({ icono: '❄️', texto: 'Aire acondicionado' });
+            if (habitacion.tv) comodidades.push({ icono: '📺', texto: 'TV' });
+            if (habitacion.minibar) comodidades.push({ icono: '🍷', texto: 'Minibar' });
+            if (habitacion.balcon) comodidades.push({ icono: '🪟', texto: 'Balcón' });
+            if (habitacion.desayuno_incluido) comodidades.push({ icono: '🍳', texto: 'Desayuno incluido' });
+
+            const listaComodidades = document.getElementById('comodidades-lista');
+            listaComodidades.innerHTML = '';
+            comodidades.forEach(com => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8f9fa; border-radius: 6px;';
+                div.innerHTML = `<span style="font-size: 1.2rem;">${com.icono}</span> <span>${com.texto}</span>`;
+                listaComodidades.appendChild(div);
+            });
+
+            // Cargar galería
+            imagenes = habitacion.imagenes || [];
+            if (imagenes.length === 0 && habitacion.imagen_principal) {
+                imagenes.push({ url_cloudinary: habitacion.imagen_principal });
+            }
+
+            mostrarGaleria();
+        }
+
+        function mostrarGaleria() {
+            const galeria = document.getElementById('galeria');
+            galeria.innerHTML = '';
+
+            if (imagenes.length === 0) {
+                galeria.innerHTML = '<p>No hay imágenes disponibles</p>';
+                return;
+            }
+
+            // Imagen principal
+            const principal = document.createElement('div');
+            principal.className = 'imagen-principal';
+            principal.onclick = () => abrirModal(0);
+            principal.innerHTML = `<img src="${imagenes[0].url_cloudinary}" alt="Imagen principal">`;
+            galeria.appendChild(principal);
+
+            // Imágenes secundarias
+            if (imagenes.length > 1) {
+                const secundarias = document.createElement('div');
+                secundarias.className = 'imagenes-secundarias';
+
+                for (let i = 1; i < Math.min(imagenes.length, 3); i++) {
+                    const img = document.createElement('div');
+                    img.className = 'imagen-secundaria';
+                    img.onclick = () => abrirModal(i);
+                    img.innerHTML = `<img src="${imagenes[i].url_cloudinary}" alt="Imagen ${i + 1}">`;
+                    
+                    if (i === 2 && imagenes.length > 3) {
+                        img.innerHTML += `<div class="ver-todas" onclick="event.stopPropagation(); abrirModal(0)">Ver todas (${imagenes.length})</div>`;
+                    }
+                    
+                    secundarias.appendChild(img);
+                }
+
+                galeria.appendChild(secundarias);
+            }
+        }
+
+        function abrirModal(index) {
+            imagenActual = index;
+            document.getElementById('imagenModal').src = imagenes[imagenActual].url_cloudinary;
+            document.getElementById('modalGaleria').classList.add('active');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalGaleria').classList.remove('active');
+        }
+
+        function cambiarImagen(direccion) {
+            imagenActual += direccion;
+            if (imagenActual < 0) imagenActual = imagenes.length - 1;
+            if (imagenActual >= imagenes.length) imagenActual = 0;
+            document.getElementById('imagenModal').src = imagenes[imagenActual].url_cloudinary;
+        }
+
+        function iniciarReserva() {
+            // Verificar si está logueado
+            if (auth && auth.usuario && !auth.esAdmin) {
+                window.location.href = `reservar.html?habitacion=${habitacion.id}`;
+            } else if (auth && auth.esAdmin) {
+                alert('Los administradores no pueden hacer reservas');
+            } else {
+                if (confirm('Debes iniciar sesión para reservar. ¿Deseas ir al login?')) {
+                    window.location.href = 'Login.html';
+                }
+            }
+        }
+    </script>
+    <script src="auth-session.js"></script>
+</body>
+</html>
