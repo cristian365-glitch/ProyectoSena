@@ -11,15 +11,15 @@ public class Main {
     
     public static void main(String[] args) {
         try {
-            // Obtener puerto de Render
+            // Obtener puerto de Render (variable de entorno)
             String portStr = System.getenv("PORT");
             int port = (portStr != null && !portStr.isEmpty()) 
                        ? Integer.parseInt(portStr) 
                        : 8080;
             
             System.out.println("=================================");
-            System.out.println("Iniciando Servidor Tomcat");
-            System.out.println("Puerto: " + port);
+            System.out.println("🚀 Iniciando Servidor Tomcat");
+            System.out.println("📍 Puerto: " + port);
             System.out.println("=================================");
             
             // Crear instancia de Tomcat
@@ -28,18 +28,39 @@ public class Main {
             tomcat.getConnector(); // Fuerza la creación del conector
             
             // Buscar directorio webapp en diferentes ubicaciones
-            String webappDirLocation = findWebappDirectory();
-            System.out.println("Directorio web encontrado: " + webappDirLocation);
+            String webappPath = buscarDirectorioWebapp();
             
-            // Agregar la aplicación web
-            Context context = tomcat.addWebapp("", webappDirLocation);
+            if (webappPath == null) {
+                System.err.println("❌ ERROR: No se encontró el directorio webapp");
+                System.err.println("Buscado en:");
+                System.err.println("  - /app/web");
+                System.err.println("  - web");
+                System.err.println("  - src/main/webapp");
+                System.exit(1);
+            }
             
-            // Configurar el classloader
+            System.out.println("✓ Directorio webapp encontrado: " + webappPath);
+            
+            // Listar contenido del directorio (para debug)
+            File webappDir = new File(webappPath);
+            System.out.println("📂 Contenido del directorio web:");
+            File[] archivos = webappDir.listFiles();
+            if (archivos != null) {
+                for (File archivo : archivos) {
+                    System.out.println("  - " + archivo.getName());
+                }
+            }
+            
+            // Agregar la aplicación web al contexto raíz ""
+            Context context = tomcat.addWebapp("", webappPath);
+            
+            // Configurar classloader
             context.setParentClassLoader(Main.class.getClassLoader());
             
-            // Agregar recursos adicionales si existen
+            // Agregar recursos de clases compiladas si existen
             File classesDir = new File("target/classes");
             if (classesDir.exists()) {
+                System.out.println("✓ Agregando clases compiladas");
                 StandardRoot resources = new StandardRoot(context);
                 resources.addPreResources(
                     new DirResourceSet(resources, "/WEB-INF/classes", 
@@ -49,17 +70,18 @@ public class Main {
             }
             
             System.out.println("=================================");
-            System.out.println("Configuración completada");
-            System.out.println("Iniciando servidor...");
+            System.out.println("⚙️  Configuración completada");
+            System.out.println("🔄 Iniciando servidor...");
             System.out.println("=================================");
             
             // Iniciar Tomcat
             tomcat.start();
             
             System.out.println("=================================");
-            System.out.println("✓ Servidor iniciado exitosamente");
-            System.out.println("✓ Accede a: http://localhost:" + port);
-            System.out.println("✓ Presiona Ctrl+C para detener");
+            System.out.println("✅ Servidor iniciado exitosamente");
+            System.out.println("🌐 Accede a: http://localhost:" + port);
+            System.out.println("📄 Página principal: http://localhost:" + port + "/index.html");
+            System.out.println("🔐 Login: http://localhost:" + port + "/Login.html");
             System.out.println("=================================");
             
             // Mantener el servidor corriendo
@@ -84,29 +106,37 @@ public class Main {
     
     /**
      * Busca el directorio webapp en diferentes ubicaciones
+     * Orden de prioridad:
+     * 1. /app/web (Producción en Docker)
+     * 2. web (Desarrollo local)
+     * 3. src/main/webapp (Maven estándar)
      */
-    private static String findWebappDirectory() {
-        // Lista de posibles ubicaciones
-        String[] possibleLocations = {
-            "/app/webapp",              // Producción en Docker (copiado por Dockerfile)
-            "src/main/webapp",          // Desarrollo local
-            "web",                      // Alternativa común
-            "webapp",                   // Otra alternativa
-            "."                         // Directorio actual como último recurso
+    private static String buscarDirectorioWebapp() {
+        String[] posiblesRutas = {
+            "/app/web",           // Producción en Render (Docker)
+            "web",                // Desarrollo local (desde raíz del proyecto)
+            "src/main/webapp"     // Maven estándar
         };
         
-        for (String location : possibleLocations) {
-            File dir = new File(location);
+        for (String ruta : posiblesRutas) {
+            File dir = new File(ruta);
+            
+            System.out.println("🔍 Buscando en: " + dir.getAbsolutePath());
+            
             if (dir.exists() && dir.isDirectory()) {
-                System.out.println("✓ Encontrado directorio webapp en: " + location);
-                return dir.getAbsolutePath();
+                // Verificar que tenga archivos
+                File[] archivos = dir.listFiles();
+                if (archivos != null && archivos.length > 0) {
+                    System.out.println("✓ Directorio encontrado y tiene contenido");
+                    return dir.getAbsolutePath();
+                } else {
+                    System.out.println("⚠ Directorio existe pero está vacío");
+                }
+            } else {
+                System.out.println("✗ Directorio no existe");
             }
         }
         
-        // Si no se encuentra nada, crear directorio temporal
-        System.out.println("⚠ No se encontró directorio webapp, creando temporal");
-        File tempDir = new File("temp-webapp");
-        tempDir.mkdirs();
-        return tempDir.getAbsolutePath();
+        return null;
     }
 }
