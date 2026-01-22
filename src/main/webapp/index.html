@@ -485,18 +485,38 @@
 </head>
 <body>
     <header>
-        <ul>
-            <li class="logo">
-                <a href="index.html">
-                    <img src="recursos/logo armonia n1.png" width="89px" alt="logo">
-                </a>
-            </li>
-            <li><a href="nav/disponibilidad.html">Habitaciones</a></li>
-            <li><a href="nav/experiencias.html">EXPERIENCIAS</a></li>
-            <li><a href="nav/servicios.html">SERVICIOS</a></li>         
-            <li class="registro" id="auth-container"></li>
-        </ul>
-    </header>
+    <ul>
+        <li class="logo">
+            <a href="index.html">
+                <img src="recursos/logo armonia n1.png" width="89px" alt="logo">
+            </a>
+        </li>
+        
+        <li class="menu-toggle-li">
+            <button class="menu-toggle" id="menuToggle" aria-label="Menú">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </li>
+        
+        <li><a href="nav/disponibilidad.html">Habitaciones</a></li>
+        <li><a href="nav/experiencias.html">EXPERIENCIAS</a></li>
+        <li><a href="nav/servicios.html">SERVICIOS</a></li>         
+        <li class="registro" id="auth-container"></li>
+    </ul>
+</header>
+
+
+<!-- Menú móvil desplegable (fuera del header) -->
+<div class="nav-mobile-menu" id="mobileMenu">
+    <ul>
+        <li><a href="nav/disponibilidad.html">Habitaciones</a></li>
+        <li><a href="nav/experiencias.html">Experiencias</a></li>
+        <li><a href="nav/servicios.html">Servicios</a></li>
+        <li class="registro" id="auth-container"></li>
+    </ul>
+</div>
 
     <!-- Hero Section Mejorado -->
     <section class="hero-section">
@@ -832,6 +852,7 @@
 
 <!-- JavaScript para cargar y filtrar habitaciones (MODIFICADO) -->
 <script>
+    
     let habitacionesOriginal = [];
     
     // IDs permitidos de habitaciones que se mostrarán
@@ -935,5 +956,51 @@
     function verDetalleHabitacion(habitacionId) {
         window.location.href = `detalle-habitacion.html?id=${habitacionId}`;
     }
-    
+
+
+const menuToggle = document.getElementById('menuToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+const authMobile = document.getElementById('auth-mobile');
+
+if (menuToggle && mobileMenu) {
+    menuToggle.addEventListener('click', function() {
+        menuToggle.classList.toggle('active');
+        mobileMenu.classList.toggle('active');
+        document.body.classList.toggle('menu-open');
+        
+        // Copiar el contenido de auth al menú móvil
+        const authContainer = document.getElementById('auth-container');
+        if (authContainer && authMobile) {
+            authMobile.innerHTML = authContainer.innerHTML;
+        }
+    });
+
+    // Cerrar menú al hacer click en un enlace
+    mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function() {
+            menuToggle.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            document.body.classList.remove('menu-open');
+        });
+    });
+
+    // Cerrar menú al hacer click fuera
+    document.addEventListener('click', function(event) {
+        if (!mobileMenu.contains(event.target) && !menuToggle.contains(event.target) && mobileMenu.classList.contains('active')) {
+            menuToggle.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            document.body.classList.remove('menu-open');
+        }
+    });
+
+    // Cerrar menú al redimensionar
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            menuToggle.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            document.body.classList.remove('menu-open');
+        }
+    });
+}
+
 </script>

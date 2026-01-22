@@ -8,10 +8,12 @@ import java.sql.SQLException;
  * Clase para manejar la conexión a la base de datos de forma centralizada
  */
 public class DatabaseManager {
+ 
     // Configuración de la base de datos
-    private static final String URL = "jdbc:mysql://localhost:3306/hotela?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+
+    private static final String URL = "jdbc:mysql://tramway.proxy.rlwy.net:15541/hotela";
     private static final String USER = "root";
-    private static final String PASSWORD = ""; // Cambia esto por tu contraseña si tienes
+    private static final String PASSWORD = "GISzxRTXxfaGXAarcJOLVmXCivBwvGAv"; // Cambia esto por tu contraseña si tienes
     
     // Singleton pattern para evitar múltiples instancias
     private static DatabaseManager instance;
