@@ -303,7 +303,7 @@ class AuthManager {
     
     mostrarBotonesLogin() {
         const authContainer = document.getElementById('auth-container');
-        const BASE_PATH = '/ProyectoSena/';
+        const BASE_PATH = '/ProyectoSena/login/';
         
         if (!authContainer) {
             console.warn('No se encontró #auth-container en el HTML');
