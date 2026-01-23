@@ -53,25 +53,41 @@ public class Main {
     }
     
     private static String encontrarWebapp() {
-        String[] rutas = {
-            "/app/webapp",           // Docker: copiado desde src/main/webapp
-            "src/main/webapp",      // Local: desarrollo
-            "webapp"                // Alternativa
-        };
+    String[] rutas = {
+        "/app/webapp",
+        "src/main/webapp",
+        "webapp",
+        "target/webapp"  // Agregar esta ruta
+    };
+    
+    for (String ruta : rutas) {
+        File dir = new File(ruta);
+        System.out.println("🔍 Buscando: " + dir.getAbsolutePath());
         
-        for (String ruta : rutas) {
-            File dir = new File(ruta);
-            System.out.println("🔍 Buscando: " + dir.getAbsolutePath());
-            
-            if (dir.exists() && dir.isDirectory()) {
-                File[] archivos = dir.listFiles();
-                if (archivos != null && archivos.length > 0) {
-                    System.out.println("✓ Encontrado (" + archivos.length + " items)");
-                    return dir.getAbsolutePath();
-                }
+        if (dir.exists() && dir.isDirectory()) {
+            File[] archivos = dir.listFiles();
+            if (archivos != null && archivos.length > 0) {
+                System.out.println("✓ Encontrado (" + archivos.length + " items)");
+                // Mostrar estructura para debug
+                mostrarEstructura(dir, 0);
+                return dir.getAbsolutePath();
             }
         }
-        
-        return null;
     }
+    
+    return null;
+}
+
+private static void mostrarEstructura(File dir, int nivel) {
+    if (nivel > 2) return; // Limitar profundidad
+    File[] archivos = dir.listFiles();
+    if (archivos != null) {
+        for (File f : archivos) {
+            System.out.println("  ".repeat(nivel) + "├─ " + f.getName());
+            if (f.isDirectory()) {
+                mostrarEstructura(f, nivel + 1);
+            }
+        }
+    }
+}
 }

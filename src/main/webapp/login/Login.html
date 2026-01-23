@@ -234,7 +234,7 @@
 
         <div class="form-container">
             <!-- REGISTRO -->
-            <form class="formulario active" id="registro" action="../RegistroServlet" method="POST">
+            <form class="formulario active" id="registro" action="/RegistroServlet" method="POST">
                 <div class="input-wrapper">
                     <label>Nombre:</label>
                     <input type="text" name="nombre" required autocomplete="name">
@@ -280,7 +280,7 @@
             </form>
 
             <!-- LOGIN -->
-            <form class="formulario" id="login" action="../LoginServlet" method="POST">
+            <form class="formulario" id="login" action="/LoginServlet" method="POST">
                 <div class="input-wrapper">
                     <label>Email:</label>
                     <input type="email" name="email" id="login_email" required autocomplete="username">
@@ -313,7 +313,7 @@
     <script>
         // Función para iniciar login con Google
         function loginConGoogle() {
-            window.location.href = '../GoogleLoginServlet';
+            window.location.href = '/GoogleLoginServlet';
         }
 
         // Sistema de notificaciones
