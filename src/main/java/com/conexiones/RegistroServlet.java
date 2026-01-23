@@ -16,8 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-
-
 @WebServlet("/RegistroServlet")
 public class RegistroServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -54,7 +52,7 @@ public class RegistroServlet extends HttpServlet {
             password == null || password.isEmpty()) {
             
             System.out.println("❌ Campos vacíos");
-            response.sendRedirect("Login.html?error=campos_vacios");
+            response.sendRedirect("/login/Login.html?error=campos_vacios");
             return;
         }
         
@@ -66,14 +64,14 @@ public class RegistroServlet extends HttpServlet {
         // Validar formato de email
         if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             System.out.println("❌ Email inválido: " + email);
-            response.sendRedirect("Login.html?error=email_invalido");
+            response.sendRedirect("/login/Login.html?error=email_invalido");
             return;
         }
         
         // Validar longitud mínima de contraseña
         if (password.length() < 6) {
             System.out.println("❌ Contraseña muy corta");
-            response.sendRedirect("Login.html?error=password_corta");
+            response.sendRedirect("/login/Login.html?error=password_corta");
             return;
         }
         
@@ -94,7 +92,7 @@ public class RegistroServlet extends HttpServlet {
             
             if (rs.next() && rs.getInt(1) > 0) {
                 System.out.println("⚠️ Email ya existe: " + email);
-                response.sendRedirect("Login.html?error=email_existe");
+                response.sendRedirect("/login/Login.html?error=email_existe");
                 return;
             }
             
@@ -136,12 +134,12 @@ public class RegistroServlet extends HttpServlet {
                 // Regenerar ID de sesión
                 request.changeSessionId();
                 
-                response.sendRedirect("index.html?registro=exitoso");
+                response.sendRedirect("/index.html?registro=exitoso");
                 
             } else {
                 conn.rollback();
                 System.out.println("❌ No se pudo insertar el usuario");
-                response.sendRedirect("Login.html?error=registro_fallido");
+                response.sendRedirect("/login/Login.html?error=registro_fallido");
             }
             
         } catch (SQLException e) {
@@ -158,9 +156,9 @@ public class RegistroServlet extends HttpServlet {
             e.printStackTrace();
             
             if (e.getMessage().contains("Duplicate entry")) {
-                response.sendRedirect("Login.html?error=email_existe");
+                response.sendRedirect("/login/Login.html?error=email_existe");
             } else {
-                response.sendRedirect("Login.html?error=error_sistema");
+                response.sendRedirect("/login/Login.html?error=error_sistema");
             }
             
         } catch (Exception e) {
@@ -176,7 +174,7 @@ public class RegistroServlet extends HttpServlet {
                 }
             }
             
-            response.sendRedirect("Login.html?error=error_sistema");
+            response.sendRedirect("/login/Login.html?error=error_sistema");
             
         } finally {
             // Cerrar recursos

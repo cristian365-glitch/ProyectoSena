@@ -62,7 +62,7 @@ public class LoginServlet extends HttpServlet {
         
         if (email == null || email.trim().isEmpty() ||
             password == null || password.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/Login.html?error=campos_vacios");
+            response.sendRedirect("/login/Login.html?error=campos_vacios");
             return;
         }
         
@@ -72,7 +72,7 @@ public class LoginServlet extends HttpServlet {
         String clientIp = getClientIP(request);
         if (estaBloqueado(clientIp)) {
             System.out.println("🚫 IP bloqueada por demasiados intentos: " + clientIp);
-            response.sendRedirect(request.getContextPath() + "/Login.html?error=demasiados_intentos");
+            response.sendRedirect("/login/Login.html?error=demasiados_intentos");
             return;
         }
         
@@ -99,7 +99,7 @@ public class LoginServlet extends HttpServlet {
         }
         
         System.out.println("❌ Login fallido para: " + email);
-        response.sendRedirect(request.getContextPath() + "/Login.html?error=credenciales_incorrectas");
+        response.sendRedirect("/login/Login.html?error=credenciales_incorrectas");
     }
     
     /**
@@ -131,18 +131,18 @@ public class LoginServlet extends HttpServlet {
                         session.setAttribute("email", email);
                         session.setAttribute("logueado", true);
                         session.setAttribute("esAdmin", true);
-                        session.setAttribute("loginMethod", "password"); // ✅ NUEVO
+                        session.setAttribute("loginMethod", "password");
                         session.setMaxInactiveInterval(30 * 60);
                         
                         request.changeSessionId();
                         
-                        // ✅ NUEVO: Actualizar fecha de último login
+                        // Actualizar fecha de último login
                         actualizarUltimoLogin(adminId, true);
                         
                         LogManager.registrarLog(adminId, clientIp, true);
                         
                         System.out.println("✅ Login admin exitoso: " + email);
-                        response.sendRedirect(request.getContextPath() + "/index.html?login=admin");
+                        response.sendRedirect("/index.html?login=admin");
                         return true;
                     } else {
                         System.out.println("❌ Contraseña incorrecta para admin: " + email);
@@ -188,18 +188,18 @@ public class LoginServlet extends HttpServlet {
                         session.setAttribute("telefono", telefono);
                         session.setAttribute("logueado", true);
                         session.setAttribute("esAdmin", false);
-                        session.setAttribute("loginMethod", "password"); // ✅ NUEVO
+                        session.setAttribute("loginMethod", "password");
                         session.setMaxInactiveInterval(30 * 60);
                         
                         request.changeSessionId();
                         
-                        // ✅ NUEVO: Actualizar fecha de último login
+                        // Actualizar fecha de último login
                         actualizarUltimoLogin(userId, false);
                         
                         LogManager.registrarLog(userId, clientIp, false);
                         
                         System.out.println("✅ Login usuario exitoso: " + email);
-                        response.sendRedirect(request.getContextPath() + "/index.html?login=exitoso");
+                        response.sendRedirect("/index.html?login=exitoso");
                         return true;
                     } else {
                         System.out.println("❌ Contraseña incorrecta para usuario: " + email);
@@ -212,14 +212,14 @@ public class LoginServlet extends HttpServlet {
         } catch (SQLException e) {
             System.err.println("Error en login: " + e.getMessage());
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/Login.html?error=error_sistema");
+            response.sendRedirect("/login/Login.html?error=error_sistema");
         }
         
         return false;
     }
     
     /**
-     * ✅ NUEVO MÉTODO: Actualiza la fecha de último login del usuario
+     * Actualiza la fecha de último login del usuario
      */
     private void actualizarUltimoLogin(int userId, boolean esAdmin) {
         Connection conn = null;
@@ -468,7 +468,7 @@ public class LoginServlet extends HttpServlet {
             System.out.println("👋 Cerrando sesión de: " + usuario);
             session.invalidate();
         }
-        response.sendRedirect(request.getContextPath() + "/index.html?logout=exitoso");
+        response.sendRedirect("/login/Login.html?logout=exitoso");
     }
     
     /**

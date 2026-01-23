@@ -99,10 +99,46 @@ public class VerificaSesionServlet extends HttpServlet {
             } else {
                 out.print("{\"success\": false, \"message\": \"No hay sesión activa\"}");
             }
+        } else if ("cerrarSesion".equals(action)) {
+            // Cerrar sesión
+            HttpSession session = request.getSession(false);
+            
+            if (session != null) {
+                String usuario = (String) session.getAttribute("usuario");
+                System.out.println("👋 Cerrando sesión de: " + usuario);
+                session.invalidate();
+            }
+            
+            // Redirigir al login con parámetro de logout exitoso
+            response.sendRedirect("/login/Login.html?logout=exitoso");
+            return;
         }
         
         out.flush();
         out.close();
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        String action = request.getParameter("action");
+        
+        if ("cerrarSesion".equals(action)) {
+            // Cerrar sesión
+            HttpSession session = request.getSession(false);
+            
+            if (session != null) {
+                String usuario = (String) session.getAttribute("usuario");
+                System.out.println("👋 Cerrando sesión de: " + usuario);
+                session.invalidate();
+            }
+            
+            // Redirigir al login con parámetro de logout exitoso
+            response.sendRedirect("/login/Login.html?logout=exitoso");
+        } else {
+            doGet(request, response);
+        }
     }
     
     @Override

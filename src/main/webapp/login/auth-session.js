@@ -12,56 +12,50 @@ class AuthManager {
     }
     
     async init() {
-    try {
-        const contextPath = '';
-        // ✅ CAMBIO AQUÍ: Usar VerificaSesionServlet en lugar de RegistroServlet
-        const response = await fetch(
-            `${window.location.origin}/VerificaSesionServlet?action=verificarSesion`
-        );
+        try {
+            // Hacer petición al servlet de verificación de sesión
+            const response = await fetch('/VerificaSesionServlet?action=verificarSesion');
  
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            console.warn('Respuesta no es JSON, usuario no logueado');
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                console.warn('Respuesta no es JSON, usuario no logueado');
+                this.mostrarBotonesLogin();
+                return;
+            }
+            
+            const data = await response.json();
+            
+            if (data.logueado) {
+                this.usuario = data.nombre;
+                this.esAdmin = data.esAdmin === true;
+                this.userId = data.userId;
+                this.email = data.email;
+                
+                // Cargar avatar del usuario
+                await this.cargarAvatar();
+                
+                this.actualizarUI();
+                
+                console.log('✅ Sesión activa:', {
+                    usuario: this.usuario,
+                    esAdmin: this.esAdmin,
+                    avatar: this.avatarUrl
+                });
+            } else {
+                this.mostrarBotonesLogin();
+            }
+        } catch (error) {
+            console.error('Error al verificar sesión:', error);
             this.mostrarBotonesLogin();
-            return;
         }
-        
-        const data = await response.json();
-        
-        if (data.logueado) {
-            this.usuario = data.nombre;
-            this.esAdmin = data.esAdmin === true;
-            this.userId = data.userId;
-            this.email = data.email;
-            
-            // Cargar avatar del usuario
-            await this.cargarAvatar();
-            
-            this.actualizarUI();
-            
-            console.log('✅ Sesión activa:', {
-                usuario: this.usuario,
-                esAdmin: this.esAdmin,
-                avatar: this.avatarUrl
-            });
-        } else {
-            this.mostrarBotonesLogin();
-        }
-    } catch (error) {
-        console.error('Error al verificar sesión:', error);
-        this.mostrarBotonesLogin();
     }
-}
     
     /**
      * Carga la URL del avatar desde Gravatar a través del servlet
      */
     async cargarAvatar() {
         try {
-            const contextPath = window.location.pathname.split('/')[1];
-            const response = await fetch(
-                `${window.location.origin}/${contextPath}/LoginServlet?action=getAvatarUrl&size=200`
-            );
+            const response = await fetch('/LoginServlet?action=getAvatarUrl&size=200');
             
             if (response.ok) {
                 const data = await response.json();
@@ -250,7 +244,7 @@ class AuthManager {
     
     actualizarUI() {
         const authContainer = document.getElementById('auth-container');
-const BASE_PATH = '/login/';
+        
         if (!authContainer) {
             console.warn('No se encontró #auth-container en el HTML');
             return;
@@ -272,9 +266,9 @@ const BASE_PATH = '/login/';
                         ⭐ ${this.usuario}
                     </span>
                     <div class="dropdown-menu">
-                        <a href="habitacionesCRUD/gestionar-habitaciones.html" class="menu-item">Gestionar Habitaciones</a>
-                        <a href="usuario/reservas.html" class="menu-item">Ver Reservas</a>
-                        <a href="usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
+                        <a href="/habitacionesCRUD/gestionar-habitaciones.html" class="menu-item">Gestionar Habitaciones</a>
+                        <a href="/usuario/reservas.html" class="menu-item">Ver Reservas</a>
+                        <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
                         <hr>
                         <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
                     </div>
@@ -289,8 +283,8 @@ const BASE_PATH = '/login/';
                         ${this.usuario}
                     </span>
                     <div class="dropdown-menu">
-                        <a href="usuario/reservas.html" class="menu-item">Ver Reservas</a>
-                        <a href="usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
+                        <a href="/usuario/reservas.html" class="menu-item">Ver Reservas</a>
+                        <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
                         <hr>
                         <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
                     </div>
@@ -303,7 +297,6 @@ const BASE_PATH = '/login/';
     
     mostrarBotonesLogin() {
         const authContainer = document.getElementById('auth-container');
-        const BASE_PATH = '/login/';
         
         if (!authContainer) {
             console.warn('No se encontró #auth-container en el HTML');
@@ -311,7 +304,7 @@ const BASE_PATH = '/login/';
         }
         
         authContainer.innerHTML = `
-            <a href="${BASE_PATH}Login.html" id="login-link" class="btn-auth login">
+            <a href="/login/Login.html" id="login-link" class="btn-auth login">
                 <img src="/recursos/icons/usuario.svg" class="icon" width="23px" alt="icon usuario" onerror="this.style.display='none'">
                 INICIAR SESIÓN
             </a>
@@ -341,8 +334,7 @@ const BASE_PATH = '/login/';
             '¿Cerrar sesión?',
             '¿Estás seguro de que deseas cerrar tu sesión?',
             () => {
-                const BASE_PATH = '/login/';
-                window.location.href = `LoginServlet?action=cerrarSesion`;
+                window.location.href = '/LoginServlet?action=cerrarSesion';
             }
         );
     }
