@@ -13,10 +13,10 @@ class AuthManager {
     
     async init() {
     try {
-        const contextPath = window.location.pathname.split('/')[1];
+        const contextPath = '';
         // ✅ CAMBIO AQUÍ: Usar VerificaSesionServlet en lugar de RegistroServlet
         const response = await fetch(
-            `${window.location.origin}/${contextPath}/VerificaSesionServlet?action=verificarSesion`
+            `${window.location.origin}/VerificaSesionServlet?action=verificarSesion`
         );
  
         const contentType = response.headers.get("content-type");
@@ -250,7 +250,7 @@ class AuthManager {
     
     actualizarUI() {
         const authContainer = document.getElementById('auth-container');
-        const BASE_PATH = '/ProyectoSena/';
+const BASE_PATH = '/login/';
         if (!authContainer) {
             console.warn('No se encontró #auth-container en el HTML');
             return;
@@ -261,7 +261,7 @@ class AuthManager {
         // Generar HTML del avatar
         const avatarHTML = this.avatarUrl 
             ? `<img src="${this.avatarUrl}" alt="${this.usuario}" class="user-avatar" onerror="this.src='https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200'">`
-            : `<img src="${BASE_PATH}recursos/icons/usuario.svg" alt="${this.usuario}" class="icon" width="23px">`;
+            : `<img src="/recursos/icons/usuario.svg" alt="${this.usuario}" class="icon" width="23px">`;
         
         if (this.esAdmin) {
             // Admin logueado
@@ -272,9 +272,9 @@ class AuthManager {
                         ⭐ ${this.usuario}
                     </span>
                     <div class="dropdown-menu">
-                        <a href="${BASE_PATH}habitacionesCRUD/gestionar-habitaciones.html" class="menu-item">Gestionar Habitaciones</a>
-                        <a href="${BASE_PATH}usuario/reservas.html" class="menu-item">Ver Reservas</a>
-                        <a href="${BASE_PATH}usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
+                        <a href="habitacionesCRUD/gestionar-habitaciones.html" class="menu-item">Gestionar Habitaciones</a>
+                        <a href="usuario/reservas.html" class="menu-item">Ver Reservas</a>
+                        <a href="usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
                         <hr>
                         <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
                     </div>
@@ -289,8 +289,8 @@ class AuthManager {
                         ${this.usuario}
                     </span>
                     <div class="dropdown-menu">
-                        <a href="${BASE_PATH}usuario/reservas.html" class="menu-item">Ver Reservas</a>
-                        <a href="${BASE_PATH}usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
+                        <a href="usuario/reservas.html" class="menu-item">Ver Reservas</a>
+                        <a href="usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
                         <hr>
                         <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
                     </div>
@@ -303,7 +303,7 @@ class AuthManager {
     
     mostrarBotonesLogin() {
         const authContainer = document.getElementById('auth-container');
-        const BASE_PATH = '/ProyectoSena/login/';
+        const BASE_PATH = '/login/';
         
         if (!authContainer) {
             console.warn('No se encontró #auth-container en el HTML');
@@ -312,7 +312,7 @@ class AuthManager {
         
         authContainer.innerHTML = `
             <a href="${BASE_PATH}Login.html" id="login-link" class="btn-auth login">
-                <img src="${BASE_PATH}recursos/icons/usuario.svg" class="icon" width="23px" alt="icon usuario" onerror="this.style.display='none'">
+                <img src="/recursos/icons/usuario.svg" class="icon" width="23px" alt="icon usuario" onerror="this.style.display='none'">
                 INICIAR SESIÓN
             </a>
         `;
@@ -341,8 +341,8 @@ class AuthManager {
             '¿Cerrar sesión?',
             '¿Estás seguro de que deseas cerrar tu sesión?',
             () => {
-                const BASE_PATH = '/ProyectoSena/';
-                window.location.href = `${BASE_PATH}LoginServlet?action=cerrarSesion`;
+                const BASE_PATH = '/login/';
+                window.location.href = `LoginServlet?action=cerrarSesion`;
             }
         );
     }
