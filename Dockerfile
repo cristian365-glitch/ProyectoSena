@@ -6,21 +6,24 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
-# Compilar (Maven automáticamente empaqueta src/main/webapp/ en el JAR)
+# Compilar el proyecto
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Ejecutar
 FROM eclipse-temurin:11-jre
 WORKDIR /app
 
-# Copiar el JAR (ya contiene webapp/)
+# Copiar el JAR compilado
 COPY --from=build /app/target/ProyectoSena-1.0-SNAPSHOT.jar app.jar
 
-# Copiar webapp por separado para acceso directo
+# Copiar la carpeta webapp (HTML, CSS, JS)
 COPY --from=build /app/src/main/webapp /app/webapp
+
+# ESTO ES CRÍTICO: Copiar las clases compiladas (donde están tus Servlets)
+COPY --from=build /app/target/classes /app/classes
 
 # Exponer puerto
 EXPOSE 8080
 
-# Ejecutar
+# Ejecutar la aplicación
 CMD ["java", "-jar", "app.jar"]
