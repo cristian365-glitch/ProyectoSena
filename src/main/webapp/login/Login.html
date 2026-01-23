@@ -6,10 +6,9 @@
     <title>Hotel Armonia - Login / Registro</title>
     <link rel="stylesheet" href="LoginCSS.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="indexCSS.css">
-    <link rel="apple-touch-icon" sizes="180x180" href="recursos/imagen icon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="recursos/imagen icon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="recursos/imagen icon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../recursos/imagen icon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../recursos/imagen icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../recursos/imagen icon/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     
     <style>
@@ -235,7 +234,7 @@
 
         <div class="form-container">
             <!-- REGISTRO -->
-            <form class="formulario active" id="registro" action="RegistroServlet" method="POST">
+            <form class="formulario active" id="registro" action="../RegistroServlet" method="POST">
                 <div class="input-wrapper">
                     <label>Nombre:</label>
                     <input type="text" name="nombre" required autocomplete="name">
@@ -281,7 +280,7 @@
             </form>
 
             <!-- LOGIN -->
-            <form class="formulario" id="login" action="LoginServlet" method="POST">
+            <form class="formulario" id="login" action="../LoginServlet" method="POST">
                 <div class="input-wrapper">
                     <label>Email:</label>
                     <input type="email" name="email" id="login_email" required autocomplete="username">
@@ -314,7 +313,7 @@
     <script>
         // Función para iniciar login con Google
         function loginConGoogle() {
-            window.location.href = 'GoogleLoginServlet';
+            window.location.href = '../GoogleLoginServlet';
         }
 
         // Sistema de notificaciones
@@ -558,6 +557,15 @@
             if (login === 'google') {
                 setTimeout(() => {
                     showNotification('success', '¡Bienvenido!', 'Has iniciado sesión exitosamente con Google.');
+                }, 300);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            // Verificar si viene de logout exitoso
+            const logout = params.get('logout');
+            if (logout === 'exitoso') {
+                setTimeout(() => {
+                    showNotification('info', 'Sesión Cerrada', 'Has cerrado sesión correctamente. ¡Esperamos verte pronto!');
                 }, 300);
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
