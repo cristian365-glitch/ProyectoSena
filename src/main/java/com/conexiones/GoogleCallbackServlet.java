@@ -57,7 +57,7 @@ public class GoogleCallbackServlet extends HttpServlet {
         String error = request.getParameter("error");
         if (error != null) {
             System.out.println("❌ Error de Google: " + error);
-            response.sendRedirect(request.getContextPath() + "/Login.html?error=google_auth_error");
+            response.sendRedirect(request.getContextPath() + "login/Login.html?error=google_auth_error");
             return;
         }
         
@@ -67,7 +67,7 @@ public class GoogleCallbackServlet extends HttpServlet {
         
         if (code == null || code.isEmpty()) {
             System.out.println("❌ No se recibió código de autorización");
-            response.sendRedirect(request.getContextPath() + "/Login.html?error=google_no_code");
+            response.sendRedirect(request.getContextPath() + "login/Login.html?error=google_no_code");
             return;
         }
         
@@ -75,14 +75,14 @@ public class GoogleCallbackServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null) {
             System.out.println("❌ No hay sesión activa");
-            response.sendRedirect(request.getContextPath() + "/Login.html?error=session_expired");
+            response.sendRedirect(request.getContextPath() + "login/Login.html?error=session_expired");
             return;
         }
         
         String expectedState = (String) session.getAttribute("google_oauth_state");
         if (expectedState == null || !expectedState.equals(state)) {
             System.out.println("❌ State token inválido - posible ataque CSRF");
-            response.sendRedirect(request.getContextPath() + "/Login.html?error=invalid_state");
+            response.sendRedirect(request.getContextPath() + "login/Login.html?error=invalid_state");
             return;
         }
         
@@ -98,7 +98,7 @@ public class GoogleCallbackServlet extends HttpServlet {
             
             if (accessToken == null) {
                 System.out.println("❌ No se pudo obtener access token");
-                response.sendRedirect(request.getContextPath() + "/Login.html?error=google_token_error");
+                response.sendRedirect(request.getContextPath() + "login/Login.html?error=google_token_error");
                 return;
             }
             
@@ -110,7 +110,7 @@ public class GoogleCallbackServlet extends HttpServlet {
             
             if (userInfo == null) {
                 System.out.println("❌ No se pudo obtener información del usuario");
-                response.sendRedirect(request.getContextPath() + "/Login.html?error=google_userinfo_error");
+                response.sendRedirect(request.getContextPath() + "login/Login.html?error=google_userinfo_error");
                 return;
             }
             

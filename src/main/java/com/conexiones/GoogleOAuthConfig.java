@@ -18,10 +18,10 @@ public class GoogleOAuthConfig {
     
     // URL de redirección después de la autenticación
     // Debe coincidir EXACTAMENTE con la configurada en Google Cloud Console
-    public static final String REDIRECT_URI = "http://localhost:8080/ProyectoSena/GoogleCallbackServlet";
+//    public static final String REDIRECT_URI = "http://localhost:8080/ProyectoSena/GoogleCallbackServlet";
     
     // En producción:
-    // public static final String REDIRECT_URI = "https://tudominio.com/GoogleCallbackServlet";
+    public static final String REDIRECT_URI = "https://proyectosena-mad6.onrender.com/GoogleCallbackServlet";
     
     // Scopes (permisos) que solicitamos
     public static final String SCOPE = "openid email profile";
