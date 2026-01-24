@@ -1,51 +1,74 @@
 package com.conexiones;
 
+import com.pagos.MPConfiguracion;
+
 /**
- * Configuración centralizada para Google OAuth 2.0
- * 
- * IMPORTANTE: En producción, estas credenciales deben estar en:
- * - Variables de entorno
- * - Archivos de configuración externos (.properties)
- * - Sistemas de gestión de secretos (AWS Secrets Manager, etc.)
- * 
- * NUNCA subir estas credenciales a Git
+ * Configuración de Google OAuth 2.0
+ * Ahora lee desde config.properties a través de MPConfiguracion
  */
 public class GoogleOAuthConfig {
     
-    // ⚠️ REEMPLAZAR CON TUS CREDENCIALES DE GOOGLE CLOUD CONSOLE
-    public static final String CLIENT_ID = "401203717590-doj5m5st8l8lmm5f2997cddusbmvqfmc.apps.googleusercontent.com";
-    public static final String CLIENT_SECRET = "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";
+    private static final MPConfiguracion config = MPConfiguracion.getInstance();
     
-    // URL de redirección después de la autenticación
-    // Debe coincidir EXACTAMENTE con la configurada en Google Cloud Console
-//    public static final String REDIRECT_URI = "http://localhost:8080/ProyectoSena/GoogleCallbackServlet";
-    
-    // En producción:
-    public static final String REDIRECT_URI = "https://proyectosena-mad6.onrender.com/GoogleCallbackServlet";
-    
-    // Scopes (permisos) que solicitamos
-    public static final String SCOPE = "openid email profile";
-    
-    // URLs de Google OAuth
+    // URLs de Google OAuth (constantes)
     public static final String AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
     public static final String TOKEN_URL = "https://oauth2.googleapis.com/token";
     public static final String USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo";
+    public static final String SCOPE = "openid email profile";
     
-    /**
-     * Método alternativo: Cargar desde variables de entorno (RECOMENDADO)
-     */
     public static String getClientId() {
-        String envClientId = System.getenv("GOOGLE_CLIENT_ID");
-        return (envClientId != null && !envClientId.isEmpty()) ? envClientId : CLIENT_ID;
+        String clientId = config.getGoogleClientId();
+        if (clientId == null || clientId.trim().isEmpty()) {
+            System.err.println("⚠️ Google Client ID no configurado en config.properties");
+            return null;
+        }
+        return clientId.trim();
     }
     
     public static String getClientSecret() {
-        String envClientSecret = System.getenv("GOOGLE_CLIENT_SECRET");
-        return (envClientSecret != null && !envClientSecret.isEmpty()) ? envClientSecret : CLIENT_SECRET;
+        String secret = config.getGoogleClientSecret();
+        if (secret == null || secret.trim().isEmpty()) {
+            System.err.println("⚠️ Google Client Secret no configurado en config.properties");
+            return null;
+        }
+        return secret.trim();
     }
     
     public static String getRedirectUri() {
-        String envRedirectUri = System.getenv("GOOGLE_REDIRECT_URI");
-        return (envRedirectUri != null && !envRedirectUri.isEmpty()) ? envRedirectUri : REDIRECT_URI;
+        String uri = config.getGoogleRedirectUri();
+        if (uri == null || uri.trim().isEmpty()) {
+            System.err.println("⚠️ Google Redirect URI no configurado en config.properties");
+            return null;
+        }
+        return uri.trim();
+    }
+    
+    /**
+     * Imprime la configuración actual (sin mostrar secretos completos)
+     */
+    public static void imprimirConfiguracion() {
+        System.out.println("========================================");
+        System.out.println("🔐 CONFIGURACIÓN DE GOOGLE OAUTH");
+        System.out.println("========================================");
+        
+        String clientId = getClientId();
+        if (clientId != null) {
+            String preview = clientId.length() > 20 ? 
+                clientId.substring(0, 20) + "..." : clientId;
+            System.out.println("✅ Client ID: " + preview);
+        } else {
+            System.err.println("❌ Client ID NO configurado");
+        }
+        
+        String clientSecret = getClientSecret();
+        if (clientSecret != null) {
+            System.out.println("✅ Client Secret: GOCSPX-***");
+        } else {
+            System.err.println("❌ Client Secret NO configurado");
+        }
+        
+        System.out.println("Redirect URI: " + getRedirectUri());
+        System.out.println("Scope: " + SCOPE);
+        System.out.println("========================================");
     }
 }
