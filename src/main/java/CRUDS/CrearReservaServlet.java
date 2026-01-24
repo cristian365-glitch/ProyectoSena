@@ -40,7 +40,7 @@ public class CrearReservaServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         
         if (session == null || session.getAttribute("logueado") == null) {
-            response.sendRedirect(request.getContextPath() + "/Login.html?error=no_logueado&redirect=reservar");
+            response.sendRedirect(request.getContextPath() + "/login/Login.html?error=no_logueado&redirect=reservar");
             return;
         }
         
@@ -48,7 +48,7 @@ public class CrearReservaServlet extends HttpServlet {
         Integer userId = (Integer) session.getAttribute("userId");
         
         if (userId == null) {
-            response.sendRedirect(request.getContextPath() + "/Login.html?error=sesion_invalida");
+            response.sendRedirect(request.getContextPath() + "/login/Login.html?error=sesion_invalida");
             return;
         }
         
@@ -65,6 +65,12 @@ public class CrearReservaServlet extends HttpServlet {
         String telefono = request.getParameter("telefono");
         String solicitudes = request.getParameter("solicitudes");
         
+        System.out.println("📥 Datos recibidos:");
+        System.out.println("   Habitación ID: " + habitacionIdStr);
+        System.out.println("   Check-in: " + fechaCheckin);
+        System.out.println("   Check-out: " + fechaCheckout);
+        System.out.println("   Usuario ID: " + userId);
+        
         // Validaciones básicas
         if (habitacionIdStr == null || habitacionIdStr.trim().isEmpty() ||
             fechaCheckin == null || fechaCheckin.trim().isEmpty() ||
@@ -74,7 +80,7 @@ public class CrearReservaServlet extends HttpServlet {
             email == null || email.trim().isEmpty() ||
             telefono == null || telefono.trim().isEmpty()) {
             
-            response.sendRedirect(request.getContextPath() + "/reservar.html?habitacion=" + 
+            response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
                                 habitacionIdStr + "&error=campos_vacios");
             return;
         }
@@ -91,19 +97,22 @@ public class CrearReservaServlet extends HttpServlet {
             
             // Validaciones de fechas
             if (checkin.isBefore(hoy)) {
-                response.sendRedirect(request.getContextPath() + "/reservar.html?habitacion=" + 
+                System.out.println("❌ Error: Fecha de check-in en el pasado");
+                response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
                                     habitacionId + "&error=fecha_pasada");
                 return;
             }
             
             if (checkout.isBefore(checkin) || checkout.isEqual(checkin)) {
-                response.sendRedirect(request.getContextPath() + "/reservar.html?habitacion=" + 
+                System.out.println("❌ Error: Fechas inválidas");
+                response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
                                     habitacionId + "&error=fechas_invalidas");
                 return;
             }
             
             // Calcular número de noches y total
             long noches = ChronoUnit.DAYS.between(checkin, checkout);
+            System.out.println("📊 Número de noches: " + noches);
             
             Connection conn = null;
             PreparedStatement psHabitacion = null;
@@ -123,6 +132,7 @@ public class CrearReservaServlet extends HttpServlet {
                 rsHabitacion = psHabitacion.executeQuery();
                 
                 if (!rsHabitacion.next()) {
+                    System.out.println("❌ Error: Habitación no existe");
                     response.sendRedirect(request.getContextPath() + "/index.html?error=habitacion_no_existe");
                     return;
                 }
@@ -130,40 +140,57 @@ public class CrearReservaServlet extends HttpServlet {
                 double precioNoche = rsHabitacion.getDouble("precio_noche");
                 int capacidad = rsHabitacion.getInt("capacidad");
                 
+                System.out.println("💰 Precio por noche: $" + precioNoche);
+                System.out.println("👥 Capacidad: " + capacidad);
+                
                 // Verificar capacidad
                 if (numPersonas > capacidad) {
-                    response.sendRedirect(request.getContextPath() + "/reservar.html?habitacion=" + 
+                    System.out.println("❌ Error: Excede capacidad (" + numPersonas + " > " + capacidad + ")");
+                    response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
                                         habitacionId + "&error=excede_capacidad");
                     return;
                 }
                 
                 // Calcular total
                 double total = precioNoche * noches;
+                System.out.println("💵 Total a pagar: $" + total);
                 
-                // Verificar disponibilidad de la habitación
-                String sqlDisponibilidad = "SELECT COUNT(*) FROM reservas " +
-                                          "WHERE habitacion_id = ? " +
-                                          "AND estado != 'cancelada' " +
-                                          "AND ((fecha_checkin BETWEEN ? AND ?) " +
-                                          "OR (fecha_checkout BETWEEN ? AND ?) " +
-                                          "OR (fecha_checkin <= ? AND fecha_checkout >= ?))";
+                // ⭐ VERIFICACIÓN DE DISPONIBILIDAD MEJORADA
+                System.out.println("🔍 Verificando disponibilidad...");
+                System.out.println("   Rango solicitado: " + fechaCheckin + " → " + fechaCheckout);
+                
+                String sqlDisponibilidad = 
+                    "SELECT id, fecha_checkin, fecha_checkout, estado " +
+                    "FROM reservas " +
+                    "WHERE habitacion_id = ? " +
+                    "AND estado IN ('pendiente', 'confirmada') " +
+                    "AND NOT (" +
+                    "  fecha_checkout <= ? OR fecha_checkin >= ?" +
+                    ")";
                 
                 psDisponibilidad = conn.prepareStatement(sqlDisponibilidad);
                 psDisponibilidad.setInt(1, habitacionId);
-                psDisponibilidad.setString(2, fechaCheckin);
-                psDisponibilidad.setString(3, fechaCheckout);
-                psDisponibilidad.setString(4, fechaCheckin);
-                psDisponibilidad.setString(5, fechaCheckout);
-                psDisponibilidad.setString(6, fechaCheckin);
-                psDisponibilidad.setString(7, fechaCheckout);
+                psDisponibilidad.setString(2, fechaCheckin);  // checkout de reserva existente <= checkin solicitado
+                psDisponibilidad.setString(3, fechaCheckout); // checkin de reserva existente >= checkout solicitado
                 
                 rsDisponibilidad = psDisponibilidad.executeQuery();
                 
-                if (rsDisponibilidad.next() && rsDisponibilidad.getInt(1) > 0) {
-                    response.sendRedirect(request.getContextPath() + "/reservar.html?habitacion=" + 
+                if (rsDisponibilidad.next()) {
+                    // Hay conflicto de fechas
+                    System.out.println("❌ CONFLICTO DE FECHAS DETECTADO:");
+                    do {
+                        System.out.println("   Reserva ID: " + rsDisponibilidad.getInt("id"));
+                        System.out.println("   Ocupada desde: " + rsDisponibilidad.getString("fecha_checkin"));
+                        System.out.println("   Hasta: " + rsDisponibilidad.getString("fecha_checkout"));
+                        System.out.println("   Estado: " + rsDisponibilidad.getString("estado"));
+                    } while (rsDisponibilidad.next());
+                    
+                    response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
                                         habitacionId + "&error=no_disponible");
                     return;
                 }
+                
+                System.out.println("✅ Habitación disponible para las fechas solicitadas");
                 
                 // Insertar reserva
                 String sqlInsert = "INSERT INTO reservas (habitacion_id, id_usuario, nombre_cliente, email, telefono, " +
@@ -193,13 +220,17 @@ public class CrearReservaServlet extends HttpServlet {
                     
                     conn.commit();
                     
-                    System.out.println("✅ Reserva creada exitosamente - ID: " + reservaId + " - Usuario: " + userId);
+                    System.out.println("✅ Reserva creada exitosamente!");
+                    System.out.println("   Reserva ID: " + reservaId);
+                    System.out.println("   Usuario ID: " + userId);
+                    System.out.println("   Total: $" + total);
                     
-                    // 🎯 REDIRIGIR A PÁGINA DE CONFIRMACIÓN Y PAGO
-                    response.sendRedirect(request.getContextPath() + "/confirmacion-reserva.html?id=" + reservaId);
+                    // ✅ RUTA CORREGIDA - confirmacion-reserva.html está en /login/
+                    response.sendRedirect(request.getContextPath() + "/login/confirmacion-reserva.html?id=" + reservaId);
                 } else {
                     conn.rollback();
-                    response.sendRedirect(request.getContextPath() + "/reservar.html?habitacion=" + 
+                    System.out.println("❌ Error: No se pudo guardar la reserva");
+                    response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
                                         habitacionId + "&error=no_guardado");
                 }
                 
@@ -211,8 +242,9 @@ public class CrearReservaServlet extends HttpServlet {
                         ex.printStackTrace();
                     }
                 }
+                System.err.println("❌ Error SQL: " + e.getMessage());
                 e.printStackTrace();
-                response.sendRedirect(request.getContextPath() + "/reservar.html?habitacion=" + 
+                response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
                                     habitacionId + "&error=error_sistema");
             } finally {
                 DatabaseManager.closeResources(rsHabitacion, psHabitacion, null);
@@ -221,11 +253,13 @@ public class CrearReservaServlet extends HttpServlet {
             }
             
         } catch (NumberFormatException e) {
-            response.sendRedirect(request.getContextPath() + "/reservar.html?habitacion=" + 
+            System.err.println("❌ Error: Datos inválidos - " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
                                 habitacionIdStr + "&error=datos_invalidos");
         } catch (Exception e) {
+            System.err.println("❌ Error inesperado: " + e.getMessage());
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/reservar.html?habitacion=" + 
+            response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
                                 habitacionIdStr + "&error=error_sistema");
         }
     }
