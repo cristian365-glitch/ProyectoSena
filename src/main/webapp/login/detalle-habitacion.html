@@ -8,11 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="auth-ui.css">
-    <!-- ✅ SOLO UNA VEZ auth-session.js -->
     <script src="auth-session.js"></script>
-    <script>
-        window.APP_CONTEXT = '/Armonia';
-    </script>
     <style>
         body {
             margin: 0;
@@ -40,7 +36,6 @@
             color: #d4af37;
         }
 
-        /* Galería de imágenes */
         .galeria {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -110,7 +105,6 @@
             color: white;
         }
 
-        /* Info de la habitación */
         .habitacion-contenido {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -172,7 +166,6 @@
             font-size: 0.9rem;
         }
 
-        /* Panel de reserva */
         .panel-reserva {
             background: #f8f9fa;
             padding: 30px;
@@ -217,7 +210,6 @@
             box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
         }
 
-        /* Modal de galería */
         .modal-galeria {
             display: none;
             position: fixed;
@@ -282,7 +274,6 @@
             background: rgba(255, 255, 255, 0.4);
         }
 
-        /* Mensaje de error */
         .error-message {
             background: #ffebee;
             color: #c62828;
@@ -337,11 +328,10 @@
                 </a>
             </li>
 
-            <li><a href="nav/disponibilidad.html">Habitaciones</a></li>
-            <li><a href="nav/experiencias.html">Experiencias</a></li>
-            <li><a href="nav/servicios.html">Servicios</a></li>
+            <li><a href="disponibilidad.html">Habitaciones</a></li>
+            <li><a href="experiencias.html">Experiencias</a></li>
+            <li><a href="servicios.html">Servicios</a></li>
 
-            <!-- 🔴 AQUÍ SE INYECTA TODO -->
             <li class="registro" id="auth-container"></li>
         </ul>
     </header>
@@ -349,15 +339,10 @@
     <div class="detalle-container">
         <a href="disponibilidad.html" class="back-btn">← Volver a habitaciones</a>
 
-        <!-- Loading inicial -->
         <div id="loading" class="loading">Cargando habitación...</div>
 
-        <!-- Galería de imágenes -->
-        <div class="galeria" id="galeria" style="display: none;">
-            <!-- Se llena dinámicamente -->
-        </div>
+        <div class="galeria" id="galeria" style="display: none;"></div>
 
-        <!-- Contenido principal -->
         <div class="habitacion-contenido" id="contenido-habitacion" style="display: none;">
             <div class="info-principal">
                 <h1 id="nombre-habitacion"></h1>
@@ -384,12 +369,9 @@
                     <strong>🛏️ Camas:</strong> <span id="camas-texto"></span>
                 </div>
 
-                <!-- Comodidades -->
                 <div id="comodidades-container" style="margin: 20px 0;">
                     <h3 style="font-size: 1.3rem; margin-bottom: 15px;">Comodidades</h3>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;" id="comodidades-lista">
-                        <!-- Se llenan dinámicamente -->
-                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;" id="comodidades-lista"></div>
                 </div>
             </div>
 
@@ -411,7 +393,6 @@
         </div>
     </div>
 
-    <!-- Modal de galería -->
     <div class="modal-galeria" id="modalGaleria">
         <span class="cerrar-modal" onclick="cerrarModal()">×</span>
         <div class="navegacion-galeria">
@@ -428,7 +409,6 @@
         let imagenes = [];
         let imagenActual = 0;
 
-        // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', async function() {
             const params = new URLSearchParams(window.location.search);
             const habitacionId = params.get('id');
@@ -446,29 +426,29 @@
 
         async function cargarHabitacion(id) {
             try {
-                console.log('Cargando habitación con ID:', id);
+                console.log('🔍 Cargando habitación con ID:', id);
                 
-                // ✅ RUTA CORREGIDA - Ajusta según tu estructura
-                const response = await fetch(`DetalleHabitacionServlet?id=${id}`);
+                // ✅ Ruta correcta según tu estructura
+                // detalle-habitacion.html está en /login/
+                // El servlet está mapeado en el contexto raíz
+                const response = await fetch(`../DetalleHabitacionServlet?id=${id}`);
                 
-                console.log('Response status:', response.status);
-                console.log('Response headers:', response.headers.get('content-type'));
+                console.log('📡 Response status:', response.status);
+                console.log('📋 Content-Type:', response.headers.get('content-type'));
 
-                // Verificar si la respuesta es exitosa
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                // Verificar que sea JSON
                 const contentType = response.headers.get("content-type");
                 if (!contentType || !contentType.includes("application/json")) {
                     const text = await response.text();
-                    console.error('Respuesta recibida (no es JSON):', text.substring(0, 500));
-                    throw new TypeError("El servidor no devolvió JSON. Verifica que el servlet esté configurado correctamente.");
+                    console.error('❌ Respuesta recibida (no es JSON):', text.substring(0, 500));
+                    throw new TypeError("El servidor no devolvió JSON válido");
                 }
 
                 habitacion = await response.json();
-                console.log('Habitación cargada:', habitacion);
+                console.log('✅ Habitación cargada:', habitacion);
 
                 if (!habitacion || habitacion.error) {
                     throw new Error(habitacion?.error || 'Habitación no encontrada');
@@ -477,7 +457,7 @@
                 mostrarHabitacion();
                 
             } catch (error) {
-                console.error('Error completo:', error);
+                console.error('❌ Error completo:', error);
                 mostrarError('Error al cargar la habitación: ' + error.message);
             }
         }
@@ -496,7 +476,6 @@
         }
 
         function mostrarHabitacion() {
-            // Ocultar loading y mostrar contenido
             document.getElementById('loading').style.display = 'none';
             document.getElementById('galeria').style.display = 'grid';
             document.getElementById('contenido-habitacion').style.display = 'grid';
@@ -506,19 +485,16 @@
             document.getElementById('capacidad').textContent = habitacion.capacidad;
             document.getElementById('precio').textContent = habitacion.precio_noche.toLocaleString('es-CO');
 
-            // Metros cuadrados
             if (habitacion.metros_cuadrados) {
                 document.getElementById('metros').textContent = habitacion.metros_cuadrados;
                 document.getElementById('metros-container').style.display = 'block';
             }
 
-            // Vista
             if (habitacion.vista) {
                 document.getElementById('vista').textContent = habitacion.vista;
                 document.getElementById('vista-container').style.display = 'block';
             }
 
-            // Camas
             if (habitacion.camas_info) {
                 document.getElementById('camas-texto').textContent = habitacion.camas_info;
                 document.getElementById('camas-info').style.display = 'block';
@@ -531,7 +507,6 @@
             badge.textContent = icono + ' ' + habitacion.experiencia.toUpperCase();
             badge.className = 'experiencia-tag ' + habitacion.experiencia;
 
-            // Mostrar comodidades
             const comodidades = [];
             if (habitacion.wifi) comodidades.push({ icono: '📶', texto: 'WiFi gratuito' });
             if (habitacion.aire_acondicionado) comodidades.push({ icono: '❄️', texto: 'Aire acondicionado' });
@@ -549,7 +524,6 @@
                 listaComodidades.appendChild(div);
             });
 
-            // Cargar galería
             imagenes = habitacion.imagenes || [];
             if (imagenes.length === 0 && habitacion.imagen_principal) {
                 imagenes.push({ url_cloudinary: habitacion.imagen_principal });
@@ -567,14 +541,12 @@
                 return;
             }
 
-            // Imagen principal
             const principal = document.createElement('div');
             principal.className = 'imagen-principal';
             principal.onclick = () => abrirModal(0);
             principal.innerHTML = `<img src="${imagenes[0].url_cloudinary}" alt="Imagen principal">`;
             galeria.appendChild(principal);
 
-            // Imágenes secundarias
             if (imagenes.length > 1) {
                 const secundarias = document.createElement('div');
                 secundarias.className = 'imagenes-secundarias';
@@ -614,7 +586,6 @@
         }
 
         function iniciarReserva() {
-            // Verificar si está logueado
             if (typeof auth !== 'undefined' && auth && auth.usuario && !auth.esAdmin) {
                 window.location.href = `reservar.html?habitacion=${habitacion.id}`;
             } else if (typeof auth !== 'undefined' && auth && auth.esAdmin) {
@@ -626,13 +597,32 @@
             }
         }
 
-        // Cerrar modal con tecla ESC
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 cerrarModal();
             }
         });
     </script>
-    <!-- ❌ ELIMINADO: Script duplicado -->
 </body>
 </html>
+```
+
+## 🔧 Cambios realizados:
+
+1. **❌ Eliminado** `window.APP_CONTEXT = '/Armonia';`
+2. **✅ Ruta actualizada** a `../DetalleHabitacionServlet?id=${id}` porque:
+   - `detalle-habitacion.html` está en `/login/`
+   - Para subir un nivel usamos `../`
+   - Luego accedemos al servlet en el contexto raíz
+
+## 📁 Estructura de rutas:
+```
+Web Pages/
+├── login/
+│   └── detalle-habitacion.html  ← Estás aquí
+└── DetalleHabitacionServlet     ← Necesitas subir un nivel (..)
+```
+
+**Prueba ahora** y verifica en la consola que aparezca:
+```
+✅ Habitación cargada: {datos...}
