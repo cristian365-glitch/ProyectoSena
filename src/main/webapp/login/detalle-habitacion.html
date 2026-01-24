@@ -6,7 +6,9 @@
     <title>Detalle Habitación - Hotel Armonía</title>
     <link rel="stylesheet" href="../indexCSS.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="auth-ui.css">
+    <!-- ✅ SOLO UNA VEZ auth-session.js -->
     <script src="auth-session.js"></script>
     <script>
         window.APP_CONTEXT = '/Armonia';
@@ -280,6 +282,23 @@
             background: rgba(255, 255, 255, 0.4);
         }
 
+        /* Mensaje de error */
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
         @media (max-width: 768px) {
             .galeria {
                 grid-template-columns: 1fr;
@@ -310,33 +329,36 @@
     </style>
 </head>
 <body>
-        <header>
-    <ul>
-        <li class="logo">
-            <a href="../index.html">
-                <img src="recursos/logo armonia n1.png" width="89px" alt="logo">
-            </a>
-        </li>
+    <header>
+        <ul>
+            <li class="logo">
+                <a href="../index.html">
+                    <img src="recursos/logo armonia n1.png" width="89px" alt="logo">
+                </a>
+            </li>
 
-        <li><a href="nav/disponibilidad.html">Habitaciones</a></li>
-        <li><a href="nav/experiencias.html">Experiencias</a></li>
-        <li><a href="nav/servicios.html">Servicios</a></li>
+            <li><a href="nav/disponibilidad.html">Habitaciones</a></li>
+            <li><a href="nav/experiencias.html">Experiencias</a></li>
+            <li><a href="nav/servicios.html">Servicios</a></li>
 
-        <!-- 🔴 AQUÍ SE INYECTA TODO -->
-        <li class="registro" id="auth-container"></li>
-    </ul>
-</header>
+            <!-- 🔴 AQUÍ SE INYECTA TODO -->
+            <li class="registro" id="auth-container"></li>
+        </ul>
+    </header>
 
     <div class="detalle-container">
         <a href="disponibilidad.html" class="back-btn">← Volver a habitaciones</a>
 
+        <!-- Loading inicial -->
+        <div id="loading" class="loading">Cargando habitación...</div>
+
         <!-- Galería de imágenes -->
-        <div class="galeria" id="galeria">
+        <div class="galeria" id="galeria" style="display: none;">
             <!-- Se llena dinámicamente -->
         </div>
 
         <!-- Contenido principal -->
-        <div class="habitacion-contenido">
+        <div class="habitacion-contenido" id="contenido-habitacion" style="display: none;">
             <div class="info-principal">
                 <h1 id="nombre-habitacion"></h1>
                 <span id="experiencia-badge" class="experiencia-tag"></span>
@@ -349,7 +371,7 @@
                         <span>Personas</span>
                     </div>
                     <div class="detalle-quick" id="metros-container" style="display: none;">
-                        <strong>📐 <span id="metros">-</span></strong>m²
+                        <strong>📐 <span id="metros">-</span>m²</strong>
                         <span>Superficie</span>
                     </div>
                     <div class="detalle-quick" id="vista-container" style="display: none;">
@@ -412,7 +434,10 @@
             const habitacionId = params.get('id');
 
             if (!habitacionId) {
-                window.location.href = 'index.html';
+                mostrarError('No se especificó ID de habitación');
+                setTimeout(() => {
+                    window.location.href = 'disponibilidad.html';
+                }, 2000);
                 return;
             }
 
@@ -421,23 +446,61 @@
 
         async function cargarHabitacion(id) {
             try {
+                console.log('Cargando habitación con ID:', id);
+                
+                // ✅ RUTA CORREGIDA - Ajusta según tu estructura
                 const response = await fetch(`DetalleHabitacionServlet?id=${id}`);
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers.get('content-type'));
+
+                // Verificar si la respuesta es exitosa
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                // Verificar que sea JSON
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    const text = await response.text();
+                    console.error('Respuesta recibida (no es JSON):', text.substring(0, 500));
+                    throw new TypeError("El servidor no devolvió JSON. Verifica que el servlet esté configurado correctamente.");
+                }
+
                 habitacion = await response.json();
+                console.log('Habitación cargada:', habitacion);
 
                 if (!habitacion || habitacion.error) {
-                    alert('Habitación no encontrada');
-                    window.location.href = 'index.html';
-                    return;
+                    throw new Error(habitacion?.error || 'Habitación no encontrada');
                 }
 
                 mostrarHabitacion();
+                
             } catch (error) {
-                console.error('Error:', error);
-                alert('Error al cargar la habitación');
+                console.error('Error completo:', error);
+                mostrarError('Error al cargar la habitación: ' + error.message);
             }
         }
 
+        function mostrarError(mensaje) {
+            document.getElementById('loading').innerHTML = `
+                <div class="error-message">
+                    <h3>⚠️ Error</h3>
+                    <p>${mensaje}</p>
+                    <button onclick="window.location.href='disponibilidad.html'" 
+                            style="margin-top: 15px; padding: 10px 20px; background: #d4af37; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        Volver a habitaciones
+                    </button>
+                </div>
+            `;
+        }
+
         function mostrarHabitacion() {
+            // Ocultar loading y mostrar contenido
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('galeria').style.display = 'grid';
+            document.getElementById('contenido-habitacion').style.display = 'grid';
+
             document.getElementById('nombre-habitacion').textContent = habitacion.nombre;
             document.getElementById('descripcion').textContent = habitacion.descripcion || 'Disfruta de una experiencia única en esta magnífica habitación.';
             document.getElementById('capacidad').textContent = habitacion.capacidad;
@@ -481,7 +544,7 @@
             listaComodidades.innerHTML = '';
             comodidades.forEach(com => {
                 const div = document.createElement('div');
-                div.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 8px; background: #f8f9fa; border-radius: 6px;';
+                div.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 8px; background: white; border-radius: 6px; border: 1px solid #e0e0e0;';
                 div.innerHTML = `<span style="font-size: 1.2rem;">${com.icono}</span> <span>${com.texto}</span>`;
                 listaComodidades.appendChild(div);
             });
@@ -500,7 +563,7 @@
             galeria.innerHTML = '';
 
             if (imagenes.length === 0) {
-                galeria.innerHTML = '<p>No hay imágenes disponibles</p>';
+                galeria.innerHTML = '<p style="padding: 40px; text-align: center; color: #999;">No hay imágenes disponibles</p>';
                 return;
             }
 
@@ -552,9 +615,9 @@
 
         function iniciarReserva() {
             // Verificar si está logueado
-            if (auth && auth.usuario && !auth.esAdmin) {
+            if (typeof auth !== 'undefined' && auth && auth.usuario && !auth.esAdmin) {
                 window.location.href = `reservar.html?habitacion=${habitacion.id}`;
-            } else if (auth && auth.esAdmin) {
+            } else if (typeof auth !== 'undefined' && auth && auth.esAdmin) {
                 alert('Los administradores no pueden hacer reservas');
             } else {
                 if (confirm('Debes iniciar sesión para reservar. ¿Deseas ir al login?')) {
@@ -562,7 +625,14 @@
                 }
             }
         }
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                cerrarModal();
+            }
+        });
     </script>
-    <script src="auth-session.js"></script>
+    <!-- ❌ ELIMINADO: Script duplicado -->
 </body>
 </html>
