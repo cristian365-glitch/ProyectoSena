@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirmación de Reserva - Hotel Armonía</title>
-    <link rel="stylesheet" href="indexCSS.css">
+    <!-- ✅ RUTAS CORREGIDAS -->
+    <link rel="stylesheet" href="../indexCSS.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         body {
@@ -299,6 +300,29 @@
             color: #856404;
         }
 
+        /* Loading spinner */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #d4af37;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         @media (max-width: 768px) {
             .confirmacion-container {
                 margin: 80px auto 40px;
@@ -319,337 +343,268 @@
     <header>
         <ul>
             <li class="logo">
-                <a href="index.html">
+                <a href="../index.html">
                     <img src="recursos/logo armonia n1.png" width="85px" alt="logo">
                 </a>
             </li>
-            <li><a href="index.html">INICIO</a></li>
-            <li><a href="/nav/Experiencias.html">EXPERIENCIAS</a></li>
-            <li><a href="/nav/Hoteles.html">HOTELES</a></li>
+            <li><a href="disponibilidad.html">Habitaciones</a></li>
+            <li><a href="experiencias.html">Experiencias</a></li>
+            <li><a href="servicios.html">Servicios</a></li>
         </ul>
     </header>
 
     <div class="confirmacion-container">
-        <!-- Badge de éxito -->
-        <div class="exito-badge">
-            <div class="check-icon"></div>
-            <h1>¡Reserva Creada Exitosamente!</h1>
-            <p>Tu reserva ha sido registrada. Completa el pago para confirmarla.</p>
-            <div class="codigo-reserva" id="codigoReserva">-</div>
-            <span class="estado-badge estado-pendiente">Pendiente de Pago</span>
+        <!-- Loading inicial -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Cargando reserva...</p>
         </div>
 
-        <!-- Detalles de la reserva -->
-        <div class="detalles-reserva">
-            <h2>Detalles de tu Reserva</h2>
-            
-            <div class="detalle-fila">
-                <span class="detalle-label">Habitación</span>
-                <span class="detalle-valor" id="nombreHabitacion">-</span>
+        <!-- Todo el contenido oculto inicialmente -->
+        <div id="contenido-reserva" style="display: none;">
+            <!-- Badge de éxito -->
+            <div class="exito-badge">
+                <div class="check-icon"></div>
+                <h1>¡Reserva Creada Exitosamente!</h1>
+                <p>Tu reserva ha sido registrada. Completa el pago para confirmarla.</p>
+                <div class="codigo-reserva" id="codigoReserva">-</div>
+                <span class="estado-badge estado-pendiente">Pendiente de Pago</span>
             </div>
 
-            <div class="detalle-fila">
-                <span class="detalle-label">Nombre</span>
-                <span class="detalle-valor" id="nombreCliente">-</span>
+            <!-- Detalles de la reserva -->
+            <div class="detalles-reserva">
+                <h2>Detalles de tu Reserva</h2>
+                
+                <div class="detalle-fila">
+                    <span class="detalle-label">Habitación</span>
+                    <span class="detalle-valor" id="nombreHabitacion">-</span>
+                </div>
+
+                <div class="detalle-fila">
+                    <span class="detalle-label">Nombre</span>
+                    <span class="detalle-valor" id="nombreCliente">-</span>
+                </div>
+
+                <div class="detalle-fila">
+                    <span class="detalle-label">Email</span>
+                    <span class="detalle-valor" id="emailCliente">-</span>
+                </div>
+
+                <div class="detalle-fila">
+                    <span class="detalle-label">Check-in</span>
+                    <span class="detalle-valor" id="fechaCheckin">-</span>
+                </div>
+
+                <div class="detalle-fila">
+                    <span class="detalle-label">Check-out</span>
+                    <span class="detalle-valor" id="fechaCheckout">-</span>
+                </div>
+
+                <div class="detalle-fila">
+                    <span class="detalle-label">Noches</span>
+                    <span class="detalle-valor" id="numNoches">-</span>
+                </div>
+
+                <div class="detalle-fila">
+                    <span class="detalle-label">Personas</span>
+                    <span class="detalle-valor" id="numPersonas">-</span>
+                </div>
+
+                <div class="detalle-fila" style="padding-top: 20px; border-top: 2px solid #d4af37;">
+                    <span class="detalle-label" style="font-size: 1.2rem; color: #d4af37;">Total a Pagar</span>
+                    <span class="detalle-valor" style="font-size: 1.5rem; font-weight: 700; color: #d4af37;" id="totalPagar">$0</span>
+                </div>
             </div>
 
-            <div class="detalle-fila">
-                <span class="detalle-label">Email</span>
-                <span class="detalle-valor" id="emailCliente">-</span>
-            </div>
+            <!-- Métodos de pago -->
+            <div class="metodos-pago">
+                <h2>Pagar tu Reserva</h2>
+                <p class="subtitulo">Elige cómo deseas completar el pago</p>
 
-            <div class="detalle-fila">
-                <span class="detalle-label">Check-in</span>
-                <span class="detalle-valor" id="fechaCheckin">-</span>
-            </div>
+                <div class="metodo-option" data-metodo="mercadopago">
+                    <div class="metodo-icon">💳</div>
+                    <div class="metodo-info">
+                        <h3>Pagar con Mercado Pago</h3>
+                        <p>Tarjetas, PSE, Nequi, Daviplata, Efectivo (Efecty/Baloto)</p>
+                    </div>
+                    <div class="radio-custom"></div>
+                </div>
 
-            <div class="detalle-fila">
-                <span class="detalle-label">Check-out</span>
-                <span class="detalle-valor" id="fechaCheckout">-</span>
-            </div>
+                <div class="metodo-option" data-metodo="hotel">
+                    <div class="metodo-icon">🏨</div>
+                    <div class="metodo-info">
+                        <h3>Pagar en el Hotel</h3>
+                        <p>Paga al momento del check-in (sujeto a disponibilidad)</p>
+                    </div>
+                    <div class="radio-custom"></div>
+                </div>
 
-            <div class="detalle-fila">
-                <span class="detalle-label">Noches</span>
-                <span class="detalle-valor" id="numNoches">-</span>
-            </div>
+                <div class="info-seguridad">
+                    🔒 <strong>Pago 100% Seguro:</strong> Tus datos están protegidos con encriptación SSL.
+                </div>
 
-            <div class="detalle-fila">
-                <span class="detalle-label">Personas</span>
-                <span class="detalle-valor" id="numPersonas">-</span>
-            </div>
-
-            <div class="detalle-fila" style="padding-top: 20px; border-top: 2px solid #d4af37;">
-                <span class="detalle-label" style="font-size: 1.2rem; color: #d4af37;">Total a Pagar</span>
-                <span class="detalle-valor" style="font-size: 1.5rem; font-weight: 700; color: #d4af37;" id="totalPagar">$0</span>
+                <button class="btn-pagar" id="btnPagar" disabled>Proceder al Pago</button>
+                <button class="btn-secundario" onclick="window.location.href='../index.html'">Volver al Inicio</button>
             </div>
         </div>
-
-        <!-- Métodos de pago -->
-        <!-- REEMPLAZA la sección de métodos de pago con esto: -->
-
-<div class="metodos-pago">
-    <h2>Pagar tu Reserva</h2>
-    <p class="subtitulo">Elige cómo deseas completar el pago</p>
-
-    <!-- Mercado Pago (incluye todo) -->
-    <div class="metodo-option" data-metodo="mercadopago">
-        <div class="metodo-icon">💳</div>
-        <div class="metodo-info">
-            <h3>Pagar con Mercado Pago</h3>
-            <p>Tarjetas, PSE, Nequi, Daviplata, Efectivo (Efecty/Baloto)</p>
-        </div>
-        <div class="radio-custom"></div>
-    </div>
-
-    <!-- Pagar en el hotel -->
-    <div class="metodo-option" data-metodo="hotel">
-        <div class="metodo-icon">🏨</div>
-        <div class="metodo-info">
-            <h3>Pagar en el Hotel</h3>
-            <p>Paga al momento del check-in (sujeto a disponibilidad)</p>
-        </div>
-        <div class="radio-custom"></div>
-    </div>
-
-    <div class="info-seguridad">
-        🔒 <strong>Pago 100% Seguro:</strong> Tus datos están protegidos con encriptación SSL.
-    </div>
-
-    <button class="btn-pagar" id="btnPagar" disabled>Proceder al Pago</button>
-    <button class="btn-secundario" onclick="window.location.href='index.html'">Volver al Inicio</button>
-</div>
     </div>
 
     <script>
-// Script para confirmacion-reserva.html
-let reservaData = null;
-let metodoSeleccionado = null;
+        let reservaData = null;
+        let metodoSeleccionado = null;
 
-document.addEventListener('DOMContentLoaded', async function() {
-    const params = new URLSearchParams(window.location.search);
-    const reservaId = params.get('id');
+        document.addEventListener('DOMContentLoaded', async function() {
+            const params = new URLSearchParams(window.location.search);
+            const reservaId = params.get('id');
 
-    if (!reservaId) {
-        alert('No se encontró la reserva');
-        window.location.href = 'index.html';
-        return;
-    }
+            if (!reservaId) {
+                alert('No se encontró la reserva');
+                window.location.href = '../index.html';
+                return;
+            }
 
-    await cargarReserva(reservaId);
-    configurarMetodosPago();
-});
-
-async function cargarReserva(id) {
-    try {
-        const response = await fetch(`ObtenerReservaServlet?id=${id}`, {
-            credentials: 'include' // ⭐ AGREGADO
+            await cargarReserva(reservaId);
+            configurarMetodosPago();
         });
-        reservaData = await response.json();
 
-        if (!reservaData || reservaData.error) {
-            alert('Error al cargar la reserva');
-            window.location.href = 'index.html';
-            return;
+        async function cargarReserva(id) {
+            try {
+                const response = await fetch(`../ObtenerReservaServlet?id=${id}`, {
+                    credentials: 'include'
+                });
+                
+                reservaData = await response.json();
+
+                if (!reservaData || reservaData.error) {
+                    alert('Error al cargar la reserva');
+                    window.location.href = '../index.html';
+                    return;
+                }
+
+                // ✅ OCULTAR LOADING Y MOSTRAR CONTENIDO
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('contenido-reserva').style.display = 'block';
+
+                // Mostrar datos
+                document.getElementById('codigoReserva').textContent = '#' + reservaData.id.toString().padStart(6, '0');
+                document.getElementById('nombreHabitacion').textContent = reservaData.habitacion_nombre;
+                document.getElementById('nombreCliente').textContent = reservaData.nombre_cliente;
+                document.getElementById('emailCliente').textContent = reservaData.email;
+                document.getElementById('fechaCheckin').textContent = formatearFecha(reservaData.fecha_checkin);
+                document.getElementById('fechaCheckout').textContent = formatearFecha(reservaData.fecha_checkout);
+                document.getElementById('numNoches').textContent = reservaData.num_noches + ' noches';
+                document.getElementById('numPersonas').textContent = reservaData.num_personas;
+                document.getElementById('totalPagar').textContent = '$' + reservaData.total.toLocaleString('es-CO');
+
+                console.log('✅ Reserva cargada:', reservaData.id);
+
+            } catch (error) {
+                console.error('❌ Error al cargar reserva:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div style="background: #ffebee; color: #c62828; padding: 20px; border-radius: 8px; text-align: center;">
+                        <h3>⚠️ Error</h3>
+                        <p>No se pudo cargar la reserva</p>
+                        <button onclick="window.location.href='../index.html'" 
+                                style="margin-top: 15px; padding: 10px 20px; background: #d4af37; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            Volver al Inicio
+                        </button>
+                    </div>
+                `;
+            }
         }
 
-        // Mostrar datos
-        document.getElementById('codigoReserva').textContent = '#' + reservaData.id.toString().padStart(6, '0');
-        document.getElementById('nombreHabitacion').textContent = reservaData.habitacion_nombre;
-        document.getElementById('nombreCliente').textContent = reservaData.nombre_cliente;
-        document.getElementById('emailCliente').textContent = reservaData.email;
-        document.getElementById('fechaCheckin').textContent = formatearFecha(reservaData.fecha_checkin);
-        document.getElementById('fechaCheckout').textContent = formatearFecha(reservaData.fecha_checkout);
-        document.getElementById('numNoches').textContent = reservaData.num_noches + ' noches';
-        document.getElementById('numPersonas').textContent = reservaData.num_personas;
-        document.getElementById('totalPagar').textContent = '$' + reservaData.total.toLocaleString('es-CO');
+        function formatearFecha(fecha) {
+            const date = new Date(fecha);
+            return date.toLocaleDateString('es-CO', { 
+                weekday: 'short', 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
 
-        console.log('✅ Reserva cargada:', reservaData.id);
+        function configurarMetodosPago() {
+            const opciones = document.querySelectorAll('.metodo-option');
+            const btnPagar = document.getElementById('btnPagar');
 
-    } catch (error) {
-        console.error('❌ Error al cargar reserva:', error);
-        alert('Error al cargar los datos de la reserva');
-    }
-}
-
-function formatearFecha(fecha) {
-    const date = new Date(fecha);
-    return date.toLocaleDateString('es-CO', { 
-        weekday: 'short', 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
-    });
-}
-
-function configurarMetodosPago() {
-    const opciones = document.querySelectorAll('.metodo-option');
-    const btnPagar = document.getElementById('btnPagar');
-
-    opciones.forEach(opcion => {
-        opcion.addEventListener('click', function() {
-            // Remover selección anterior
-            opciones.forEach(o => o.classList.remove('selected'));
-            
-            // Seleccionar actual
-            this.classList.add('selected');
-            metodoSeleccionado = this.dataset.metodo;
-            
-            // Habilitar botón
-            btnPagar.disabled = false;
-            
-            console.log('✅ Método seleccionado:', metodoSeleccionado);
-        });
-    });
-
-    btnPagar.addEventListener('click', procesarPago);
-}
-
-async function procesarPago() {
-    if (!metodoSeleccionado || !reservaData) {
-        alert('Por favor selecciona un método de pago');
-        return;
-    }
-
-    const btnPagar = document.getElementById('btnPagar');
-    btnPagar.disabled = true;
-    btnPagar.textContent = 'Procesando...';
-
-    console.log('💳 Procesando pago...');
-    console.log('   Método:', metodoSeleccionado);
-    console.log('   Reserva:', reservaData.id);
-
-    if (metodoSeleccionado === 'hotel') {
-        // ====================================
-        // OPCIÓN 1: PAGAR EN EL HOTEL
-        // ====================================
-        try {
-            console.log('🏨 Procesando pago en hotel...');
-            
-            const response = await fetch('ActualizarEstadoReservaServlet', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                credentials: 'include', // ⭐ AGREGADO
-                body: `reserva_id=${reservaData.id}&estado=confirmada`
+            opciones.forEach(opcion => {
+                opcion.addEventListener('click', function() {
+                    opciones.forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    metodoSeleccionado = this.dataset.metodo;
+                    btnPagar.disabled = false;
+                });
             });
 
-            const result = await response.json();
-            
-            if (result.success) {
-                console.log('✅ Reserva confirmada para pago en hotel');
-                
-                if (typeof notify !== 'undefined') {
-                    notify.success(
-                        '¡Reserva Confirmada!',
-                        'Podrás pagar en el hotel al hacer check-in.',
-                        5000
-                    );
-                } else {
-                    alert('✅ Reserva confirmada. Podrás pagar en el hotel al hacer check-in.');
+            btnPagar.addEventListener('click', procesarPago);
+        }
+
+        async function procesarPago() {
+            if (!metodoSeleccionado || !reservaData) {
+                alert('Por favor selecciona un método de pago');
+                return;
+            }
+
+            const btnPagar = document.getElementById('btnPagar');
+            btnPagar.disabled = true;
+            btnPagar.textContent = 'Procesando...';
+
+            if (metodoSeleccionado === 'hotel') {
+                try {
+                    const response = await fetch('../ActualizarEstadoReservaServlet', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        credentials: 'include',
+                        body: `reserva_id=${reservaData.id}&estado=confirmada`
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert('✅ Reserva confirmada. Podrás pagar en el hotel al hacer check-in.');
+                        setTimeout(() => {
+                            window.location.href = 'usuario/reservas.html';
+                        }, 2000);
+                    } else {
+                        throw new Error(result.error || 'Error al confirmar');
+                    }
+                } catch (error) {
+                    alert('Error al confirmar: ' + error.message);
+                    btnPagar.disabled = false;
+                    btnPagar.textContent = 'Proceder al Pago';
                 }
                 
-                // Redirigir a mis reservas
-                setTimeout(() => {
-                    window.location.href = 'usuario/reservas.html';
-                }, 2000);
-            } else {
-                throw new Error(result.error || 'Error al confirmar');
-            }
-        } catch (error) {
-            console.error('❌ Error:', error);
-            
-            if (typeof notify !== 'undefined') {
-                notify.error('Error', 'No se pudo confirmar la reserva: ' + error.message);
-            } else {
-                alert('Error al confirmar: ' + error.message);
-            }
-            
-            btnPagar.disabled = false;
-            btnPagar.textContent = 'Proceder al Pago';
-        }
-        
-    } else if (metodoSeleccionado === 'mercadopago') {
-        // ====================================
-        // OPCIÓN 2: MERCADO PAGO
-        // ====================================
-        try {
-            console.log('💳 Creando preferencia de MercadoPago...');
-            console.log('   Reserva ID:', reservaData.id);
-            console.log('   Total:', reservaData.total);
-            
-            const response = await fetch('CrearPreferenciaMPServlet', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                credentials: 'include', // ⭐ CRÍTICO - Mantiene la sesión
-                body: `reserva_id=${reservaData.id}`
-            });
+            } else if (metodoSeleccionado === 'mercadopago') {
+                try {
+                    const response = await fetch('../CrearPreferenciaMPServlet', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        credentials: 'include',
+                        body: `reserva_id=${reservaData.id}`
+                    });
 
-            console.log('📥 Respuesta recibida, status:', response.status);
-            
-            const result = await response.json();
-            console.log('📥 Datos de preferencia:', result);
+                    const result = await response.json();
 
-            if (result.success) {
-                console.log('✅ Preferencia creada exitosamente');
-                console.log('   Preference ID:', result.preference_id);
-                console.log('   Token de sesión:', result.token);
-                
-                // Usar sandbox_init_point en TEST, init_point en PRODUCCIÓN
-                const initPoint = result.sandbox_init_point || result.init_point;
-                
-                console.log('🔄 Redirigiendo a MercadoPago:', initPoint);
-                
-                // Pequeña pausa para que el usuario vea el mensaje
-                if (typeof notify !== 'undefined') {
-                    notify.info(
-                        'Redirigiendo...',
-                        'Serás redirigido a MercadoPago para completar el pago.',
-                        2000
-                    );
+                    if (result.success) {
+                        const initPoint = result.sandbox_init_point || result.init_point;
+                        setTimeout(() => {
+                            window.location.href = initPoint;
+                        }, 1000);
+                    } else {
+                        throw new Error(result.error || 'No se pudo crear el pago');
+                    }
+                    
+                } catch (error) {
+                    alert('Error al procesar: ' + error.message);
+                    btnPagar.disabled = false;
+                    btnPagar.textContent = 'Proceder al Pago';
                 }
-                
-                setTimeout(() => {
-                    window.location.href = initPoint;
-                }, 1000);
-                
-            } else {
-                throw new Error(result.error || 'No se pudo crear el pago');
             }
-            
-        } catch (error) {
-            console.error('❌ Error al procesar con MercadoPago:', error);
-            
-            if (typeof notify !== 'undefined') {
-                notify.error(
-                    'Error de Pago',
-                    'No se pudo procesar el pago: ' + error.message,
-                    6000
-                );
-            } else {
-                alert('Error al procesar: ' + error.message);
-            }
-            
-            btnPagar.disabled = false;
-            btnPagar.textContent = 'Proceder al Pago';
         }
-        
-    } else if (metodoSeleccionado === 'wompi') {
-        // ====================================
-        // OPCIÓN 3: WOMPI (Para implementar)
-        // ====================================
-        alert('Wompi estará disponible próximamente');
-        btnPagar.disabled = false;
-        btnPagar.textContent = 'Proceder al Pago';
-        
-    } else {
-        alert('Método de pago no válido');
-        btnPagar.disabled = false;
-        btnPagar.textContent = 'Proceder al Pago';
-    }
-}
     </script>
 </body>
 </html>
