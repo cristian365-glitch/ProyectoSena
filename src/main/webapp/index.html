@@ -9,7 +9,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="recursos/imagen icon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="recursos/imagen icon/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
-    <link rel="stylesheet" href="auth-ui.css">
+    <link rel="stylesheet" href="login/auth-ui.css">
     <script src="login/auth-session.js"></script>
     <style>
         /* ===== ESTILOS ADICIONALES PARA MEJORAR EL DISEÑO ===== */
@@ -944,17 +944,17 @@
 
     function reservarHabitacion(habitacionId, nombreHabitacion) {
         if (auth && auth.usuario && !auth.esAdmin) {
-            window.location.href = `detalle-habitacion.html?id=${habitacionId}`;
+            window.location.href = `login/detalle-habitacion.html?id=${habitacionId}`;
         } else if (auth && auth.esAdmin) {
             alert('Los administradores no pueden hacer reservas');
         } else {
             alert('Debes iniciar sesión para ver más detalles');
-            window.location.href = 'Login.html';
+            window.location.href = 'login/Login.html';
         }
     }
 
     function verDetalleHabitacion(habitacionId) {
-        window.location.href = `detalle-habitacion.html?id=${habitacionId}`;
+        window.location.href = `login/detalle-habitacion.html?id=${habitacionId}`;
     }
 
 
