@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservar Habitación - Hotel Armonía</title>
-    <link rel="stylesheet" href="indexCSS.css">
+    <!-- ✅ RUTAS CORREGIDAS -->
+    <link rel="stylesheet" href="../indexCSS.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="apple-touch-icon" sizes="180x180" href="recursos/imagen icon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="recursos/imagen icon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="recursos/imagen icon/favicon-16x16.png">
-    <link rel="stylesheet" href="indexCSS.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="../recursos/imagen icon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../recursos/imagen icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../recursos/imagen icon/favicon-16x16.png">
     <link rel="stylesheet" href="auth-ui.css">
     <script src="auth-session.js"></script>
     
@@ -172,6 +172,7 @@
             font-size: 1rem;
             transition: all 0.3s;
             font-family: inherit;
+            box-sizing: border-box;
         }
 
         .form-group input:focus,
@@ -182,7 +183,6 @@
             box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
         }
 
-        /* ⭐ ESTILOS PERSONALIZADOS PARA FECHAS OCUPADAS */
         .form-group input[type="date"] {
             position: relative;
         }
@@ -202,7 +202,6 @@
             display: block;
         }
 
-        /* Leyenda de fechas */
         .leyenda-fechas {
             display: flex;
             gap: 20px;
@@ -281,7 +280,6 @@
             color: #666;
         }
 
-        /* Loading spinner */
         .loading-fechas {
             position: absolute;
             right: 15px;
@@ -321,22 +319,21 @@
     </style>
 </head>
 <body>
-        <header>
-    <ul>
-        <li class="logo">
-            <a href="index.html">
-                <img src="recursos/logo armonia n1.png" width="89px" alt="logo">
-            </a>
-        </li>
+    <header>
+        <ul>
+            <li class="logo">
+                <a href="../index.html">
+                    <img src="recursos/logo armonia n1.png" width="89px" alt="logo">
+                </a>
+            </li>
 
-        <li><a href="../nav/disponibilidad.html">Habitaciones</a></li>
-        <li><a href="../nav/experiencias.html">Experiencias</a></li>
-        <li><a href="../nav/servicios.html">Servicios</a></li>
+            <li><a href="disponibilidad.html">Habitaciones</a></li>
+            <li><a href="experiencias.html">Experiencias</a></li>
+            <li><a href="servicios.html">Servicios</a></li>
 
-        <!-- 🔴 AQUÍ SE INYECTA TODO -->
-        <li class="registro" id="auth-container"></li>
-    </ul>
-</header>
+            <li class="registro" id="auth-container"></li>
+        </ul>
+    </header>
 
     <div class="reserva-container">
         <a href="javascript:history.back()" class="back-btn">← Volver</a>
@@ -347,7 +344,6 @@
                 <h2>Completa tu Reserva</h2>
                 <p class="subtitulo">Ingresa tus datos para confirmar la reserva</p>
 
-                <!-- Leyenda de fechas -->
                 <div class="leyenda-fechas">
                     <div class="leyenda-item">
                         <div class="leyenda-color ocupado"></div>
@@ -359,7 +355,7 @@
                     </div>
                 </div>
 
-                <form id="reservaForm" action="CrearReservaServlet" method="POST">
+                <form id="reservaForm" action="../CrearReservaServlet" method="POST">
                     <input type="hidden" id="habitacionId" name="habitacion_id">
 
                     <div class="row">
@@ -465,282 +461,280 @@
         </div>
     </div>
 
-    <script src="auth-session.js"></script>
     <script>
-// REEMPLAZA TODO EL <script> de tu reservar.html con esto:
+        let habitacion = null;
+        let fechasOcupadas = [];
 
-let habitacion = null;
-let fechasOcupadas = [];
-
-document.addEventListener('DOMContentLoaded', async function() {
-    await verificarSesionYCargarDatos();
-    
-    const params = new URLSearchParams(window.location.search);
-    const habitacionId = params.get('habitacion');
-
-    if (!habitacionId) {
-        alert('No se especificó habitación');
-        window.location.href = 'index.html';
-        return;
-    }
-
-    // Cargar habitación y fechas ocupadas
-    await cargarHabitacion(habitacionId);
-    await cargarFechasOcupadas(habitacionId);
-
-    // Configurar fechas mínimas
-    const hoy = new Date().toISOString().split('T')[0];
-    document.getElementById('checkin').min = hoy;
-    document.getElementById('checkout').min = hoy;
-
-    // Event listeners
-    document.getElementById('checkin').addEventListener('change', function() {
-        validarFechaSeleccionada('checkin');
-        calcularPrecio();
-    });
-    
-    document.getElementById('checkout').addEventListener('change', function() {
-        validarFechaSeleccionada('checkout');
-        calcularPrecio();
-    });
-    
-    mostrarErrores();
-});
-
-async function verificarSesionYCargarDatos() {
-    try {
-        const response = await fetch('ObtenerSesionServlet', {
-            credentials: 'include'
-        });
-        const data = await response.json();
-        
-        if (!data.logueado) {
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Iniciando carga de reservar.html');
+            
             const params = new URLSearchParams(window.location.search);
             const habitacionId = params.get('habitacion');
-            window.location.href = `Login.html?redirect=reservar&habitacion=${habitacionId}`;
-            return;
-        }
-        
-        if (data.nombre) document.getElementById('nombre').value = data.nombre;
-        if (data.email) document.getElementById('email').value = data.email;
-        if (data.telefono) document.getElementById('telefono').value = data.telefono;
-        
-    } catch (error) {
-        console.error('Error al verificar sesión:', error);
-        window.location.href = 'Login.html?redirect=reservar';
-    }
-}
 
-async function cargarHabitacion(id) {
-    try {
-        const response = await fetch(`DetalleHabitacionServlet?id=${id}`, {
-            credentials: 'include'
+            if (!habitacionId) {
+                alert('No se especificó habitación');
+                window.location.href = 'disponibilidad.html';
+                return;
+            }
+
+            console.log('📋 Habitación ID:', habitacionId);
+
+            // Verificar sesión primero
+            await verificarSesionYCargarDatos();
+
+            // Cargar habitación y fechas ocupadas
+            await cargarHabitacion(habitacionId);
+            await cargarFechasOcupadas(habitacionId);
+
+            // Configurar fechas mínimas
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('checkin').min = hoy;
+            document.getElementById('checkout').min = hoy;
+
+            // Event listeners
+            document.getElementById('checkin').addEventListener('change', function() {
+                validarFechaSeleccionada('checkin');
+                calcularPrecio();
+            });
+            
+            document.getElementById('checkout').addEventListener('change', function() {
+                validarFechaSeleccionada('checkout');
+                calcularPrecio();
+            });
+            
+            mostrarErrores();
         });
-        habitacion = await response.json();
 
-        if (!habitacion || habitacion.error) {
-            alert('Habitación no encontrada');
-            window.location.href = 'index.html';
-            return;
+        async function verificarSesionYCargarDatos() {
+            try {
+                console.log('🔐 Verificando sesión...');
+                const response = await fetch('../ObtenerSesionServlet', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (!data.logueado) {
+                    const params = new URLSearchParams(window.location.search);
+                    const habitacionId = params.get('habitacion');
+                    window.location.href = `Login.html?redirect=reservar&habitacion=${habitacionId}`;
+                    return;
+                }
+                
+                console.log('✅ Sesión verificada:', data.nombre);
+                
+                if (data.nombre) document.getElementById('nombre').value = data.nombre;
+                if (data.email) document.getElementById('email').value = data.email;
+                if (data.telefono) document.getElementById('telefono').value = data.telefono;
+                
+            } catch (error) {
+                console.error('❌ Error al verificar sesión:', error);
+                window.location.href = 'Login.html?redirect=reservar';
+            }
         }
 
-        document.getElementById('habitacionId').value = habitacion.id;
-        document.getElementById('imgHabitacion').src = habitacion.imagen_principal;
-        document.getElementById('nombreHabitacion').textContent = habitacion.nombre;
-        document.getElementById('experienciaHabitacion').textContent = habitacion.experiencia.toUpperCase();
-        document.getElementById('precioNoche').textContent = '$' + habitacion.precio_noche.toLocaleString('es-CO');
-        document.getElementById('personas').max = habitacion.capacidad;
-        
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error al cargar la habitación');
-    }
-}
+        async function cargarHabitacion(id) {
+            try {
+                console.log('🏨 Cargando habitación...');
+                // ✅ RUTA CORREGIDA
+                const response = await fetch(`../DetalleHabitacionServlet?id=${id}`, {
+                    credentials: 'include'
+                });
 
-// ⭐ CARGAR FECHAS OCUPADAS usando el servlet existente
-async function cargarFechasOcupadas(habitacionId) {
-    try {
-        console.log('🔍 Cargando fechas ocupadas para habitación:', habitacionId);
-        
-        // ⭐ CAMBIO AQUÍ: usar fechas_ocupadas en lugar de habitacion_id
-        const response = await fetch(`ObtenerReservaServlet?fechas_ocupadas=${habitacionId}`, {
-            credentials: 'include'
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                habitacion = await response.json();
+                console.log('✅ Habitación cargada:', habitacion);
+
+                if (!habitacion || habitacion.error) {
+                    alert('Habitación no encontrada');
+                    window.location.href = 'disponibilidad.html';
+                    return;
+                }
+
+                document.getElementById('habitacionId').value = habitacion.id;
+                document.getElementById('imgHabitacion').src = habitacion.imagen_principal;
+                document.getElementById('nombreHabitacion').textContent = habitacion.nombre;
+                document.getElementById('experienciaHabitacion').textContent = habitacion.experiencia.toUpperCase();
+                document.getElementById('precioNoche').textContent = '$' + habitacion.precio_noche.toLocaleString('es-CO');
+                document.getElementById('personas').max = habitacion.capacidad;
+                
+            } catch (error) {
+                console.error('❌ Error al cargar habitación:', error);
+                alert('Error al cargar la habitación: ' + error.message);
+            }
+        }
+
+        async function cargarFechasOcupadas(habitacionId) {
+            try {
+                console.log('📅 Cargando fechas ocupadas...');
+                // ✅ RUTA CORREGIDA
+                const response = await fetch(`../ObtenerReservaServlet?fechas_ocupadas=${habitacionId}`, {
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    fechasOcupadas = data.fechas_ocupadas || [];
+                    console.log('✅ Fechas ocupadas:', fechasOcupadas);
+                }
+            } catch (error) {
+                console.error('❌ Error al cargar fechas:', error);
+            }
+        }
+
+        function validarFechaSeleccionada(inputId) {
+            const input = document.getElementById(inputId);
+            const fechaSeleccionada = input.value;
+            
+            if (!fechaSeleccionada) return true;
+            
+            if (fechasOcupadas.includes(fechaSeleccionada)) {
+                console.warn('⚠️ Fecha ocupada:', fechaSeleccionada);
+                input.style.borderColor = '#d4af37';
+                input.style.borderWidth = '3px';
+                input.style.background = '#fff9e6';
+                
+                alert('⚠️ Esta fecha está ocupada. Por favor selecciona otra.');
+                
+                input.value = '';
+                return false;
+            } else {
+                input.style.borderColor = '#e0e0e0';
+                input.style.borderWidth = '2px';
+                input.style.background = 'white';
+                return true;
+            }
+        }
+
+        function validarRangoFechas(checkin, checkout) {
+            const inicio = new Date(checkin);
+            const fin = new Date(checkout);
+            
+            let fechaActual = new Date(inicio);
+            while (fechaActual < fin) {
+                const fechaStr = fechaActual.toISOString().split('T')[0];
+                if (fechasOcupadas.includes(fechaStr)) {
+                    console.warn('⚠️ Rango contiene fecha ocupada:', fechaStr);
+                    return false;
+                }
+                fechaActual.setDate(fechaActual.getDate() + 1);
+            }
+            
+            return true;
+        }
+
+        const formatearFecha = (fecha) => {
+            const [year, month, day] = fecha.split('-');
+            return `${day}/${month}/${year}`;
+        };
+
+        function calcularPrecio() {
+            const checkin = document.getElementById('checkin').value;
+            const checkout = document.getElementById('checkout').value;
+
+            if (!checkin || !checkout || !habitacion) return;
+
+            const fecha1 = new Date(checkin);
+            const fecha2 = new Date(checkout);
+            const diff = fecha2 - fecha1;
+            const noches = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+            if (noches <= 0) {
+                alert('La fecha de salida debe ser posterior a la de llegada');
+                document.getElementById('checkout').value = '';
+                return;
+            }
+
+            document.getElementById('fechaLlegada').textContent = formatearFecha(checkin);
+            document.getElementById('fechaSalida').textContent = formatearFecha(checkout);
+            document.getElementById('numNoches').textContent = noches + (noches === 1 ? ' noche' : ' noches');
+            document.getElementById('nochesCalculo').textContent = noches + (noches === 1 ? ' noche' : ' noches');
+
+            const subtotal = habitacion.precio_noche * noches;
+            document.getElementById('subtotal').textContent = '$' + subtotal.toLocaleString('es-CO');
+            document.getElementById('total').textContent = '$' + subtotal.toLocaleString('es-CO');
+        }
+
+        document.getElementById('reservaForm').addEventListener('submit', function(e) {
+            const checkin = document.getElementById('checkin').value;
+            const checkout = document.getElementById('checkout').value;
+
+            if (!checkin || !checkout) {
+                e.preventDefault();
+                alert('Debes seleccionar las fechas de tu estadía');
+                return;
+            }
+
+            const fecha1 = new Date(checkin);
+            const fecha2 = new Date(checkout);
+
+            if (fecha2 <= fecha1) {
+                e.preventDefault();
+                alert('La fecha de salida debe ser posterior a la de llegada');
+                return;
+            }
+            
+            if (!validarRangoFechas(checkin, checkout)) {
+                e.preventDefault();
+                alert('⚠️ Las fechas seleccionadas incluyen días ocupados. Por favor elige otras fechas.');
+                return;
+            }
+            
+            const personas = parseInt(document.getElementById('personas').value);
+            if (habitacion && personas > habitacion.capacidad) {
+                e.preventDefault();
+                alert(`La habitación tiene capacidad máxima de ${habitacion.capacidad} personas`);
+                return;
+            }
+            
+            console.log('✅ Reserva válida, enviando...');
         });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            fechasOcupadas = data.fechas_ocupadas || [];
-            console.log('✅ Fechas ocupadas:', fechasOcupadas);
+
+        function mostrarErrores() {
+            const params = new URLSearchParams(window.location.search);
+            const error = params.get('error');
+            
+            if (!error) return;
+            
+            const mensajes = {
+                'campos_vacios': 'Por favor completa todos los campos requeridos',
+                'fecha_pasada': 'La fecha de llegada no puede ser en el pasado',
+                'fechas_invalidas': 'Las fechas seleccionadas no son válidas',
+                'excede_capacidad': 'El número de personas excede la capacidad de la habitación',
+                'no_disponible': 'La habitación no está disponible en las fechas seleccionadas',
+                'no_guardado': 'No se pudo procesar la reserva. Intenta nuevamente',
+                'error_sistema': 'Error en el sistema. Por favor intenta más tarde',
+                'datos_invalidos': 'Los datos ingresados no son válidos'
+            };
+            
+            const mensaje = mensajes[error] || 'Ha ocurrido un error';
+            
+            const alerta = document.createElement('div');
+            alerta.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #ff4444;
+                color: white;
+                padding: 15px 30px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 10000;
+                font-weight: 600;
+            `;
+            alerta.textContent = mensaje;
+            
+            document.body.appendChild(alerta);
+            
+            setTimeout(() => {
+                alerta.style.opacity = '0';
+                setTimeout(() => alerta.remove(), 300);
+            }, 5000);
         }
-    } catch (error) {
-        console.error('❌ Error al cargar fechas:', error);
-    }
-}
-
-// ⭐ VALIDAR FECHA SELECCIONADA
-function validarFechaSeleccionada(inputId) {
-    const input = document.getElementById(inputId);
-    const fechaSeleccionada = input.value;
-    
-    if (!fechaSeleccionada) return true;
-    
-    if (fechasOcupadas.includes(fechaSeleccionada)) {
-        console.warn('⚠️ Fecha ocupada:', fechaSeleccionada);
-        input.style.borderColor = '#d4af37';
-        input.style.borderWidth = '3px';
-        input.style.background = '#fff9e6';
-        
-        // Mostrar alerta
-        if (typeof notify !== 'undefined') {
-            notify.warning(
-                'Fecha Ocupada',
-                'Esta fecha ya está reservada. Por favor selecciona otra.',
-                4000
-            );
-        } else {
-            alert('⚠️ Esta fecha está ocupada. Por favor selecciona otra.');
-        }
-        
-        input.value = '';
-        return false;
-    } else {
-        input.style.borderColor = '#e0e0e0';
-        input.style.borderWidth = '2px';
-        input.style.background = 'white';
-        return true;
-    }
-}
-
-// ⭐ VALIDAR RANGO COMPLETO
-function validarRangoFechas(checkin, checkout) {
-    const inicio = new Date(checkin);
-    const fin = new Date(checkout);
-    
-    let fechaActual = new Date(inicio);
-    while (fechaActual < fin) {
-        const fechaStr = fechaActual.toISOString().split('T')[0];
-        if (fechasOcupadas.includes(fechaStr)) {
-            console.warn('⚠️ Rango contiene fecha ocupada:', fechaStr);
-            return false;
-        }
-        fechaActual.setDate(fechaActual.getDate() + 1);
-    }
-    
-    return true;
-}
-
-const formatearFecha = (fecha) => {
-    const [year, month, day] = fecha.split('-');
-    return `${day}/${month}/${year}`;
-};
-
-function calcularPrecio() {
-    const checkin = document.getElementById('checkin').value;
-    const checkout = document.getElementById('checkout').value;
-
-    if (!checkin || !checkout || !habitacion) return;
-
-    const fecha1 = new Date(checkin);
-    const fecha2 = new Date(checkout);
-    const diff = fecha2 - fecha1;
-    const noches = Math.ceil(diff / (1000 * 60 * 60 * 24));
-
-    if (noches <= 0) {
-        alert('La fecha de salida debe ser posterior a la de llegada');
-        document.getElementById('checkout').value = '';
-        return;
-    }
-
-    document.getElementById('fechaLlegada').textContent = formatearFecha(checkin);
-    document.getElementById('fechaSalida').textContent = formatearFecha(checkout);
-    document.getElementById('numNoches').textContent = noches + (noches === 1 ? ' noche' : ' noches');
-    document.getElementById('nochesCalculo').textContent = noches + (noches === 1 ? ' noche' : ' noches');
-
-    const subtotal = habitacion.precio_noche * noches;
-    document.getElementById('subtotal').textContent = '$' + subtotal.toLocaleString('es-CO');
-    document.getElementById('total').textContent = '$' + subtotal.toLocaleString('es-CO');
-}
-
-// ⭐ VALIDAR FORMULARIO CON FECHAS OCUPADAS
-document.getElementById('reservaForm').addEventListener('submit', function(e) {
-    const checkin = document.getElementById('checkin').value;
-    const checkout = document.getElementById('checkout').value;
-
-    if (!checkin || !checkout) {
-        e.preventDefault();
-        alert('Debes seleccionar las fechas de tu estadía');
-        return;
-    }
-
-    const fecha1 = new Date(checkin);
-    const fecha2 = new Date(checkout);
-
-    if (fecha2 <= fecha1) {
-        e.preventDefault();
-        alert('La fecha de salida debe ser posterior a la de llegada');
-        return;
-    }
-    
-    // ⭐ VALIDAR FECHAS OCUPADAS
-    if (!validarRangoFechas(checkin, checkout)) {
-        e.preventDefault();
-        alert('⚠️ Las fechas seleccionadas incluyen días ocupados. Por favor elige otras fechas.');
-        return;
-    }
-    
-    const personas = parseInt(document.getElementById('personas').value);
-    if (habitacion && personas > habitacion.capacidad) {
-        e.preventDefault();
-        alert(`La habitación tiene capacidad máxima de ${habitacion.capacidad} personas`);
-        return;
-    }
-    
-    console.log('✅ Reserva válida, enviando...');
-});
-
-function mostrarErrores() {
-    const params = new URLSearchParams(window.location.search);
-    const error = params.get('error');
-    
-    if (!error) return;
-    
-    const mensajes = {
-        'campos_vacios': 'Por favor completa todos los campos requeridos',
-        'fecha_pasada': 'La fecha de llegada no puede ser en el pasado',
-        'fechas_invalidas': 'Las fechas seleccionadas no son válidas',
-        'excede_capacidad': 'El número de personas excede la capacidad de la habitación',
-        'no_disponible': 'La habitación no está disponible en las fechas seleccionadas',
-        'no_guardado': 'No se pudo procesar la reserva. Intenta nuevamente',
-        'error_sistema': 'Error en el sistema. Por favor intenta más tarde',
-        'datos_invalidos': 'Los datos ingresados no son válidos'
-    };
-    
-    const mensaje = mensajes[error] || 'Ha ocurrido un error';
-    
-    const alerta = document.createElement('div');
-    alerta.style.cssText = `
-        position: fixed;
-        top: 80px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #ff4444;
-        color: white;
-        padding: 15px 30px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        z-index: 10000;
-        font-weight: 600;
-    `;
-    alerta.textContent = mensaje;
-    
-    document.body.appendChild(alerta);
-    
-    setTimeout(() => {
-        alerta.style.opacity = '0';
-        setTimeout(() => alerta.remove(), 300);
-    }, 5000);
-}
     </script>
 </body>
 </html>
