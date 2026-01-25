@@ -833,7 +833,7 @@ for (let servicio of filtros.servicios) {
         
         function reservar(id) {
             if (auth && auth.usuario && !auth.esAdmin) {
-                window.location.href = `../login/logindetalle-habitacion.html?id=${id}`;
+                window.location.href = `../login/detalle-habitacion.html?id=${id}`;
             } else if (auth && auth.esAdmin) {
                 alert('Los administradores no pueden hacer reservas');
             } else {

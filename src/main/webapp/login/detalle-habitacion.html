@@ -337,7 +337,7 @@
     </header>
 
     <div class="detalle-container">
-        <a href="disponibilidad.html" class="back-btn">← Volver a habitaciones</a>
+        <a href="../nav/disponibilidad.html" class="back-btn">← Volver a habitaciones</a>
 
         <div id="loading" class="loading">Cargando habitación...</div>
 
@@ -605,24 +605,3 @@
     </script>
 </body>
 </html>
-```
-
-## 🔧 Cambios realizados:
-
-1. **❌ Eliminado** `window.APP_CONTEXT = '/Armonia';`
-2. **✅ Ruta actualizada** a `../DetalleHabitacionServlet?id=${id}` porque:
-   - `detalle-habitacion.html` está en `/login/`
-   - Para subir un nivel usamos `../`
-   - Luego accedemos al servlet en el contexto raíz
-
-## 📁 Estructura de rutas:
-```
-Web Pages/
-├── login/
-│   └── detalle-habitacion.html  ← Estás aquí
-└── DetalleHabitacionServlet     ← Necesitas subir un nivel (..)
-```
-
-**Prueba ahora** y verifica en la consola que aparezca:
-```
-✅ Habitación cargada: {datos...}

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservar Habitación - Hotel Armonía</title>
-    <!-- ✅ RUTAS CORREGIDAS -->
     <link rel="stylesheet" href="../indexCSS.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="../recursos/imagen icon/apple-touch-icon.png">
@@ -183,8 +182,23 @@
             box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
         }
 
-        .form-group input[type="date"] {
-            position: relative;
+        /* ✅ ESTILOS PARA MARCAR FECHAS OCUPADAS */
+        .form-group input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+        }
+
+        /* Fecha ocupada - fondo dorado */
+        .form-group input[type="date"].fecha-ocupada {
+            background: linear-gradient(135deg, #fff9e6, #ffe4b3) !important;
+            border-color: #d4af37 !important;
+            border-width: 3px !important;
+        }
+
+        /* Fecha disponible - fondo verde claro */
+        .form-group input[type="date"].fecha-disponible {
+            background: #e8f5e9 !important;
+            border-color: #4caf50 !important;
+            border-width: 2px !important;
         }
 
         .fecha-warning {
@@ -327,9 +341,9 @@
                 </a>
             </li>
 
-            <li><a href="disponibilidad.html">Habitaciones</a></li>
-            <li><a href="experiencias.html">Experiencias</a></li>
-            <li><a href="servicios.html">Servicios</a></li>
+            <li><a href="../nav/disponibilidad.html">Habitaciones</a></li>
+            <li><a href="../nav/experiencias.html">Experiencias</a></li>
+            <li><a href="../nav/servicios.html">Servicios</a></li>
 
             <li class="registro" id="auth-container"></li>
         </ul>
@@ -491,15 +505,26 @@
             document.getElementById('checkin').min = hoy;
             document.getElementById('checkout').min = hoy;
 
-            // Event listeners
+            // Event listeners para validar y aplicar colores
             document.getElementById('checkin').addEventListener('change', function() {
+                aplicarColorFecha(this);
                 validarFechaSeleccionada('checkin');
                 calcularPrecio();
             });
             
             document.getElementById('checkout').addEventListener('change', function() {
+                aplicarColorFecha(this);
                 validarFechaSeleccionada('checkout');
                 calcularPrecio();
+            });
+
+            // ✅ LISTENER PARA CUANDO SE ABRE EL CALENDARIO
+            document.getElementById('checkin').addEventListener('click', function() {
+                aplicarColorFecha(this);
+            });
+            
+            document.getElementById('checkout').addEventListener('click', function() {
+                aplicarColorFecha(this);
             });
             
             mostrarErrores();
@@ -535,7 +560,6 @@
         async function cargarHabitacion(id) {
             try {
                 console.log('🏨 Cargando habitación...');
-                // ✅ RUTA CORREGIDA
                 const response = await fetch(`../DetalleHabitacionServlet?id=${id}`, {
                     credentials: 'include'
                 });
@@ -569,7 +593,6 @@
         async function cargarFechasOcupadas(habitacionId) {
             try {
                 console.log('📅 Cargando fechas ocupadas...');
-                // ✅ RUTA CORREGIDA
                 const response = await fetch(`../ObtenerReservaServlet?fechas_ocupadas=${habitacionId}`, {
                     credentials: 'include'
                 });
@@ -578,33 +601,71 @@
                 
                 if (data.success) {
                     fechasOcupadas = data.fechas_ocupadas || [];
-                    console.log('✅ Fechas ocupadas:', fechasOcupadas);
+                    console.log('✅ Fechas ocupadas cargadas:', fechasOcupadas);
+                    console.log('📊 Total de fechas ocupadas:', fechasOcupadas.length);
                 }
             } catch (error) {
                 console.error('❌ Error al cargar fechas:', error);
             }
         }
 
+        // ✅ NUEVA FUNCIÓN: Aplicar color según disponibilidad
+        function aplicarColorFecha(input) {
+            const fechaSeleccionada = input.value;
+            
+            if (!fechaSeleccionada) {
+                // Si no hay fecha seleccionada, remover todas las clases
+                input.classList.remove('fecha-ocupada', 'fecha-disponible');
+                return;
+            }
+            
+            console.log('🎨 Aplicando color a fecha:', fechaSeleccionada);
+            console.log('📋 Fechas ocupadas:', fechasOcupadas);
+            
+            // Verificar si la fecha está ocupada
+            if (fechasOcupadas.includes(fechaSeleccionada)) {
+                console.log('🟡 Fecha OCUPADA - aplicando dorado');
+                input.classList.remove('fecha-disponible');
+                input.classList.add('fecha-ocupada');
+            } else {
+                console.log('🟢 Fecha DISPONIBLE - aplicando verde');
+                input.classList.remove('fecha-ocupada');
+                input.classList.add('fecha-disponible');
+            }
+        }
+
         function validarFechaSeleccionada(inputId) {
             const input = document.getElementById(inputId);
+            const warning = document.getElementById('warning' + inputId.charAt(0).toUpperCase() + inputId.slice(1));
             const fechaSeleccionada = input.value;
             
             if (!fechaSeleccionada) return true;
             
             if (fechasOcupadas.includes(fechaSeleccionada)) {
-                console.warn('⚠️ Fecha ocupada:', fechaSeleccionada);
-                input.style.borderColor = '#d4af37';
-                input.style.borderWidth = '3px';
-                input.style.background = '#fff9e6';
+                console.warn('⚠️ Fecha ocupada seleccionada:', fechaSeleccionada);
                 
+                // Mostrar warning
+                if (warning) {
+                    warning.classList.add('show');
+                }
+                
+                // Mostrar alerta
                 alert('⚠️ Esta fecha está ocupada. Por favor selecciona otra.');
                 
+                // Limpiar el input
                 input.value = '';
+                input.classList.remove('fecha-ocupada', 'fecha-disponible');
+                
+                if (warning) {
+                    setTimeout(() => warning.classList.remove('show'), 3000);
+                }
+                
                 return false;
             } else {
-                input.style.borderColor = '#e0e0e0';
-                input.style.borderWidth = '2px';
-                input.style.background = 'white';
+                // Ocultar warning si estaba visible
+                if (warning) {
+                    warning.classList.remove('show');
+                }
                 return true;
             }
         }
@@ -645,6 +706,7 @@
             if (noches <= 0) {
                 alert('La fecha de salida debe ser posterior a la de llegada');
                 document.getElementById('checkout').value = '';
+                document.getElementById('checkout').classList.remove('fecha-ocupada', 'fecha-disponible');
                 return;
             }
 
