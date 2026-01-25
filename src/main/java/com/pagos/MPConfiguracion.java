@@ -4,23 +4,7 @@ public class MPConfiguracion {
     private static MPConfiguracion instance;
     
     private MPConfiguracion() {
-        validarConfiguracion();
-    }
-    
-    private void validarConfiguracion() {
-        System.out.println("========================================");
-        System.out.println("💳 MERCADOPAGO CONFIGURATION");
-        System.out.println("========================================");
-        
-        String token = getAccessToken();
-        String pubKey = getPublicKey();
-        String baseUrl = getBaseUrl();
-        
-        System.out.println(token != null ? "✅ Access Token: SET" : "❌ MERCADOPAGO_ACCESS_TOKEN no configurado");
-        System.out.println(pubKey != null ? "✅ Public Key: SET" : "❌ MERCADOPAGO_PUBLIC_KEY no configurado");
-        System.out.println("✅ Base URL: " + baseUrl);
-        System.out.println("✅ Modo: " + (isModoTest() ? "TEST" : "PRODUCCIÓN"));
-        System.out.println("========================================");
+        imprimirConfiguracion();
     }
     
     public static MPConfiguracion getInstance() {
@@ -30,6 +14,10 @@ public class MPConfiguracion {
         return instance;
     }
     
+    // ============================================
+    // MERCADOPAGO
+    // ============================================
+    
     public String getAccessToken() {
         return System.getenv("MERCADOPAGO_ACCESS_TOKEN");
     }
@@ -38,10 +26,23 @@ public class MPConfiguracion {
         return System.getenv("MERCADOPAGO_PUBLIC_KEY");
     }
     
+    public boolean isModoTest() {
+        String modo = System.getenv("MERCADOPAGO_MODO");
+        return modo == null || "test".equals(modo);
+    }
+    
+    // ============================================
+    // URLs BASE
+    // ============================================
+    
     public String getBaseUrl() {
         String url = System.getenv("BASE_URL");
-        return url != null ? url : "http://localhost:8080/ProyectoSena";
+        return url != null ? url : "http://localhost:8080";
     }
+    
+    // ============================================
+    // URLs DE RETORNO (con token de sesión)
+    // ============================================
     
     public String getSuccessUrl(String token, String reservaId) {
         return String.format("%s/pago-exitoso.html?token=%s&reserva=%s", 
@@ -70,21 +71,22 @@ public class MPConfiguracion {
         return getBaseUrl() + "/pago-pendiente.html";
     }
     
+    // ============================================
+    // WEBHOOK
+    // ============================================
+    
     public String getWebhookUrl() {
-        String webhook = System.getenv("WEBHOOK_URL");
-        return webhook != null ? webhook : getBaseUrl() + "/webhook/mercadopago";
+        return System.getenv("WEBHOOK_URL");
     }
     
     public String getWebhookSecret() {
         return System.getenv("MERCADOPAGO_WEBHOOK_SECRET");
     }
     
-    public boolean isModoTest() {
-        String modo = System.getenv("MERCADOPAGO_MODO");
-        return modo == null || "test".equals(modo);
-    }
+    // ============================================
+    // GOOGLE OAUTH
+    // ============================================
     
-    // ✅ MÉTODOS PARA GOOGLE OAUTH
     public String getGoogleClientId() {
         return System.getenv("GOOGLE_CLIENT_ID");
     }
@@ -113,6 +115,22 @@ public class MPConfiguracion {
         return "https://www.googleapis.com/oauth2/v3/userinfo";
     }
     
+    // ============================================
+    // CLOUDINARY
+    // ============================================
+    
+    public String getCloudinaryCloudName() {
+        return System.getenv("CLOUDINARY_CLOUD_NAME");
+    }
+    
+    public String getCloudinaryUploadPreset() {
+        return System.getenv("UPLOAD_PRESET");
+    }
+    
+    // ============================================
+    // DIAGNÓSTICO
+    // ============================================
+    
     public void imprimirConfiguracion() {
         System.out.println("========================================");
         System.out.println("📋 CONFIGURACIÓN COMPLETA");
@@ -121,21 +139,35 @@ public class MPConfiguracion {
         // Mercado Pago
         System.out.println("\n💳 MERCADO PAGO:");
         String token = getAccessToken();
-        System.out.println("   Access Token: " + (token != null ? "✅ OK" : "❌ NO"));
+        System.out.println("   Access Token: " + (token != null && !token.isEmpty() ? "✅ OK" : "❌ NO"));
         
         String pubKey = getPublicKey();
-        System.out.println("   Public Key: " + (pubKey != null ? "✅ OK" : "❌ NO"));
+        System.out.println("   Public Key: " + (pubKey != null && !pubKey.isEmpty() ? "✅ OK" : "❌ NO"));
         System.out.println("   Base URL: " + getBaseUrl());
         System.out.println("   Modo: " + (isModoTest() ? "TEST" : "PRODUCCIÓN"));
+        
+        String webhookUrl = getWebhookUrl();
+        System.out.println("   Webhook URL: " + (webhookUrl != null ? "✅ " + webhookUrl : "❌ NO"));
+        
+        String webhookSecret = getWebhookSecret();
+        System.out.println("   Webhook Secret: " + (webhookSecret != null && !webhookSecret.isEmpty() ? "✅ OK" : "❌ NO"));
         
         // Google OAuth
         System.out.println("\n🔐 GOOGLE OAUTH:");
         String clientId = getGoogleClientId();
-        System.out.println("   Client ID: " + (clientId != null ? "✅ OK" : "❌ NO"));
+        System.out.println("   Client ID: " + (clientId != null && !clientId.isEmpty() ? "✅ OK" : "❌ NO"));
         
         String clientSecret = getGoogleClientSecret();
-        System.out.println("   Client Secret: " + (clientSecret != null ? "✅ OK" : "❌ NO"));
+        System.out.println("   Client Secret: " + (clientSecret != null && !clientSecret.isEmpty() ? "✅ OK" : "❌ NO"));
         System.out.println("   Redirect URI: " + getGoogleRedirectUri());
+        
+        // Cloudinary
+        System.out.println("\n☁️ CLOUDINARY:");
+        String cloudName = getCloudinaryCloudName();
+        System.out.println("   Cloud Name: " + (cloudName != null && !cloudName.isEmpty() ? "✅ OK" : "❌ NO"));
+        
+        String uploadPreset = getCloudinaryUploadPreset();
+        System.out.println("   Upload Preset: " + (uploadPreset != null && !uploadPreset.isEmpty() ? "✅ OK" : "❌ NO"));
         
         System.out.println("========================================");
     }

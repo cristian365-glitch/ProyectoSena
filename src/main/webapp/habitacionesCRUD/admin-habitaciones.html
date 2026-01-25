@@ -197,28 +197,31 @@
         }
         
         // Subir a Cloudinary
-        async function uploadToCloudinary(file) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_CONFIG.UPLOAD_PRESET);
-            
-            const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.CLOUD_NAME}/image/upload`;
-            
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (!response.ok) throw new Error('Error en Cloudinary');
-                
-                const data = await response.json();
-                return data.secure_url;
-            } catch (error) {
-                console.error('Error:', error);
-                throw new Error('No se pudo subir la imagen a Cloudinary');
-            }
-        }
+        // ⭐ CARGAR CONFIGURACIÓN DESDE EL SERVIDOR
+        let CLOUDINARY_CONFIG = {};
+
+// Cargar configuración al inicio
+async function loadConfig() {
+    try {
+        const response = await fetch('/api/config');
+        if (!response.ok) throw new Error('Error cargando configuración');
+        
+        const config = await response.json();
+        CLOUDINARY_CONFIG = {
+            CLOUD_NAME: config.cloudName,
+            UPLOAD_PRESET: config.uploadPreset
+        };
+        
+        console.log('✅ Configuración de Cloudinary cargada');
+    } catch (error) {
+        console.error('❌ Error cargando configuración:', error);
+        showMessage('Error: No se pudo cargar la configuración de Cloudinary', 'error');
+    }
+}
+
+// Llamar antes de usar
+window.addEventListener('DOMContentLoaded', loadConfig);
+
         
         // Enviar formulario
         document.getElementById('roomForm').addEventListener('submit', async function(e) {

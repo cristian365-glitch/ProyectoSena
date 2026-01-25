@@ -29,10 +29,10 @@ public class GoogleOAuthConfig {
         System.out.println("========================================");
         
         String clientId = getClientId();
-        System.out.println(clientId != null ? "✅ Client ID: SET" : "❌ GOOGLE_CLIENT_ID no configurado");
+        System.out.println(clientId != null && !clientId.isEmpty() ? "✅ Client ID: SET" : "❌ GOOGLE_CLIENT_ID no configurado");
         
         String clientSecret = getClientSecret();
-        System.out.println(clientSecret != null ? "✅ Client Secret: SET" : "❌ GOOGLE_CLIENT_SECRET no configurado");
+        System.out.println(clientSecret != null && !clientSecret.isEmpty() ? "✅ Client Secret: SET" : "❌ GOOGLE_CLIENT_SECRET no configurado");
         
         System.out.println("✅ Redirect URI: " + getRedirectUri());
         System.out.println("✅ Scope: " + SCOPE);
