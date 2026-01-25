@@ -1,6 +1,5 @@
 package com.conexiones;
 
-import com.conexiones.GoogleOAuthConfig;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import untils.PasswordHasher;
@@ -26,16 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-/**
- * Servlet que maneja el callback de Google OAuth 2.0
- * 
- * Flujo:
- * 1. Google redirige aquí con un código de autorización
- * 2. Intercambiamos el código por un access token
- * 3. Usamos el access token para obtener info del usuario
- * 4. Buscamos o creamos el usuario en nuestra BD
- * 5. Iniciamos sesión automáticamente
- */
 @WebServlet("/GoogleCallbackServlet")
 public class GoogleCallbackServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -57,7 +46,7 @@ public class GoogleCallbackServlet extends HttpServlet {
         String error = request.getParameter("error");
         if (error != null) {
             System.out.println("❌ Error de Google: " + error);
-            response.sendRedirect(request.getContextPath() + "login/Login.html?error=google_auth_error");
+            response.sendRedirect(request.getContextPath() + "/login/Login.html?error=google_auth_error");
             return;
         }
         
@@ -67,7 +56,7 @@ public class GoogleCallbackServlet extends HttpServlet {
         
         if (code == null || code.isEmpty()) {
             System.out.println("❌ No se recibió código de autorización");
-            response.sendRedirect(request.getContextPath() + "login/Login.html?error=google_no_code");
+            response.sendRedirect(request.getContextPath() + "/login/Login.html?error=google_no_code");
             return;
         }
         
@@ -75,14 +64,14 @@ public class GoogleCallbackServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session == null) {
             System.out.println("❌ No hay sesión activa");
-            response.sendRedirect(request.getContextPath() + "login/Login.html?error=session_expired");
+            response.sendRedirect(request.getContextPath() + "/login/Login.html?error=session_expired");
             return;
         }
         
         String expectedState = (String) session.getAttribute("google_oauth_state");
         if (expectedState == null || !expectedState.equals(state)) {
             System.out.println("❌ State token inválido - posible ataque CSRF");
-            response.sendRedirect(request.getContextPath() + "login/Login.html?error=invalid_state");
+            response.sendRedirect(request.getContextPath() + "/login/Login.html?error=invalid_state");
             return;
         }
         
@@ -98,7 +87,7 @@ public class GoogleCallbackServlet extends HttpServlet {
             
             if (accessToken == null) {
                 System.out.println("❌ No se pudo obtener access token");
-                response.sendRedirect(request.getContextPath() + "login/Login.html?error=google_token_error");
+                response.sendRedirect(request.getContextPath() + "/login/Login.html?error=google_token_error");
                 return;
             }
             
@@ -110,7 +99,7 @@ public class GoogleCallbackServlet extends HttpServlet {
             
             if (userInfo == null) {
                 System.out.println("❌ No se pudo obtener información del usuario");
-                response.sendRedirect(request.getContextPath() + "login/Login.html?error=google_userinfo_error");
+                response.sendRedirect(request.getContextPath() + "/login/Login.html?error=google_userinfo_error");
                 return;
             }
             
@@ -127,19 +116,16 @@ public class GoogleCallbackServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/index.html?login=google");
             } else {
                 System.out.println("❌ Error al procesar usuario");
-                response.sendRedirect(request.getContextPath() + "/Login.html?error=google_process_error");
+                response.sendRedirect(request.getContextPath() + "/login/Login.html?error=google_process_error");
             }
             
         } catch (Exception e) {
             System.err.println("❌ Error en callback de Google:");
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/Login.html?error=google_error");
+            response.sendRedirect(request.getContextPath() + "/login/Login.html?error=google_error");
         }
     }
     
-    /**
-     * Intercambia el código de autorización por un access token
-     */
     private String intercambiarCodigoPorToken(String code) throws IOException {
         URL url = new URL(GoogleOAuthConfig.TOKEN_URL);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -148,7 +134,6 @@ public class GoogleCallbackServlet extends HttpServlet {
         conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         conn.setDoOutput(true);
         
-        // Construir el body de la petición
         StringBuilder postData = new StringBuilder();
         postData.append("code=").append(URLEncoder.encode(code, "UTF-8"));
         postData.append("&client_id=").append(URLEncoder.encode(GoogleOAuthConfig.getClientId(), "UTF-8"));
@@ -156,13 +141,11 @@ public class GoogleCallbackServlet extends HttpServlet {
         postData.append("&redirect_uri=").append(URLEncoder.encode(GoogleOAuthConfig.getRedirectUri(), "UTF-8"));
         postData.append("&grant_type=authorization_code");
         
-        // Enviar petición
         try (OutputStream os = conn.getOutputStream()) {
             byte[] input = postData.toString().getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
         
-        // Leer respuesta
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
             System.err.println("❌ Error al obtener token. Código: " + responseCode);
@@ -178,14 +161,10 @@ public class GoogleCallbackServlet extends HttpServlet {
             }
         }
         
-        // Parsear JSON
         JsonObject json = JsonParser.parseString(response.toString()).getAsJsonObject();
         return json.has("access_token") ? json.get("access_token").getAsString() : null;
     }
     
-    /**
-     * Obtiene la información del usuario desde Google
-     */
     private GoogleUserInfo obtenerInfoUsuario(String accessToken) throws IOException {
         URL url = new URL(GoogleOAuthConfig.USERINFO_URL);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -208,7 +187,6 @@ public class GoogleCallbackServlet extends HttpServlet {
             }
         }
         
-        // Parsear JSON
         JsonObject json = JsonParser.parseString(response.toString()).getAsJsonObject();
         
         GoogleUserInfo userInfo = new GoogleUserInfo();
@@ -221,9 +199,6 @@ public class GoogleCallbackServlet extends HttpServlet {
         return userInfo;
     }
     
-    /**
-     * Busca o crea el usuario en la base de datos y inicia sesión
-     */
     private boolean procesarUsuarioGoogle(HttpServletRequest request, HttpServletResponse response,
                                          GoogleUserInfo userInfo) throws IOException {
         
@@ -242,7 +217,6 @@ public class GoogleCallbackServlet extends HttpServlet {
             conn = dbManager.getConnection();
             conn.setAutoCommit(false);
             
-            // Buscar usuario por email
             String checkSql = "SELECT id, nombre, telefono FROM usuarios WHERE email = ?";
             psCheck = conn.prepareStatement(checkSql);
             psCheck.setString(1, userInfo.email.toLowerCase());
@@ -253,14 +227,12 @@ public class GoogleCallbackServlet extends HttpServlet {
             String telefono;
             
             if (rs.next()) {
-                // Usuario ya existe
                 userId = rs.getInt("id");
                 nombre = rs.getString("nombre");
                 telefono = rs.getString("telefono");
                 
                 System.out.println("✅ Usuario existente encontrado: " + userInfo.email);
                 
-                // Actualizar google_id y foto si no los tiene
                 String updateSql = "UPDATE usuarios SET google_id = ?, foto_url = ? WHERE id = ? AND (google_id IS NULL OR foto_url IS NULL)";
                 psUpdate = conn.prepareStatement(updateSql);
                 psUpdate.setString(1, userInfo.googleId);
@@ -269,10 +241,8 @@ public class GoogleCallbackServlet extends HttpServlet {
                 psUpdate.executeUpdate();
                 
             } else {
-                // Usuario nuevo - crear cuenta
                 System.out.println("🆕 Creando nuevo usuario desde Google: " + userInfo.email);
                 
-                // Generar contraseña aleatoria segura (no la usará, pero la BD la requiere)
                 byte[] salt = PasswordHasher.generarSalt();
                 String saltBase64 = Base64.getEncoder().encodeToString(salt);
                 String passwordHash = PasswordHasher.hashPassword(generarPasswordAleatorio(), salt);
@@ -282,7 +252,7 @@ public class GoogleCallbackServlet extends HttpServlet {
                 psInsert = conn.prepareStatement(insertSql, PreparedStatement.RETURN_GENERATED_KEYS);
                 psInsert.setString(1, userInfo.name != null ? userInfo.name : "Usuario de Google");
                 psInsert.setString(2, userInfo.email.toLowerCase());
-                psInsert.setString(3, ""); // Teléfono vacío inicialmente
+                psInsert.setString(3, "");
                 psInsert.setString(4, passwordHash);
                 psInsert.setString(5, saltBase64);
                 psInsert.setString(6, userInfo.googleId);
@@ -295,7 +265,6 @@ public class GoogleCallbackServlet extends HttpServlet {
                     return false;
                 }
                 
-                // Obtener el ID generado
                 ResultSet generatedKeys = psInsert.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     userId = generatedKeys.getInt(1);
@@ -309,7 +278,6 @@ public class GoogleCallbackServlet extends HttpServlet {
             
             conn.commit();
             
-            // Crear sesión
             HttpSession session = request.getSession(true);
             session.setAttribute("usuario", nombre);
             session.setAttribute("userId", userId);
@@ -318,13 +286,11 @@ public class GoogleCallbackServlet extends HttpServlet {
             session.setAttribute("foto_url", userInfo.picture);
             session.setAttribute("logueado", true);
             session.setAttribute("esAdmin", false);
-            session.setAttribute("loginMethod", "google"); // Identificar método de login
+            session.setAttribute("loginMethod", "google");
             session.setMaxInactiveInterval(30 * 60);
             
-            // Regenerar ID de sesión
             request.changeSessionId();
             
-            // Registrar en logs
             String clientIp = getClientIP(request);
             LogManager.registrarLog(userId, clientIp, false);
             
@@ -365,9 +331,6 @@ public class GoogleCallbackServlet extends HttpServlet {
         }
     }
     
-    /**
-     * Obtiene la IP real del cliente
-     */
     private String getClientIP(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
@@ -379,18 +342,12 @@ public class GoogleCallbackServlet extends HttpServlet {
         return ip;
     }
     
-    /**
-     * Genera una contraseña aleatoria segura
-     */
     private String generarPasswordAleatorio() {
         byte[] bytes = new byte[32];
         new java.security.SecureRandom().nextBytes(bytes);
         return Base64.getEncoder().encodeToString(bytes);
     }
     
-    /**
-     * Clase interna para almacenar la información del usuario de Google
-     */
     private static class GoogleUserInfo {
         String email;
         String name;
