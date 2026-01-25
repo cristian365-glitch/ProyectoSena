@@ -1,62 +1,26 @@
 package com.pagos;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 public class MPConfiguracion {
     private static MPConfiguracion instance;
-    private Properties properties;
-    private boolean archivoEncontrado = false;
     
     private MPConfiguracion() {
-        properties = new Properties();
-        cargarConfiguracion();
+        validarConfiguracion();
     }
     
-    private void cargarConfiguracion() {
-        try {
-            // ✅ AHORA LEE DE config.properties (unificado)
-            InputStream input = getClass().getClassLoader()
-                    .getResourceAsStream("config.properties");
-            
-            if (input != null) {
-                properties.load(input);
-                archivoEncontrado = true;
-                
-                System.out.println("✅ ========================================");
-                System.out.println("✅ Archivo config.properties ENCONTRADO");
-                System.out.println("✅ ========================================");
-                
-                String modo = properties.getProperty("mercadopago.modo", "test");
-                String token = properties.getProperty("mercadopago.access_token." + modo);
-                String pubKey = properties.getProperty("mercadopago.public_key." + modo);
-                
-                System.out.println("📋 Configuración de Mercado Pago:");
-                System.out.println("   - Modo: " + modo);
-                System.out.println("   - Access Token: " + (token != null && !token.isEmpty() ? "✅ Configurado" : "❌ VACÍO"));
-                System.out.println("   - Public Key: " + (pubKey != null && !pubKey.isEmpty() ? "✅ Configurado" : "❌ VACÍO"));
-                
-                if (token == null || token.trim().isEmpty()) {
-                    System.err.println("⚠️ WARNING: mercadopago.access_token." + modo + " está VACÍO");
-                    System.err.println("⚠️ Edita: resources/config.properties");
-                }
-                
-                input.close();
-                
-            } else {
-                System.err.println("❌ ========================================");
-                System.err.println("❌ Archivo config.properties NO encontrado");
-                System.err.println("❌ Crea: src/main/resources/config.properties");
-                System.err.println("❌ ========================================");
-                archivoEncontrado = false;
-            }
-            
-        } catch (IOException e) {
-            System.err.println("❌ Error al cargar config.properties");
-            e.printStackTrace();
-            archivoEncontrado = false;
-        }
+    private void validarConfiguracion() {
+        System.out.println("========================================");
+        System.out.println("💳 MERCADOPAGO CONFIGURATION");
+        System.out.println("========================================");
+        
+        String token = getAccessToken();
+        String pubKey = getPublicKey();
+        String baseUrl = getBaseUrl();
+        
+        System.out.println(token != null ? "✅ Access Token: SET" : "❌ MERCADOPAGO_ACCESS_TOKEN no configurado");
+        System.out.println(pubKey != null ? "✅ Public Key: SET" : "❌ MERCADOPAGO_PUBLIC_KEY no configurado");
+        System.out.println("✅ Base URL: " + baseUrl);
+        System.out.println("✅ Modo: " + (isModoTest() ? "TEST" : "PRODUCCIÓN"));
+        System.out.println("========================================");
     }
     
     public static MPConfiguracion getInstance() {
@@ -67,141 +31,111 @@ public class MPConfiguracion {
     }
     
     public String getAccessToken() {
-        String modo = properties.getProperty("mercadopago.modo", "test");
-        String token = properties.getProperty("mercadopago.access_token." + modo);
-        
-        if (token == null || token.trim().isEmpty()) {
-            System.err.println("⚠️ WARNING: Mercado Pago Access Token no configurado");
-            System.err.println("⚠️ Modo actual: " + modo);
-            System.err.println("⚠️ Propiedad: mercadopago.access_token." + modo);
-            return null;
-        }
-        
-        return token.trim();
+        return System.getenv("MERCADOPAGO_ACCESS_TOKEN");
     }
     
     public String getPublicKey() {
-        String modo = properties.getProperty("mercadopago.modo", "test");
-        String key = properties.getProperty("mercadopago.public_key." + modo);
-        
-        if (key != null && !key.trim().isEmpty()) {
-            return key.trim();
-        }
-        
-        System.err.println("⚠️ Public Key no configurado");
-        return null;
+        return System.getenv("MERCADOPAGO_PUBLIC_KEY");
     }
     
     public String getBaseUrl() {
-        return properties.getProperty("mercadopago.urls.base", 
-                "http://localhost:8080/ProyectoSena");
+        String url = System.getenv("BASE_URL");
+        return url != null ? url : "http://localhost:8080/ProyectoSena";
     }
     
     public String getSuccessUrl(String token, String reservaId) {
-        String base = getBaseUrl();
-        String path = properties.getProperty("mercadopago.urls.success", "/pago-exitoso.html");
-        return String.format("%s%s?token=%s&reserva=%s", base, path, token, reservaId);
+        return String.format("%s/pago-exitoso.html?token=%s&reserva=%s", 
+            getBaseUrl(), token, reservaId);
     }
     
     public String getFailureUrl(String token, String reservaId) {
-        String base = getBaseUrl();
-        String path = properties.getProperty("mercadopago.urls.failure", "/pago-fallido.html");
-        return String.format("%s%s?token=%s&reserva=%s", base, path, token, reservaId);
+        return String.format("%s/pago-fallido.html?token=%s&reserva=%s", 
+            getBaseUrl(), token, reservaId);
     }
     
     public String getPendingUrl(String token, String reservaId) {
-        String base = getBaseUrl();
-        String path = properties.getProperty("mercadopago.urls.pending", "/pago-pendiente.html");
-        return String.format("%s%s?token=%s&reserva=%s", base, path, token, reservaId);
+        return String.format("%s/pago-pendiente.html?token=%s&reserva=%s", 
+            getBaseUrl(), token, reservaId);
     }
     
     public String getSuccessUrl() {
-        return getBaseUrl() + properties.getProperty("mercadopago.urls.success", "/pago-exitoso.html");
+        return getBaseUrl() + "/pago-exitoso.html";
     }
     
     public String getFailureUrl() {
-        return getBaseUrl() + properties.getProperty("mercadopago.urls.failure", "/pago-fallido.html");
+        return getBaseUrl() + "/pago-fallido.html";
     }
     
     public String getPendingUrl() {
-        return getBaseUrl() + properties.getProperty("mercadopago.urls.pending", "/pago-pendiente.html");
+        return getBaseUrl() + "/pago-pendiente.html";
     }
     
     public String getWebhookUrl() {
-        return properties.getProperty("mercadopago.webhook.url", 
-                "http://localhost:8080/ProyectoSena/webhook/mercadopago");
+        String webhook = System.getenv("WEBHOOK_URL");
+        return webhook != null ? webhook : getBaseUrl() + "/webhook/mercadopago";
     }
     
     public String getWebhookSecret() {
-        return properties.getProperty("mercadopago.webhook.secret");
+        return System.getenv("MERCADOPAGO_WEBHOOK_SECRET");
     }
     
     public boolean isModoTest() {
-        return "test".equals(properties.getProperty("mercadopago.modo", "test"));
+        String modo = System.getenv("MERCADOPAGO_MODO");
+        return modo == null || "test".equals(modo);
     }
     
-    // ================================================
-    // ✅ NUEVOS MÉTODOS PARA GOOGLE OAUTH
-    // ================================================
-    
+    // ✅ MÉTODOS PARA GOOGLE OAUTH
     public String getGoogleClientId() {
-        return properties.getProperty("google.client_id");
+        return System.getenv("GOOGLE_CLIENT_ID");
     }
     
     public String getGoogleClientSecret() {
-        return properties.getProperty("google.client_secret");
+        return System.getenv("GOOGLE_CLIENT_SECRET");
     }
     
     public String getGoogleRedirectUri() {
-        return properties.getProperty("google.redirect_uri");
+        return getBaseUrl() + "/GoogleCallbackServlet";
     }
     
     public String getGoogleScope() {
-        return properties.getProperty("google.scope", "openid email profile");
+        return "openid email profile";
     }
     
     public String getGoogleAuthUrl() {
-        return properties.getProperty("google.auth_url", 
-                "https://accounts.google.com/o/oauth2/v2/auth");
+        return "https://accounts.google.com/o/oauth2/v2/auth";
     }
     
     public String getGoogleTokenUrl() {
-        return properties.getProperty("google.token_url", 
-                "https://oauth2.googleapis.com/token");
+        return "https://oauth2.googleapis.com/token";
     }
     
     public String getGoogleUserInfoUrl() {
-        return properties.getProperty("google.userinfo_url", 
-                "https://www.googleapis.com/oauth2/v3/userinfo");
+        return "https://www.googleapis.com/oauth2/v3/userinfo";
     }
     
     public void imprimirConfiguracion() {
         System.out.println("========================================");
         System.out.println("📋 CONFIGURACIÓN COMPLETA");
         System.out.println("========================================");
-        System.out.println("Archivo encontrado: " + (archivoEncontrado ? "✅ SÍ" : "❌ NO"));
         
-        if (archivoEncontrado) {
-            // Mercado Pago
-            System.out.println("\n💳 MERCADO PAGO:");
-            System.out.println("   Modo: " + properties.getProperty("mercadopago.modo"));
-            
-            String token = getAccessToken();
-            System.out.println("   Access Token: " + (token != null && !token.isEmpty() ? "✅ OK" : "❌ NO"));
-            
-            String pubKey = getPublicKey();
-            System.out.println("   Public Key: " + (pubKey != null && !pubKey.isEmpty() ? "✅ OK" : "❌ NO"));
-            System.out.println("   Base URL: " + getBaseUrl());
-            
-            // Google OAuth
-            System.out.println("\n🔐 GOOGLE OAUTH:");
-            String clientId = getGoogleClientId();
-            System.out.println("   Client ID: " + (clientId != null && !clientId.isEmpty() ? "✅ OK" : "❌ NO"));
-            
-            String clientSecret = getGoogleClientSecret();
-            System.out.println("   Client Secret: " + (clientSecret != null && !clientSecret.isEmpty() ? "✅ OK" : "❌ NO"));
-            System.out.println("   Redirect URI: " + getGoogleRedirectUri());
-        }
+        // Mercado Pago
+        System.out.println("\n💳 MERCADO PAGO:");
+        String token = getAccessToken();
+        System.out.println("   Access Token: " + (token != null ? "✅ OK" : "❌ NO"));
+        
+        String pubKey = getPublicKey();
+        System.out.println("   Public Key: " + (pubKey != null ? "✅ OK" : "❌ NO"));
+        System.out.println("   Base URL: " + getBaseUrl());
+        System.out.println("   Modo: " + (isModoTest() ? "TEST" : "PRODUCCIÓN"));
+        
+        // Google OAuth
+        System.out.println("\n🔐 GOOGLE OAUTH:");
+        String clientId = getGoogleClientId();
+        System.out.println("   Client ID: " + (clientId != null ? "✅ OK" : "❌ NO"));
+        
+        String clientSecret = getGoogleClientSecret();
+        System.out.println("   Client Secret: " + (clientSecret != null ? "✅ OK" : "❌ NO"));
+        System.out.println("   Redirect URI: " + getGoogleRedirectUri());
         
         System.out.println("========================================");
     }

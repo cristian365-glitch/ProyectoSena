@@ -4,21 +4,36 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * Clase para manejar la conexión a la base de datos de forma centralizada
- */
 public class DatabaseManager {
  
-    // Configuración de la base de datos
-
-    private static final String URL = "jdbc:mysql://tramway.proxy.rlwy.net:15541/hotela";
-    private static final String USER = "root";
-    private static final String PASSWORD = "GISzxRTXxfaGXAarcJOLVmXCivBwvGAv"; // Cambia esto por tu contraseña si tienes
+    // ⭐ LEER DESDE VARIABLES DE ENTORNO DE RENDER
+    private static final String URL = System.getenv("URL");
+    private static final String USER = System.getenv("USER");
+    private static final String PASSWORD = System.getenv("PASSWORD");
     
-    // Singleton pattern para evitar múltiples instancias
     private static DatabaseManager instance;
     
-    private DatabaseManager() {}
+    private DatabaseManager() {
+        // Validar que las variables existan
+        if (URL == null || USER == null || PASSWORD == null) {
+            System.err.println("========================================");
+            System.err.println("❌ ERROR: Variables de entorno no configuradas");
+            System.err.println("========================================");
+            System.err.println("Debes configurar en Render:");
+            System.err.println("  - DB_URL");
+            System.err.println("  - DB_USER");
+            System.err.println("  - DB_PASSWORD");
+            System.err.println("========================================");
+        } else {
+            System.out.println("========================================");
+            System.out.println("✅ DATABASE CONFIGURATION");
+            System.out.println("========================================");
+            System.out.println("URL: " + URL);
+            System.out.println("User: " + USER);
+            System.out.println("Password: ✅ SET");
+            System.out.println("========================================");
+        }
+    }
     
     public static synchronized DatabaseManager getInstance() {
         if (instance == null) {
@@ -27,14 +42,8 @@ public class DatabaseManager {
         return instance;
     }
     
-    /**
-     * Obtiene una conexión a la base de datos
-     * @return Connection objeto de conexión
-     * @throws SQLException si hay error en la conexión
-     */
     public Connection getConnection() throws SQLException {
         try {
-            // Cargar el driver
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (ClassNotFoundException e) {
@@ -42,9 +51,6 @@ public class DatabaseManager {
         }
     }
     
-    /**
-     * Cierra recursos de base de datos de forma segura
-     */
     public static void closeResources(AutoCloseable... resources) {
         for (AutoCloseable resource : resources) {
             if (resource != null) {
@@ -57,10 +63,6 @@ public class DatabaseManager {
         }
     }
     
-    /**
-     * Verifica si la conexión a la base de datos está disponible
-     * @return true si la conexión es exitosa
-     */
     public boolean testConnection() {
         try (Connection conn = getConnection()) {
             return conn != null && !conn.isClosed();
