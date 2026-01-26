@@ -74,11 +74,11 @@
             
             <span class="divisor">|</span>
             
-            <button class="chip chip-toggle" data-tipo="servicio" data-valor="wifi" onclick="toggleServicioChip(this, 'wifi')">📶 WiFi</button>
-            <button class="chip chip-toggle" data-tipo="servicio" data-valor="aire_acondicionado" onclick="toggleServicioChip(this, 'aire_acondicionado')">❄️ Aire acondicionado</button>
-            <button class="chip chip-toggle" data-tipo="servicio" data-valor="tv" onclick="toggleServicioChip(this, 'tv')">📺 TV</button>
-            <button class="chip chip-toggle" data-tipo="servicio" data-valor="minibar" onclick="toggleServicioChip(this, 'minibar')">🍷 Minibar</button>
-            <button class="chip chip-toggle" data-tipo="servicio" data-valor="balcon" onclick="toggleServicioChip(this, 'balcon')">🏡 Balcón</button>
+            <button class="chip" data-tipo="servicio" data-valor="wifi" onclick="toggleChip(this, 'servicio', 'wifi')">📶 WiFi</button>
+            <button class="chip" data-tipo="servicio" data-valor="aire_acondicionado" onclick="toggleChip(this, 'servicio', 'aire_acondicionado')">❄️ Aire acondicionado</button>
+            <button class="chip" data-tipo="servicio" data-valor="tv" onclick="toggleChip(this, 'servicio', 'tv')">📺 TV</button>
+            <button class="chip" data-tipo="servicio" data-valor="minibar" onclick="toggleChip(this, 'servicio', 'minibar')">🍷 Minibar</button>
+            <button class="chip" data-tipo="servicio" data-valor="balcon" onclick="toggleChip(this, 'servicio', 'balcon')">🏡 Balcón</button>
             
             <span class="divisor">|</span>
             
@@ -89,7 +89,13 @@
             <span id="contador">Cargando...</span>
         </div>
 
-        <div id="habitaciones-container" class="habitaciones-grid"></div>
+        <!-- LOADER mientras carga -->
+        <div id="loader" class="loader-container">
+            <div class="loader"></div>
+            <p>Cargando habitaciones...</p>
+        </div>
+
+        <div id="habitaciones-container" class="habitaciones-grid" style="display: none;"></div>
     </section>
 
     <style>
@@ -117,6 +123,35 @@
             font-size: 20px;
             color: #666;
             margin-bottom: 30px;
+        }
+
+        /* LOADER */
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            gap: 20px;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #d4af37;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-container p {
+            color: #666;
+            font-size: 1rem;
         }
 
         .barra-busqueda {
@@ -279,7 +314,7 @@
             display: flex;
             flex-direction: column;
             opacity: 0;
-            animation: fadeInUp 0.6s ease forwards;
+            animation: fadeInUp 0.5s ease forwards;
         }
 
         .habitacion-card:hover {
@@ -400,13 +435,15 @@
     <script>
         let habitacionesOriginal = [];
         let reservasExistentes = [];
+        let imagenesPreCargadas = new Set();
+        
         let filtros = {
             experiencia: 'todas',
+            servicios: [],
             fechaEntrada: null,
             fechaSalida: null,
             numHuespedes: 0,
-            precioMax: Infinity,
-            servicios: []
+            precioMax: Infinity
         };
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -421,6 +458,9 @@
                 
                 console.log('📦 Habitaciones cargadas:', habitacionesOriginal);
                 
+                // PRECARGA DE IMÁGENES
+                await precargarImagenes(habitacionesOriginal);
+                
                 try {
                     const respRes = await fetch('../ObtenerReservaServlet');
                     reservasExistentes = await respRes.json();
@@ -429,14 +469,40 @@
                     reservasExistentes = [];
                 }
                 
+                // Oculta loader y muestra habitaciones
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('habitaciones-container').style.display = 'grid';
+                
                 mostrarHabitaciones(habitacionesOriginal);
                 actualizarContador(habitacionesOriginal.length);
                 
             } catch (error) {
                 console.error('❌ Error:', error);
-                document.getElementById('habitaciones-container').innerHTML = 
-                    '<p style="text-align: center; color: #c53030; padding: 40px;">Error al cargar habitaciones</p>';
+                document.getElementById('loader').innerHTML = 
+                    '<p style="color: #c53030;">Error al cargar habitaciones</p>';
             }
+        }
+
+        // PRECARGA DE IMÁGENES para que no aparezcan toscas
+        function precargarImagenes(habitaciones) {
+            return Promise.all(
+                habitaciones.map(hab => {
+                    return new Promise((resolve) => {
+                        if (!hab.imagen_principal || imagenesPreCargadas.has(hab.imagen_principal)) {
+                            resolve();
+                            return;
+                        }
+                        
+                        const img = new Image();
+                        img.onload = () => {
+                            imagenesPreCargadas.add(hab.imagen_principal);
+                            resolve();
+                        };
+                        img.onerror = () => resolve(); // Continúa aunque falle
+                        img.src = hab.imagen_principal;
+                    });
+                })
+            );
         }
 
         function configurarFechas() {
@@ -468,27 +534,31 @@
             ejecutarFiltrado();
         }
 
+        // FUNCIÓN UNIFICADA - Maneja TODOS los filtros igual
         function toggleChip(elemento, tipo, valor) {
-            document.querySelectorAll('[data-tipo="experiencia"]').forEach(chip => {
-                chip.classList.remove('active');
-            });
-            elemento.classList.add('active');
-            filtros.experiencia = valor;
-            ejecutarFiltrado();
-        }
-
-        function toggleServicioChip(elemento, servicio) {
-            elemento.classList.toggle('active');
-            
-            if (elemento.classList.contains('active')) {
-                if (!filtros.servicios.includes(servicio)) {
-                    filtros.servicios.push(servicio);
+            if (tipo === 'experiencia') {
+                // Desactiva todos los de experiencia
+                document.querySelectorAll('[data-tipo="experiencia"]').forEach(chip => {
+                    chip.classList.remove('active');
+                });
+                elemento.classList.add('active');
+                filtros.experiencia = valor;
+                
+            } else if (tipo === 'servicio') {
+                // Toggle para servicios
+                elemento.classList.toggle('active');
+                
+                if (elemento.classList.contains('active')) {
+                    if (!filtros.servicios.includes(valor)) {
+                        filtros.servicios.push(valor);
+                    }
+                } else {
+                    filtros.servicios = filtros.servicios.filter(s => s !== valor);
                 }
-            } else {
-                filtros.servicios = filtros.servicios.filter(s => s !== servicio);
+                
+                console.log('🔧 Servicios activos:', filtros.servicios);
             }
             
-            console.log('🔧 Servicios activos:', filtros.servicios);
             ejecutarFiltrado();
         }
 
@@ -496,29 +566,34 @@
             console.log('🔍 Filtros activos:', filtros);
             
             let resultado = habitacionesOriginal.filter(hab => {
+                // FILTRO 1: Experiencia
                 if (filtros.experiencia !== 'todas' && hab.experiencia !== filtros.experiencia) {
                     return false;
                 }
                 
+                // FILTRO 2: Precio
                 if (hab.precio_noche > filtros.precioMax) {
                     return false;
                 }
                 
+                // FILTRO 3: Capacidad
                 if (filtros.numHuespedes > 0 && hab.capacidad < filtros.numHuespedes) {
                     return false;
                 }
                 
+                // FILTRO 4: Disponibilidad
                 if (filtros.fechaEntrada && filtros.fechaSalida) {
                     if (!estaDisponible(hab.id, filtros.fechaEntrada, filtros.fechaSalida)) {
                         return false;
                     }
                 }
                 
+                // FILTRO 5: Servicios - TODOS deben cumplirse
                 for (let servicio of filtros.servicios) {
-                    const valorServicio = hab[servicio];
-                    console.log(`Verificando ${servicio} en habitación ${hab.id}:`, valorServicio, typeof valorServicio);
-                    
-                    if (valorServicio !== 1 && valorServicio !== '1' && valorServicio !== true) {
+                    const valor = hab[servicio];
+                    // Acepta: 1, "1", true, "true"
+                    if (valor != 1 && valor !== true && valor !== "true") {
+                        console.log(`❌ Habitación ${hab.id} no tiene ${servicio} (valor: ${valor})`);
                         return false;
                     }
                 }
@@ -526,7 +601,7 @@
                 return true;
             });
             
-            console.log('✅ Habitaciones filtradas:', resultado.length);
+            console.log('✅ Resultados:', resultado.length);
             mostrarHabitaciones(resultado);
             actualizarContador(resultado.length);
         }
@@ -558,22 +633,18 @@
             document.getElementById('numHuespedes').value = '0';
             document.getElementById('precioMax').value = '';
             
-            document.querySelectorAll('[data-tipo="experiencia"]').forEach(chip => {
+            document.querySelectorAll('.chip').forEach(chip => {
                 chip.classList.remove('active');
             });
             document.querySelector('[data-valor="todas"]').classList.add('active');
             
-            document.querySelectorAll('[data-tipo="servicio"]').forEach(chip => {
-                chip.classList.remove('active');
-            });
-            
             filtros = {
                 experiencia: 'todas',
+                servicios: [],
                 fechaEntrada: null,
                 fechaSalida: null,
                 numHuespedes: 0,
-                precioMax: Infinity,
-                servicios: []
+                precioMax: Infinity
             };
             
             mostrarHabitaciones(habitacionesOriginal);
