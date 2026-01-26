@@ -148,6 +148,186 @@
             margin-bottom: 30px;
         }
 
+        /* CALENDARIO VISUAL */
+        .calendario-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .calendario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendario-header h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            margin: 0;
+            color: #000000;
+        }
+
+        .calendario-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendario-nav button {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .calendario-nav button:hover:not(:disabled) {
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        .calendario-nav button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .calendario-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendario-dia-nombre {
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #666;
+            padding: 10px 0;
+        }
+
+        .calendario-dia {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .calendario-dia:hover:not(.ocupado):not(.pasado):not(.vacio) {
+            border-color: #d4af37;
+            transform: scale(1.05);
+        }
+
+        .calendario-dia.vacio {
+            background: transparent;
+            border: none;
+            cursor: default;
+        }
+
+        .calendario-dia.pasado {
+            background: #f5f5f5;
+            color: #ccc;
+            cursor: not-allowed;
+            border-color: #f0f0f0;
+        }
+
+        .calendario-dia.disponible {
+            background: white;
+            border: 2px solid #4caf50;
+        }
+
+        .calendario-dia.disponible:hover {
+            background: #e8f5e9;
+        }
+
+        .calendario-dia.ocupado {
+            background: linear-gradient(135deg, #fff9e6, #ffe4b3);
+            border: 2px solid #d4af37;
+            position: relative;
+            cursor: not-allowed;
+        }
+
+        .calendario-dia.ocupado::after {
+            content: '×';
+            position: absolute;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #d4af37;
+            line-height: 1;
+        }
+
+        .calendario-dia.seleccionado {
+            background: #d4af37;
+            border-color: #d4af37;
+            color: white;
+            font-weight: 700;
+        }
+
+        .calendario-dia.en-rango {
+            background: #fff9e6;
+            border-color: #d4af37;
+        }
+
+        .leyenda-calendario {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .leyenda-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .leyenda-muestra {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .leyenda-muestra.disponible {
+            background: white;
+            border: 2px solid #4caf50;
+        }
+
+        .leyenda-muestra.ocupado {
+            background: linear-gradient(135deg, #fff9e6, #ffe4b3);
+            border: 2px solid #d4af37;
+            position: relative;
+        }
+
+        .leyenda-muestra.ocupado::after {
+            content: '×';
+            font-size: 1.2rem;
+            color: #d4af37;
+        }
+
+        .leyenda-muestra.seleccionado {
+            background: #d4af37;
+            border: 2px solid #d4af37;
+            color: white;
+        }
+
         .form-group {
             margin-bottom: 25px;
             position: relative;
@@ -182,75 +362,9 @@
             box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
         }
 
-        /* Indicador visual de fechas ocupadas después de seleccionar */
-        .form-group input[type="date"].fecha-ocupada {
-            background: linear-gradient(135deg, #fff9e6, #ffe4b3);
-            border-color: #d4af37;
-            border-width: 3px;
-        }
-
-        .form-group input[type="date"].fecha-disponible {
-            background: #e8f5e9;
-            border-color: #4caf50;
-            border-width: 2px;
-        }
-
-        .fecha-warning {
-            display: none;
-            margin-top: 8px;
-            padding: 10px 15px;
-            background: #fff3cd;
-            border-left: 4px solid #d4af37;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            color: #856404;
-            animation: slideDown 0.3s ease;
-        }
-
-        .fecha-warning.show {
-            display: block;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .leyenda-fechas {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-            padding: 15px;
+        .form-group input[readonly] {
             background: #f8f9fa;
-            border-radius: 8px;
-            font-size: 0.85rem;
-        }
-
-        .leyenda-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .leyenda-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-        }
-
-        .leyenda-color.ocupado {
-            background: linear-gradient(135deg, #d4af37, #b8860b);
-        }
-
-        .leyenda-color.disponible {
-            background: #e8f5e9;
-            border: 2px solid #4caf50;
+            cursor: default;
         }
 
         .row {
@@ -314,7 +428,15 @@
                 grid-template-columns: 1fr;
             }
 
-            .leyenda-fechas {
+            .calendario-grid {
+                gap: 4px;
+            }
+
+            .calendario-dia {
+                font-size: 0.85rem;
+            }
+
+            .leyenda-calendario {
                 flex-direction: column;
                 gap: 10px;
             }
@@ -345,16 +467,35 @@
             <!-- Formulario de reserva -->
             <div class="formulario-reserva">
                 <h2>Completa tu Reserva</h2>
-                <p class="subtitulo">Ingresa tus datos para confirmar la reserva</p>
+                <p class="subtitulo">Selecciona tus fechas en el calendario</p>
 
-                <div class="leyenda-fechas">
-                    <div class="leyenda-item">
-                        <div class="leyenda-color ocupado"></div>
-                        <span>Fechas ocupadas (se bloquean al seleccionar)</span>
+                <!-- CALENDARIO VISUAL -->
+                <div class="calendario-container">
+                    <div class="calendario-header">
+                        <h3 id="calendarioMesAnio">Enero 2026</h3>
+                        <div class="calendario-nav">
+                            <button type="button" id="mesAnterior">◀ Anterior</button>
+                            <button type="button" id="mesSiguiente">Siguiente ▶</button>
+                        </div>
                     </div>
-                    <div class="leyenda-item">
-                        <div class="leyenda-color disponible"></div>
-                        <span>Fechas disponibles</span>
+
+                    <div class="calendario-grid" id="calendarioGrid">
+                        <!-- Se genera dinámicamente -->
+                    </div>
+
+                    <div class="leyenda-calendario">
+                        <div class="leyenda-item">
+                            <div class="leyenda-muestra disponible"></div>
+                            <span>Disponible</span>
+                        </div>
+                        <div class="leyenda-item">
+                            <div class="leyenda-muestra ocupado"></div>
+                            <span>Ocupado</span>
+                        </div>
+                        <div class="leyenda-item">
+                            <div class="leyenda-muestra seleccionado"></div>
+                            <span>Seleccionado</span>
+                        </div>
                     </div>
                 </div>
 
@@ -364,18 +505,12 @@
                     <div class="row">
                         <div class="form-group">
                             <label for="checkin">Fecha de Llegada *</label>
-                            <input type="date" id="checkin" name="fecha_checkin" required>
-                            <div class="fecha-warning" id="warningCheckin">
-                                ⚠️ Esta fecha está ocupada. Por favor selecciona otra.
-                            </div>
+                            <input type="date" id="checkin" name="fecha_checkin" readonly required>
                         </div>
 
                         <div class="form-group">
                             <label for="checkout">Fecha de Salida *</label>
-                            <input type="date" id="checkout" name="fecha_checkout" required>
-                            <div class="fecha-warning" id="warningCheckout">
-                                ⚠️ Esta fecha está ocupada. Por favor selecciona otra.
-                            </div>
+                            <input type="date" id="checkout" name="fecha_checkout" readonly required>
                         </div>
                     </div>
 
@@ -466,6 +601,13 @@
     <script>
         let habitacion = null;
         let fechasOcupadas = [];
+        let mesActual = new Date();
+        let fechaCheckin = null;
+        let fechaCheckout = null;
+
+        const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        const DIAS_SEMANA = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Iniciando carga de reservar.html');
@@ -488,20 +630,18 @@
             await cargarHabitacion(habitacionId);
             await cargarFechasOcupadas(habitacionId);
 
-            // Configurar fechas mínimas
-            const hoy = new Date().toISOString().split('T')[0];
-            document.getElementById('checkin').min = hoy;
-            document.getElementById('checkout').min = hoy;
+            // Generar calendario
+            generarCalendario();
 
-            // Event listeners
-            document.getElementById('checkin').addEventListener('change', function() {
-                validarFechaSeleccionada('checkin');
-                calcularPrecio();
+            // Event listeners del calendario
+            document.getElementById('mesAnterior').addEventListener('click', () => {
+                mesActual.setMonth(mesActual.getMonth() - 1);
+                generarCalendario();
             });
-            
-            document.getElementById('checkout').addEventListener('change', function() {
-                validarFechaSeleccionada('checkout');
-                calcularPrecio();
+
+            document.getElementById('mesSiguiente').addEventListener('click', () => {
+                mesActual.setMonth(mesActual.getMonth() + 1);
+                generarCalendario();
             });
             
             mostrarErrores();
@@ -579,64 +719,161 @@
                 if (data.success) {
                     fechasOcupadas = data.fechas_ocupadas || [];
                     console.log('✅ Fechas ocupadas:', fechasOcupadas);
+                    generarCalendario(); // Regenerar después de cargar fechas
                 }
             } catch (error) {
                 console.error('❌ Error al cargar fechas:', error);
             }
         }
 
-        function validarFechaSeleccionada(inputId) {
-            const input = document.getElementById(inputId);
-            const warning = document.getElementById('warning' + inputId.charAt(0).toUpperCase() + inputId.slice(1));
-            const fechaSeleccionada = input.value;
-            
-            if (!fechaSeleccionada) return true;
-            
-            if (fechasOcupadas.includes(fechaSeleccionada)) {
-                console.warn('⚠️ Fecha ocupada:', fechaSeleccionada);
-                input.classList.add('fecha-ocupada');
-                input.classList.remove('fecha-disponible');
+        function generarCalendario() {
+            const grid = document.getElementById('calendarioGrid');
+            grid.innerHTML = '';
+
+            // Actualizar título
+            document.getElementById('calendarioMesAnio').textContent = 
+                `${MESES[mesActual.getMonth()]} ${mesActual.getFullYear()}`;
+
+            // Agregar nombres de días
+            DIAS_SEMANA.forEach(dia => {
+                const elemento = document.createElement('div');
+                elemento.className = 'calendario-dia-nombre';
+                elemento.textContent = dia;
+                grid.appendChild(elemento);
+            });
+
+            // Calcular primer día del mes y total de días
+            const primerDia = new Date(mesActual.getFullYear(), mesActual.getMonth(), 1);
+            const ultimoDia = new Date(mesActual.getFullYear(), mesActual.getMonth() + 1, 0);
+            const diasEnMes = ultimoDia.getDate();
+            const primerDiaSemana = primerDia.getDay();
+
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+
+            // Deshabilitar mes anterior si es el mes actual
+            const mesAnteriorBtn = document.getElementById('mesAnterior');
+            const esMesActual = mesActual.getMonth() === new Date().getMonth() && 
+                               mesActual.getFullYear() === new Date().getFullYear();
+            mesAnteriorBtn.disabled = esMesActual;
+
+            // Espacios vacíos antes del primer día
+            for (let i = 0; i < primerDiaSemana; i++) {
+                const vacio = document.createElement('div');
+                vacio.className = 'calendario-dia vacio';
+                grid.appendChild(vacio);
+            }
+
+            // Días del mes
+            for (let dia = 1; dia <= diasEnMes; dia++) {
+                const fecha = new Date(mesActual.getFullYear(), mesActual.getMonth(), dia);
+                const fechaStr = formatearFechaISO(fecha);
                 
-                if (warning) {
-                    warning.classList.add('show');
+                const elemento = document.createElement('div');
+                elemento.className = 'calendario-dia';
+                elemento.textContent = dia;
+                elemento.dataset.fecha = fechaStr;
+
+                // Marcar día pasado
+                if (fecha < hoy) {
+                    elemento.classList.add('pasado');
                 }
-                
-                alert('⚠️ Esta fecha está ocupada. Por favor selecciona otra.');
-                
-                input.value = '';
-                input.classList.remove('fecha-ocupada', 'fecha-disponible');
-                
-                if (warning) {
-                    setTimeout(() => warning.classList.remove('show'), 3000);
+                // Marcar día ocupado
+                else if (fechasOcupadas.includes(fechaStr)) {
+                    elemento.classList.add('ocupado');
                 }
-                
-                return false;
-            } else {
-                input.classList.add('fecha-disponible');
-                input.classList.remove('fecha-ocupada');
-                
-                if (warning) {
-                    warning.classList.remove('show');
+                // Marcar día disponible
+                else {
+                    elemento.classList.add('disponible');
                 }
-                return true;
+
+                // Marcar selección
+                if (fechaCheckin && fechaStr === formatearFechaISO(fechaCheckin)) {
+                    elemento.classList.add('seleccionado');
+                }
+                if (fechaCheckout && fechaStr === formatearFechaISO(fechaCheckout)) {
+                    elemento.classList.add('seleccionado');
+                }
+
+                // Marcar rango
+                if (fechaCheckin && fechaCheckout && fecha > fechaCheckin && fecha < fechaCheckout) {
+                    elemento.classList.add('en-rango');
+                }
+
+                // Click handler
+                if (!elemento.classList.contains('pasado') && !elemento.classList.contains('ocupado')) {
+                    elemento.addEventListener('click', () => seleccionarFecha(fecha));
+                }
+
+                grid.appendChild(elemento);
             }
         }
 
-        function validarRangoFechas(checkin, checkout) {
-            const inicio = new Date(checkin);
-            const fin = new Date(checkout);
-            
+        function seleccionarFecha(fecha) {
+            const fechaStr = formatearFechaISO(fecha);
+
+            // Si hay fecha ocupada en el medio, no permitir
+            if (fechaCheckin && !fechaCheckout) {
+                if (fecha < fechaCheckin) {
+                    alert('La fecha de salida debe ser posterior a la llegada');
+                    return;
+                }
+
+                // Verificar si hay fechas ocupadas entre checkin y la nueva fecha
+                if (hayFechasOcupadasEnRango(fechaCheckin, fecha)) {
+                    alert('⚠️ Hay fechas ocupadas en el rango seleccionado. Por favor elige otra fecha.');
+                    return;
+                }
+            }
+
+            // Lógica de selección
+            if (!fechaCheckin) {
+                // Primera selección: check-in
+                fechaCheckin = fecha;
+                document.getElementById('checkin').value = fechaStr;
+            } else if (!fechaCheckout) {
+                // Segunda selección: check-out
+                if (fecha <= fechaCheckin) {
+                    // Si selecciona antes del check-in, reinicia
+                    fechaCheckin = fecha;
+                    fechaCheckout = null;
+                    document.getElementById('checkin').value = fechaStr;
+                    document.getElementById('checkout').value = '';
+                } else {
+                    fechaCheckout = fecha;
+                    document.getElementById('checkout').value = fechaStr;
+                }
+            } else {
+                // Ya hay ambas fechas, reinicia la selección
+                fechaCheckin = fecha;
+                fechaCheckout = null;
+                document.getElementById('checkin').value = fechaStr;
+                document.getElementById('checkout').value = '';
+            }
+
+            generarCalendario();
+            calcularPrecio();
+        }
+
+        function hayFechasOcupadasEnRango(inicio, fin) {
             let fechaActual = new Date(inicio);
+            fechaActual.setDate(fechaActual.getDate() + 1); // Empezar desde el día siguiente
+
             while (fechaActual < fin) {
-                const fechaStr = fechaActual.toISOString().split('T')[0];
+                const fechaStr = formatearFechaISO(fechaActual);
                 if (fechasOcupadas.includes(fechaStr)) {
-                    console.warn('⚠️ Rango contiene fecha ocupada:', fechaStr);
-                    return false;
+                    return true;
                 }
                 fechaActual.setDate(fechaActual.getDate() + 1);
             }
-            
-            return true;
+            return false;
+        }
+
+        function formatearFechaISO(fecha) {
+            const year = fecha.getFullYear();
+            const month = String(fecha.getMonth() + 1).padStart(2, '0');
+            const day = String(fecha.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
         const formatearFecha = (fecha) => {
@@ -645,24 +882,15 @@
         };
 
         function calcularPrecio() {
-            const checkin = document.getElementById('checkin').value;
-            const checkout = document.getElementById('checkout').value;
+            if (!fechaCheckin || !fechaCheckout || !habitacion) return;
 
-            if (!checkin || !checkout || !habitacion) return;
-
-            const fecha1 = new Date(checkin);
-            const fecha2 = new Date(checkout);
-            const diff = fecha2 - fecha1;
+            const diff = fechaCheckout - fechaCheckin;
             const noches = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
-            if (noches <= 0) {
-                alert('La fecha de salida debe ser posterior a la de llegada');
-                document.getElementById('checkout').value = '';
-                return;
-            }
+            if (noches <= 0) return;
 
-            document.getElementById('fechaLlegada').textContent = formatearFecha(checkin);
-            document.getElementById('fechaSalida').textContent = formatearFecha(checkout);
+            document.getElementById('fechaLlegada').textContent = formatearFecha(formatearFechaISO(fechaCheckin));
+            document.getElementById('fechaSalida').textContent = formatearFecha(formatearFechaISO(fechaCheckout));
             document.getElementById('numNoches').textContent = noches + (noches === 1 ? ' noche' : ' noches');
             document.getElementById('nochesCalculo').textContent = noches + (noches === 1 ? ' noche' : ' noches');
 
@@ -672,30 +900,12 @@
         }
 
         document.getElementById('reservaForm').addEventListener('submit', function(e) {
-            const checkin = document.getElementById('checkin').value;
-            const checkout = document.getElementById('checkout').value;
-
-            if (!checkin || !checkout) {
+            if (!fechaCheckin || !fechaCheckout) {
                 e.preventDefault();
-                alert('Debes seleccionar las fechas de tu estadía');
+                alert('Debes seleccionar las fechas de tu estadía en el calendario');
                 return;
             }
 
-            const fecha1 = new Date(checkin);
-            const fecha2 = new Date(checkout);
-
-            if (fecha2 <= fecha1) {
-                e.preventDefault();
-                alert('La fecha de salida debe ser posterior a la de llegada');
-                return;
-            }
-            
-            if (!validarRangoFechas(checkin, checkout)) {
-                e.preventDefault();
-                alert('⚠️ Las fechas seleccionadas incluyen días ocupados. Por favor elige otras fechas.');
-                return;
-            }
-            
             const personas = parseInt(document.getElementById('personas').value);
             if (habitacion && personas > habitacion.capacidad) {
                 e.preventDefault();
