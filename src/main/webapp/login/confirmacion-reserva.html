@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirmación de Reserva - Hotel Armonía</title>
-    <!-- ✅ RUTAS CORREGIDAS -->
     <link rel="stylesheet" href="../indexCSS.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
@@ -300,7 +299,6 @@
             color: #856404;
         }
 
-        /* Loading spinner */
         .loading {
             text-align: center;
             padding: 40px;
@@ -350,19 +348,17 @@
             <li><a href="disponibilidad.html">Habitaciones</a></li>
             <li><a href="experiencias.html">Experiencias</a></li>
             <li><a href="servicios.html">Servicios</a></li>
+            <li class="registro" id="auth-container"></li>
         </ul>
     </header>
 
     <div class="confirmacion-container">
-        <!-- Loading inicial -->
         <div id="loading" class="loading">
             <div class="spinner"></div>
             <p>Cargando reserva...</p>
         </div>
 
-        <!-- Todo el contenido oculto inicialmente -->
         <div id="contenido-reserva" style="display: none;">
-            <!-- Badge de éxito -->
             <div class="exito-badge">
                 <div class="check-icon"></div>
                 <h1>¡Reserva Creada Exitosamente!</h1>
@@ -371,7 +367,6 @@
                 <span class="estado-badge estado-pendiente">Pendiente de Pago</span>
             </div>
 
-            <!-- Detalles de la reserva -->
             <div class="detalles-reserva">
                 <h2>Detalles de tu Reserva</h2>
                 
@@ -416,7 +411,6 @@
                 </div>
             </div>
 
-            <!-- Métodos de pago -->
             <div class="metodos-pago">
                 <h2>Pagar tu Reserva</h2>
                 <p class="subtitulo">Elige cómo deseas completar el pago</p>
@@ -481,11 +475,9 @@
                     return;
                 }
 
-                // ✅ OCULTAR LOADING Y MOSTRAR CONTENIDO
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('contenido-reserva').style.display = 'block';
 
-                // Mostrar datos
                 document.getElementById('codigoReserva').textContent = '#' + reservaData.id.toString().padStart(6, '0');
                 document.getElementById('nombreHabitacion').textContent = reservaData.habitacion_nombre;
                 document.getElementById('nombreCliente').textContent = reservaData.nombre_cliente;
@@ -539,150 +531,158 @@
             btnPagar.addEventListener('click', procesarPago);
         }
 
-        // ✅ SCRIPT CORREGIDO PARA confirmacion-reserva.html
-// Reemplaza la función procesarPago() completa
-
-async function procesarPago() {
-    if (!metodoSeleccionado || !reservaData) {
-        alert('Por favor selecciona un método de pago');
-        return;
-    }
-
-    const btnPagar = document.getElementById('btnPagar');
-    const textoOriginal = btnPagar.textContent;
-    btnPagar.disabled = true;
-    btnPagar.textContent = 'Procesando...';
-
-    console.log('💳 Procesando pago...');
-    console.log('   Método:', metodoSeleccionado);
-    console.log('   Reserva ID:', reservaData.id);
-
-    if (metodoSeleccionado === 'hotel') {
-        // ✅ PAGO EN HOTEL
-        try {
-            console.log('🏨 Confirmando pago en hotel...');
-            
-            const response = await fetch('../ActualizarEstadoReservaServlet', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                credentials: 'include',
-                body: `reserva_id=${reservaData.id}&estado=confirmada`
-            });
-
-            console.log('📡 Response status:', response.status);
-            console.log('📡 Response headers:', response.headers.get('content-type'));
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+        async function procesarPago() {
+            if (!metodoSeleccionado || !reservaData) {
+                alert('Por favor selecciona un método de pago');
+                return;
             }
 
-            const result = await response.json();
-            console.log('📦 Resultado:', result);
-            
-            if (result.success) {
-                alert('✅ Reserva confirmada. Podrás pagar en el hotel al hacer check-in.');
-                setTimeout(() => {
-                    window.location.href = 'usuario/reservas.html';
-                }, 2000);
-            } else {
-                throw new Error(result.error || 'Error al confirmar');
-            }
-            
-        } catch (error) {
-            console.error('❌ Error al confirmar:', error);
-            alert('Error al confirmar: ' + error.message);
-            btnPagar.disabled = false;
-            btnPagar.textContent = textoOriginal;
-        }
-        
-    } else if (metodoSeleccionado === 'mercadopago') {
-        // ✅ PAGO CON MERCADO PAGO
-        try {
-            console.log('💳 Creando preferencia de Mercado Pago...');
-            
-            const response = await fetch('../CrearPreferenciaMPServlet', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                credentials: 'include',
-                body: `reserva_id=${reservaData.id}`
-            });
+            const btnPagar = document.getElementById('btnPagar');
+            const textoOriginal = btnPagar.textContent;
+            btnPagar.disabled = true;
+            btnPagar.textContent = 'Procesando...';
 
-            console.log('📡 Response status:', response.status);
-            console.log('📡 Response Content-Type:', response.headers.get('content-type'));
+            console.log('========================================');
+            console.log('💳 PROCESANDO PAGO');
+            console.log('========================================');
+            console.log('   Método:', metodoSeleccionado);
+            console.log('   Reserva ID:', reservaData.id);
+            console.log('   Total:', reservaData.total);
+            console.log('========================================');
 
-            // ✅ VERIFICAR QUE SEA JSON
-            const contentType = response.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                console.error('❌ Response no es JSON, es:', contentType);
-                
-                // Leer como texto para debug
-                const text = await response.text();
-                console.error('📄 Contenido recibido:', text.substring(0, 500));
-                
-                throw new Error('El servidor no devolvió JSON. Verifica la consola del servidor.');
-            }
+            if (metodoSeleccionado === 'hotel') {
+                // Pago en hotel
+                try {
+                    const response = await fetch('../ActualizarEstadoReservaServlet', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        credentials: 'include',
+                        body: `reserva_id=${reservaData.id}&estado=confirmada`
+                    });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
-            console.log('📦 Resultado:', result);
-
-            if (result.success) {
-                const initPoint = result.sandbox_init_point || result.init_point;
-                
-                if (!initPoint) {
-                    throw new Error('No se recibió URL de pago');
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert('✅ Reserva confirmada. Podrás pagar en el hotel al hacer check-in.');
+                        setTimeout(() => {
+                            window.location.href = 'usuario/reservas.html';
+                        }, 2000);
+                    } else {
+                        throw new Error(result.error || 'Error al confirmar');
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Error:', error);
+                    alert('Error al confirmar: ' + error.message);
+                    btnPagar.disabled = false;
+                    btnPagar.textContent = textoOriginal;
                 }
                 
-                console.log('✅ Preferencia creada exitosamente');
-                console.log('🔗 Redirigiendo a:', initPoint);
-                
-                // Pequeño delay para mostrar mensaje
-                btnPagar.textContent = 'Redirigiendo a Mercado Pago...';
-                
-                setTimeout(() => {
-                    window.location.href = initPoint;
-                }, 1000);
-            } else {
-                throw new Error(result.error || 'No se pudo crear el pago');
-            }
-            
-        } catch (error) {
-            console.error('❌ Error al procesar pago MP:', error);
-            
-            let mensaje = 'Error al procesar el pago: ' + error.message;
-            
-            if (error.message.includes('JSON')) {
-                mensaje += '\n\nEsto puede indicar:\n' +
-                          '1. Error de configuración en el servidor\n' +
-                          '2. Sesión expirada\n' +
-                          '3. Error de Mercado Pago\n\n' +
-                          'Revisa la consola del navegador y del servidor para más detalles.';
-            }
-            
-            alert(mensaje);
-            btnPagar.disabled = false;
-            btnPagar.textContent = textoOriginal;
-        }
-    }
-}
+            } else if (metodoSeleccionado === 'mercadopago') {
+                // Pago con Mercado Pago
+                try {
+                    console.log('📤 Enviando petición a CrearPreferenciaMPServlet...');
+                    
+                    const response = await fetch('../CrearPreferenciaMPServlet', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        credentials: 'include',
+                        body: `reserva_id=${reservaData.id}`
+                    });
 
-// ✅ FUNCIÓN DE DEBUG (agregar al final del script)
-function debugResponse(response) {
-    console.log('🔍 DEBUG RESPONSE:');
-    console.log('   Status:', response.status);
-    console.log('   StatusText:', response.statusText);
-    console.log('   Headers:');
-    for (let [key, value] of response.headers.entries()) {
-        console.log(`     ${key}: ${value}`);
-    }
-}
+                    console.log('📡 Status:', response.status);
+                    console.log('📡 Status Text:', response.statusText);
+                    console.log('📡 Headers:');
+                    for (let [key, value] of response.headers.entries()) {
+                        console.log(`     ${key}: ${value}`);
+                    }
+
+                    // ⭐ LEER COMO TEXTO PRIMERO
+                    const responseText = await response.text();
+                    console.log('📦 Response length:', responseText.length);
+                    console.log('📦 Response preview:', responseText.substring(0, 200));
+
+                    // ⭐ VALIDAR QUE HAY CONTENIDO
+                    if (!responseText || responseText.trim() === '') {
+                        console.error('❌ RESPUESTA VACÍA DEL SERVIDOR');
+                        throw new Error('El servidor devolvió una respuesta vacía. Verifica los logs del servidor.');
+                    }
+
+                    // ⭐ INTENTAR PARSEAR JSON
+                    let result;
+                    try {
+                        result = JSON.parse(responseText);
+                        console.log('✅ JSON parseado correctamente');
+                        console.log('📦 Resultado:', result);
+                    } catch (parseError) {
+                        console.error('========================================');
+                        console.error('❌ ERROR AL PARSEAR JSON');
+                        console.error('========================================');
+                        console.error('Error:', parseError.message);
+                        console.error('Texto recibido:', responseText);
+                        console.error('========================================');
+                        throw new Error('Respuesta inválida del servidor (no es JSON válido)');
+                    }
+
+                    // ⭐ VERIFICAR ÉXITO
+                    if (result.success) {
+                        const initPoint = result.init_point;
+                        
+                        if (!initPoint) {
+                            console.error('❌ No se recibió init_point en la respuesta');
+                            console.error('Respuesta completa:', result);
+                            throw new Error('No se recibió URL de pago de Mercado Pago');
+                        }
+                        
+                        console.log('========================================');
+                        console.log('✅ PREFERENCIA CREADA EXITOSAMENTE');
+                        console.log('========================================');
+                        console.log('   Preference ID:', result.preference_id);
+                        console.log('   Init Point:', initPoint);
+                        console.log('   Token:', result.token);
+                        console.log('========================================');
+                        
+                        btnPagar.textContent = 'Redirigiendo a Mercado Pago...';
+                        
+                        setTimeout(() => {
+                            console.log('🔗 Redirigiendo a:', initPoint);
+                            window.location.href = initPoint;
+                        }, 1500);
+                        
+                    } else {
+                        // Error devuelto por el servlet
+                        console.error('❌ El servlet devolvió un error:', result.error);
+                        throw new Error(result.error || 'Error desconocido al crear el pago');
+                    }
+                    
+                } catch (error) {
+                    console.error('========================================');
+                    console.error('❌ ERROR AL PROCESAR PAGO CON MERCADO PAGO');
+                    console.error('========================================');
+                    console.error('Tipo:', error.name);
+                    console.error('Mensaje:', error.message);
+                    console.error('Stack:', error.stack);
+                    console.error('========================================');
+                    
+                    let mensaje = 'Error al procesar el pago:\n\n' + error.message;
+                    
+                    mensaje += '\n\nPosibles causas:\n' +
+                              '• Variables de entorno no configuradas\n' +
+                              '• Sesión expirada\n' +
+                              '• Error de Mercado Pago\n' +
+                              '• Error del servidor\n\n' +
+                              'Revisa la consola para más detalles.';
+                    
+                    alert(mensaje);
+                    btnPagar.disabled = false;
+                    btnPagar.textContent = textoOriginal;
+                }
+            }
+        }
     </script>
 </body>
 </html>
