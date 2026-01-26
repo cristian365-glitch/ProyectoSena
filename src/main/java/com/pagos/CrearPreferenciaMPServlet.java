@@ -233,7 +233,7 @@ public class CrearPreferenciaMPServlet extends HttpServlet {
                 PreferenceRequest preferenceRequest = PreferenceRequest.builder()
                         .items(items)
                         .backUrls(backUrls)
-                        .autoReturn("approved")  // ✅ Activar auto-return
+//                        .autoReturn("approved")  // ✅ Activar auto-return
                         .externalReference("RESERVA_" + reservaId)
                         .statementDescriptor("HOTEL ARMONIA")
                         .payer(payer)
