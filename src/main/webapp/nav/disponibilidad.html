@@ -13,46 +13,36 @@
     </script>
 </head>
 <body>
-        <header>
-    <ul>
-        <li class="logo">
-            <a href="../index.html">
-                <img src="../recursos/logo armonia n1.png" width="89px" alt="logo">
-            </a>
-        </li>
-
-        <li><a href="../nav/disponibilidad.html">Habitaciones</a></li>
-        <li><a href="../nav/experiencias.html">Experiencias</a></li>
-        <li><a href="../nav/servicios.html">Servicios</a></li>
-
-        <!-- 🔴 AQUÍ SE INYECTA TODO -->
-        <li class="registro" id="auth-container"></li>
-    </ul>
-</header>
-<br><br><br><br>
+    <header>
+        <ul>
+            <li class="logo">
+                <a href="../index.html">
+                    <img src="../recursos/logo armonia n1.png" width="89px" alt="logo">
+                </a>
+            </li>
+            <li><a href="../nav/disponibilidad.html">Habitaciones</a></li>
+            <li><a href="../nav/experiencias.html">Experiencias</a></li>
+            <li><a href="../nav/servicios.html">Servicios</a></li>
+            <li class="registro" id="auth-container"></li>
+        </ul>
+    </header>
+    <br><br><br><br>
+    
     <section id="habitaciones" class="habitaciones">
         <h2>Nuestros Alojamientos</h2>
         <p class="hab-subtitle">Descubre la paz</p>
 
-        <!-- ==================== BARRA DE BÚSQUEDA ESTILO BOOKING ==================== -->
-        <!-- Barra compacta horizontal con todos los filtros principales -->
         <div class="barra-busqueda">
-            <!-- Fechas de entrada y salida -->
             <div class="input-group">
                 <label>📅 Entrada</label>
                 <input type="date" id="fechaEntrada">
             </div>
-
             <div class="separador-vertical"></div>
-
             <div class="input-group">
                 <label>📅 Salida</label>
                 <input type="date" id="fechaSalida">
             </div>
-
             <div class="separador-vertical"></div>
-
-            <!-- Número de huéspedes -->
             <div class="input-group">
                 <label>👥 Huéspedes</label>
                 <select id="numHuespedes">
@@ -63,10 +53,7 @@
                     <option value="8">8+ personas</option>
                 </select>
             </div>
-
             <div class="separador-vertical"></div>
-
-            <!-- Precio máximo -->
             <div class="input-group">
                 <label>💰 Precio</label>
                 <select id="precioMax">
@@ -76,87 +63,32 @@
                     <option value="500000">$500,000</option>
                 </select>
             </div>
-
-            <!-- Botón de búsqueda -->
-            <button class="btn-buscar" onclick="aplicarFiltros()">
-                🔍 Buscar
-            </button>
+            <button class="btn-buscar" onclick="aplicarFiltros()">🔍 Buscar</button>
         </div>
 
-        <!-- ==================== FILTROS RÁPIDOS (CHIPS) ==================== -->
-        <!-- Segunda barra con filtros secundarios en formato chips/pills -->
         <div class="barra-filtros-rapidos">
-            <!-- Filtros de experiencia -->
-            <button class="chip active" data-tipo="experiencia" data-valor="todas" onclick="toggleChip(this, 'experiencia', 'todas')">
-                Todas
-            </button>
-            <button class="chip" data-tipo="experiencia" data-valor="bosque" onclick="toggleChip(this, 'experiencia', 'bosque')">
-                🌲 Bosque
-            </button>
-            <button class="chip" data-tipo="experiencia" data-valor="mar" onclick="toggleChip(this, 'experiencia', 'mar')">
-                🌊 Mar
-            </button>
-            <button class="chip" data-tipo="experiencia" data-valor="campo" onclick="toggleChip(this, 'experiencia', 'campo')">
-                🌾 Campo
-            </button>
-
+            <button class="chip active" data-tipo="experiencia" data-valor="todas" onclick="toggleChip(this, 'experiencia', 'todas')">Todas</button>
+            <button class="chip" data-tipo="experiencia" data-valor="bosque" onclick="toggleChip(this, 'experiencia', 'bosque')">🌲 Bosque</button>
+            <button class="chip" data-tipo="experiencia" data-valor="mar" onclick="toggleChip(this, 'experiencia', 'mar')">🌊 Mar</button>
+            <button class="chip" data-tipo="experiencia" data-valor="campo" onclick="toggleChip(this, 'experiencia', 'campo')">🌾 Campo</button>
+            
             <span class="divisor">|</span>
-
-            <!-- Filtros de servicios (toggleables) -->
-            <!-- ==================== SERVICIOS ==================== -->
-
-<!-- ==================== SERVICIOS ==================== -->
-
-<button class="chip chip-toggle"
-        data-tipo="servicio"
-        data-valor="wifi"
-        onclick="toggleServicioChip(this, 'wifi')">
-    📶 WiFi
-</button>
-
-<button class="chip chip-toggle"
-        data-tipo="servicio"
-        data-valor="aire_acondicionado"
-        onclick="toggleServicioChip(this, 'aire_acondicionado')">
-    ❄️ Aire acondicionado
-</button>
-
-<button class="chip chip-toggle"
-        data-tipo="servicio"
-        data-valor="tv"
-        onclick="toggleServicioChip(this, 'tv')">
-    📺 TV
-</button>
-
-<button class="chip chip-toggle"
-        data-tipo="servicio"
-        data-valor="minibar"
-        onclick="toggleServicioChip(this, 'minibar')">
-    🍷 Minibar
-</button>
-
-<button class="chip chip-toggle"
-        data-tipo="servicio"
-        data-valor="balcon"
-        onclick="toggleServicioChip(this, 'balcon')">
-    🏡 Balcón
-</button>
-
-
+            
+            <button class="chip chip-toggle" data-tipo="servicio" data-valor="wifi" onclick="toggleServicioChip(this, 'wifi')">📶 WiFi</button>
+            <button class="chip chip-toggle" data-tipo="servicio" data-valor="aire_acondicionado" onclick="toggleServicioChip(this, 'aire_acondicionado')">❄️ Aire acondicionado</button>
+            <button class="chip chip-toggle" data-tipo="servicio" data-valor="tv" onclick="toggleServicioChip(this, 'tv')">📺 TV</button>
+            <button class="chip chip-toggle" data-tipo="servicio" data-valor="minibar" onclick="toggleServicioChip(this, 'minibar')">🍷 Minibar</button>
+            <button class="chip chip-toggle" data-tipo="servicio" data-valor="balcon" onclick="toggleServicioChip(this, 'balcon')">🏡 Balcón</button>
+            
             <span class="divisor">|</span>
-
-            <!-- Botón para limpiar todos los filtros -->
-            <button class="chip chip-reset" onclick="limpiarTodo()">
-                🔄 Limpiar filtros
-            </button>
+            
+            <button class="chip chip-reset" onclick="limpiarTodo()">🔄 Limpiar filtros</button>
         </div>
 
-        <!-- Contador de resultados -->
         <div class="contador-resultados">
             <span id="contador">Cargando...</span>
         </div>
 
-        <!-- Grid de habitaciones -->
         <div id="habitaciones-container" class="habitaciones-grid"></div>
     </section>
 
@@ -187,8 +119,6 @@
             margin-bottom: 30px;
         }
 
-        /* ==================== BARRA DE BÚSQUEDA PRINCIPAL ==================== */
-        /* Diseño horizontal compacto, todo en una línea */
         .barra-busqueda {
             display: flex;
             align-items: stretch;
@@ -201,7 +131,6 @@
             overflow-x: auto;
         }
 
-        /* Cada grupo de input (fechas, huéspedes, precio) */
         .input-group {
             display: flex;
             flex-direction: column;
@@ -217,8 +146,7 @@
             margin-bottom: 4px;
         }
 
-        .input-group input,
-        .input-group select {
+        .input-group input, .input-group select {
             border: none;
             background: transparent;
             font-size: 0.95rem;
@@ -228,19 +156,16 @@
             outline: none;
         }
 
-        .input-group input:focus,
-        .input-group select:focus {
+        .input-group input:focus, .input-group select:focus {
             color: #d4af37;
         }
 
-        /* Separador vertical entre campos */
         .separador-vertical {
             width: 1px;
             background: #e0e0e0;
             margin: 8px 0;
         }
 
-        /* Botón de búsqueda */
         .btn-buscar {
             background: linear-gradient(135deg, #d4af37, #b8860b);
             color: white;
@@ -260,8 +185,6 @@
             box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
         }
 
-        /* ==================== BARRA DE FILTROS RÁPIDOS (CHIPS) ==================== */
-        /* Segunda barra horizontal con chips/pills */
         .barra-filtros-rapidos {
             display: flex;
             align-items: center;
@@ -275,7 +198,6 @@
             flex-wrap: wrap;
         }
 
-        /* Cada chip/pill individual */
         .chip {
             padding: 8px 18px;
             border: 2px solid #e0e0e0;
@@ -295,14 +217,12 @@
             transform: translateY(-2px);
         }
 
-        /* Chip activo */
         .chip.active {
             background: linear-gradient(135deg, #d4af37, #b8860b);
             border-color: #d4af37;
             color: white;
         }
 
-        /* Chip de reset/limpiar */
         .chip-reset {
             border-color: #ff6b6b;
             color: #ff6b6b;
@@ -313,7 +233,6 @@
             color: white;
         }
 
-        /* Divisor entre grupos de chips */
         .divisor {
             color: #ddd;
             font-weight: 300;
@@ -321,7 +240,6 @@
             margin: 0 4px;
         }
 
-        /* ==================== CONTADOR DE RESULTADOS ==================== */
         .contador-resultados {
             text-align: center;
             padding: 12px;
@@ -334,7 +252,17 @@
             font-weight: 600;
         }
 
-        /* ==================== GRID DE HABITACIONES ==================== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .habitaciones-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -348,6 +276,10 @@
             transition: all 0.3s ease;
             background: white;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease forwards;
         }
 
         .habitacion-card:hover {
@@ -363,6 +295,9 @@
 
         .habitacion-info {
             padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
         }
 
         .habitacion-info h3 {
@@ -380,6 +315,7 @@
             font-weight: 600;
             margin-bottom: 8px;
             color: white;
+            width: fit-content;
         }
 
         .experiencia-badge.bosque { background: #2d5016; }
@@ -391,6 +327,8 @@
             font-size: 0.9rem;
             margin-bottom: 12px;
             line-height: 1.4;
+            flex: 1;
+            min-height: 60px;
         }
 
         .habitacion-detalles {
@@ -426,101 +364,63 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
+            margin-top: auto;
         }
 
         .btn-reservar:hover {
             background: #b8860b;
         }
 
-        /* ==================== RESPONSIVE ==================== */
         @media (max-width: 768px) {
             .barra-busqueda {
                 flex-direction: column;
                 border-radius: 12px;
                 gap: 8px;
             }
-
-            .separador-vertical {
-                display: none;
-            }
-
+            .separador-vertical { display: none; }
             .input-group {
                 min-width: 100%;
                 padding: 12px;
             }
-
             .btn-buscar {
                 margin-left: 0;
                 width: 100%;
                 padding: 14px;
             }
-
             .barra-filtros-rapidos {
                 overflow-x: auto;
                 flex-wrap: nowrap;
                 padding-bottom: 20px;
             }
-
-            .chip {
-                flex-shrink: 0;
-            }
-
-            .habitaciones-grid {
-                grid-template-columns: 1fr;
-            }
+            .chip { flex-shrink: 0; }
+            .habitaciones-grid { grid-template-columns: 1fr; }
         }
     </style>
 
     <script>
-        /* ==================== VARIABLES GLOBALES ==================== */
-        
-        /**
-         * Array con todas las habitaciones cargadas del servidor
-         * Sirve como fuente original de datos
-         */
         let habitacionesOriginal = [];
-        
-        /**
-         * Array con las reservas existentes para verificar disponibilidad
-         * Cada reserva tiene: habitacion_id, fecha_checkin, fecha_checkout, estado
-         */
         let reservasExistentes = [];
-        
-        /**
-         * Objeto que mantiene el estado actual de todos los filtros
-         * Se actualiza cuando el usuario interactúa con los controles
-         */
         let filtros = {
-            experiencia: 'todas',    // 'todas', 'bosque', 'mar', 'campo'
-            fechaEntrada: null,      // String formato 'YYYY-MM-DD'
-            fechaSalida: null,       // String formato 'YYYY-MM-DD'
-            numHuespedes: 0,        // Número mínimo de personas
-            precioMax: Infinity,     // Precio máximo por noche
-            servicios: []            // Array: ['wifi', 'balcon', etc]
+            experiencia: 'todas',
+            fechaEntrada: null,
+            fechaSalida: null,
+            numHuespedes: 0,
+            precioMax: Infinity,
+            servicios: []
         };
 
-        /* ==================== INICIALIZACIÓN ==================== */
-        
-        /**
-         * Se ejecuta cuando el DOM está listo
-         * Carga datos iniciales y configura validaciones
-         */
         document.addEventListener('DOMContentLoaded', function() {
             cargarDatos();
             configurarFechas();
         });
 
-        /**
-         * Carga habitaciones y reservas desde el servidor
-         * Ejecuta las peticiones de forma asíncrona
-         */
         async function cargarDatos() {
             try {
-                // Carga habitaciones
                 const respHab = await fetch('../ObtenerHabitacionesServlet');
                 habitacionesOriginal = await respHab.json();
                 
-                // Carga reservas para filtro de disponibilidad
+                console.log('📦 Habitaciones cargadas:', habitacionesOriginal);
+                
                 try {
                     const respRes = await fetch('../ObtenerReservaServlet');
                     reservasExistentes = await respRes.json();
@@ -529,7 +429,6 @@
                     reservasExistentes = [];
                 }
                 
-                // Muestra las habitaciones
                 mostrarHabitaciones(habitacionesOriginal);
                 actualizarContador(habitacionesOriginal.length);
                 
@@ -540,11 +439,6 @@
             }
         }
 
-        /**
-         * Configura validación de fechas
-         * - Fecha mínima es hoy
-         * - Salida debe ser después de entrada
-         */
         function configurarFechas() {
             const hoy = new Date().toISOString().split('T')[0];
             const inputEntrada = document.getElementById('fechaEntrada');
@@ -553,7 +447,6 @@
             inputEntrada.min = hoy;
             inputSalida.min = hoy;
             
-            // Cuando cambia entrada, actualiza mínimo de salida
             inputEntrada.addEventListener('change', function() {
                 if (this.value) {
                     const minSalida = new Date(this.value);
@@ -567,153 +460,88 @@
             });
         }
 
-        /* ==================== FUNCIONES DE FILTRADO ==================== */
-        
-        /**
-         * Aplica los filtros de la barra de búsqueda principal
-         * Lee valores de inputs y ejecuta filtrado completo
-         */
         function aplicarFiltros() {
-            // Lee valores de la barra de búsqueda
             filtros.fechaEntrada = document.getElementById('fechaEntrada').value;
             filtros.fechaSalida = document.getElementById('fechaSalida').value;
             filtros.numHuespedes = parseInt(document.getElementById('numHuespedes').value) || 0;
             filtros.precioMax = parseInt(document.getElementById('precioMax').value) || Infinity;
-            
-            // Ejecuta filtrado
             ejecutarFiltrado();
         }
 
-        /**
-         * Maneja clic en chips de experiencia (Todas, Bosque, Mar, Campo)
-         * Solo uno puede estar activo a la vez
-         * 
-         * @param {Element} elemento - El botón chip clickeado
-         * @param {string} tipo - Tipo de filtro ('experiencia')
-         * @param {string} valor - Valor del filtro ('todas', 'bosque', etc)
-         */
         function toggleChip(elemento, tipo, valor) {
-            // Desactiva todos los chips de experiencia
             document.querySelectorAll('[data-tipo="experiencia"]').forEach(chip => {
                 chip.classList.remove('active');
             });
-            
-            // Activa el chip clickeado
             elemento.classList.add('active');
-            
-            // Actualiza filtro y ejecuta
             filtros.experiencia = valor;
             ejecutarFiltrado();
         }
 
-        /**
-         * Maneja clic en chips de servicio (WiFi, A/C, Balcón, Vista)
-         * Pueden estar activos múltiples a la vez (toggle)
-         * 
-         * @param {Element} elemento - El botón chip clickeado
-         * @param {string} servicio - Nombre del servicio ('wifi', 'balcon', etc)
-         */
-       function toggleServicioChip(elemento, servicio) {
-    // Toggle de estado activo
-    elemento.classList.toggle('active');
-    
-    // Actualiza array de servicios
-    if (elemento.classList.contains('active')) {
-        // Agregar servicio si no está
-        if (!filtros.servicios.includes(servicio)) {
-            filtros.servicios.push(servicio);
+        function toggleServicioChip(elemento, servicio) {
+            elemento.classList.toggle('active');
+            
+            if (elemento.classList.contains('active')) {
+                if (!filtros.servicios.includes(servicio)) {
+                    filtros.servicios.push(servicio);
+                }
+            } else {
+                filtros.servicios = filtros.servicios.filter(s => s !== servicio);
+            }
+            
+            console.log('🔧 Servicios activos:', filtros.servicios);
+            ejecutarFiltrado();
         }
-    } else {
-        // Remover servicio
-        filtros.servicios = filtros.servicios.filter(s => s !== servicio);
-    }
 
-    console.log("Filtros de servicios actuales: ", filtros.servicios); // Verificación
-    // Ejecutar filtrado
-    ejecutarFiltrado();
-}
-
-
-        /**
-         * FUNCIÓN PRINCIPAL DE FILTRADO
-         * Aplica todos los filtros activos simultáneamente
-         * Combina criterios usando AND lógico
-         */
         function ejecutarFiltrado() {
             console.log('🔍 Filtros activos:', filtros);
             
-            // Filtra el array original con todos los criterios
             let resultado = habitacionesOriginal.filter(hab => {
-                
-                // FILTRO 1: Experiencia (bosque, mar, campo)
                 if (filtros.experiencia !== 'todas' && hab.experiencia !== filtros.experiencia) {
                     return false;
                 }
                 
-                // FILTRO 2: Precio máximo
                 if (hab.precio_noche > filtros.precioMax) {
                     return false;
                 }
                 
-                // FILTRO 3: Capacidad mínima
                 if (filtros.numHuespedes > 0 && hab.capacidad < filtros.numHuespedes) {
                     return false;
                 }
                 
-                // FILTRO 4: Disponibilidad por fechas
                 if (filtros.fechaEntrada && filtros.fechaSalida) {
                     if (!estaDisponible(hab.id, filtros.fechaEntrada, filtros.fechaSalida)) {
                         return false;
                     }
                 }
                 
-// FILTRO 5: Servicios (debe tener TODOS los seleccionados)
-for (let servicio of filtros.servicios) {
-    if (Number(hab[servicio]) !== 1) {
-        return false;
-    }
-}
-
-
+                for (let servicio of filtros.servicios) {
+                    const valorServicio = hab[servicio];
+                    console.log(`Verificando ${servicio} en habitación ${hab.id}:`, valorServicio, typeof valorServicio);
+                    
+                    if (valorServicio !== 1 && valorServicio !== '1' && valorServicio !== true) {
+                        return false;
+                    }
+                }
                 
-                // Pasa todos los filtros
                 return true;
             });
             
-            // Muestra resultados
+            console.log('✅ Habitaciones filtradas:', resultado.length);
             mostrarHabitaciones(resultado);
             actualizarContador(resultado.length);
         }
 
-        /**
-         * Verifica si una habitación está disponible en las fechas dadas
-         * Compara con reservas existentes para detectar conflictos
-         * 
-         * @param {number} habId - ID de la habitación
-         * @param {string} entrada - Fecha entrada 'YYYY-MM-DD'
-         * @param {string} salida - Fecha salida 'YYYY-MM-DD'
-         * @returns {boolean} true si disponible, false si hay conflicto
-         */
         function estaDisponible(habId, entrada, salida) {
             const fechaEntrada = new Date(entrada);
             const fechaSalida = new Date(salida);
             
-            // Busca conflictos con reservas existentes
             const hayConflicto = reservasExistentes.some(reserva => {
-                // Solo verifica esta habitación
                 if (reserva.habitacion_id !== habId) return false;
-                
-                // Solo reservas activas
                 if (reserva.estado === 'cancelada') return false;
                 
                 const resEntrada = new Date(reserva.fecha_checkin);
                 const resSalida = new Date(reserva.fecha_checkout);
                 
-                // Detecta solapamiento de fechas
-                // Hay conflicto si:
-                // - Nueva entrada cae durante reserva existente
-                // - Nueva salida cae durante reserva existente
-                // - Nueva reserva engloba la existente
                 return (
                     (fechaEntrada >= resEntrada && fechaEntrada < resSalida) ||
                     (fechaSalida > resEntrada && fechaSalida <= resSalida) ||
@@ -724,29 +552,21 @@ for (let servicio of filtros.servicios) {
             return !hayConflicto;
         }
 
-        /**
-         * Limpia todos los filtros y vuelve al estado inicial
-         * Resetea tanto inputs como chips
-         */
         function limpiarTodo() {
-            // Limpia inputs de búsqueda
             document.getElementById('fechaEntrada').value = '';
             document.getElementById('fechaSalida').value = '';
             document.getElementById('numHuespedes').value = '0';
             document.getElementById('precioMax').value = '';
             
-            // Resetea chips de experiencia
             document.querySelectorAll('[data-tipo="experiencia"]').forEach(chip => {
                 chip.classList.remove('active');
             });
             document.querySelector('[data-valor="todas"]').classList.add('active');
             
-            // Desactiva chips de servicios
             document.querySelectorAll('[data-tipo="servicio"]').forEach(chip => {
                 chip.classList.remove('active');
             });
             
-            // Resetea objeto de filtros
             filtros = {
                 experiencia: 'todas',
                 fechaEntrada: null,
@@ -756,19 +576,10 @@ for (let servicio of filtros.servicios) {
                 servicios: []
             };
             
-            // Muestra todo
             mostrarHabitaciones(habitacionesOriginal);
             actualizarContador(habitacionesOriginal.length);
         }
 
-        /* ==================== FUNCIONES DE VISUALIZACIÓN ==================== */
-        
-        /**
-         * Renderiza las tarjetas de habitaciones en el grid
-         * Crea elementos HTML dinámicamente
-         * 
-         * @param {Array} habitaciones - Array de habitaciones a mostrar
-         */
         function mostrarHabitaciones(habitaciones) {
             const container = document.getElementById('habitaciones-container');
             container.innerHTML = '';
@@ -817,11 +628,6 @@ for (let servicio of filtros.servicios) {
             });
         }
 
-        /**
-         * Actualiza el contador de resultados
-         * 
-         * @param {number} cantidad - Número de habitaciones encontradas
-         */
         function actualizarContador(cantidad) {
             const texto = cantidad === 0 ? 'No hay resultados' :
                          cantidad === 1 ? '1 habitación disponible' :
@@ -829,8 +635,6 @@ for (let servicio of filtros.servicios) {
             document.getElementById('contador').textContent = texto;
         }
 
-        /* ==================== NAVEGACIÓN ==================== */
-        
         function reservar(id) {
             if (auth && auth.usuario && !auth.esAdmin) {
                 window.location.href = `../login/detalle-habitacion.html?id=${id}`;
