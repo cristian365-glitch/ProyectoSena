@@ -35,7 +35,7 @@ public class CrearPreferenciaMPServlet extends HttpServlet {
     private DatabaseManager dbManager;
     private MPConfiguracion mpConfig;
     
-    // ⭐ ALMACENAMIENTO DE TOKENS (compartido entre métodos)
+    // ⭐ Almacenamiento de tokens (compartido entre métodos)
     private static Map<String, Map<String, Object>> tokenStorage = new HashMap<>();
     
     @Override
@@ -46,26 +46,34 @@ public class CrearPreferenciaMPServlet extends HttpServlet {
         System.out.println("🚀 Inicializando CrearPreferenciaMPServlet");
         System.out.println("========================================");
         
-        dbManager = DatabaseManager.getInstance();
-        mpConfig = MPConfiguracion.getInstance();
-        
-        if (!dbManager.testConnection()) {
-            throw new ServletException("No se puede conectar a la base de datos");
-        }
-        
-        System.out.println("✅ Conexión a BD verificada");
-        
-        mpConfig.imprimirConfiguracion();
-        
-        String accessToken = mpConfig.getAccessToken();
-        
-        if (accessToken != null && !accessToken.isEmpty()) {
+        try {
+            dbManager = DatabaseManager.getInstance();
+            mpConfig = MPConfiguracion.getInstance();
+            
+            if (!dbManager.testConnection()) {
+                throw new ServletException("No se puede conectar a la base de datos");
+            }
+            
+            System.out.println("✅ Conexión a BD verificada");
+            
+            mpConfig.imprimirConfiguracion();
+            
+            String accessToken = mpConfig.getAccessToken();
+            
+            if (accessToken == null || accessToken.isEmpty()) {
+                System.err.println("❌ CRITICAL: Access Token no configurado");
+                System.err.println("❌ Verifica la variable de entorno MERCADOPAGO_ACCESS_TOKEN");
+                throw new ServletException("Mercado Pago no configurado correctamente");
+            }
+            
             MercadoPagoConfig.setAccessToken(accessToken);
             System.out.println("✅ Mercado Pago SDK configurado");
             System.out.println("✅ Modo: " + (mpConfig.isModoTest() ? "TEST" : "PRODUCCIÓN"));
-        } else {
-            System.err.println("❌ CRITICAL: No se pudo configurar Mercado Pago");
-            System.err.println("❌ Verifica resources/mercadopago.properties");
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error en init(): " + e.getMessage());
+            e.printStackTrace();
+            throw new ServletException("Error al inicializar servlet: " + e.getMessage());
         }
         
         System.out.println("========================================");
@@ -75,32 +83,36 @@ public class CrearPreferenciaMPServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        // ✅ CONFIGURAR RESPONSE COMO JSON SIEMPRE (ANTES DE CUALQUIER COSA)
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
         
-        // ⭐ VERIFICAR SESIÓN
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("logueado") == null) {
-            System.err.println("❌ No hay sesión activa");
-            enviarError(out, "Debes iniciar sesión para realizar un pago");
-            return;
-        }
-        
-        String reservaIdStr = request.getParameter("reserva_id");
-        
-        System.out.println("========================================");
-        System.out.println("📋 Nueva solicitud de pago");
-        System.out.println("   Reserva ID: " + reservaIdStr);
-        System.out.println("   Usuario: " + session.getAttribute("usuario"));
-        System.out.println("========================================");
-        
-        if (reservaIdStr == null || reservaIdStr.trim().isEmpty()) {
-            enviarError(out, "ID de reserva no especificado");
-            return;
-        }
+        PrintWriter out = null;
         
         try {
+            out = response.getWriter();
+            
+            // ⭐ VERIFICAR SESIÓN
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("logueado") == null) {
+                System.err.println("❌ No hay sesión activa");
+                enviarError(out, "Debes iniciar sesión para realizar un pago");
+                return;
+            }
+            
+            String reservaIdStr = request.getParameter("reserva_id");
+            
+            System.out.println("========================================");
+            System.out.println("📋 Nueva solicitud de pago");
+            System.out.println("   Reserva ID: " + reservaIdStr);
+            System.out.println("   Usuario: " + session.getAttribute("usuario"));
+            System.out.println("========================================");
+            
+            if (reservaIdStr == null || reservaIdStr.trim().isEmpty()) {
+                enviarError(out, "ID de reserva no especificado");
+                return;
+            }
+            
             int reservaId = Integer.parseInt(reservaIdStr);
             
             // ⭐ PASO 1: GENERAR TOKEN DE SESIÓN
@@ -141,7 +153,7 @@ public class CrearPreferenciaMPServlet extends HttpServlet {
                 
                 if (!rs.next()) {
                     System.err.println("❌ Reserva no encontrada");
-                    tokenStorage.remove(token); // Limpiar token
+                    tokenStorage.remove(token);
                     enviarError(out, "Reserva no encontrada");
                     return;
                 }
@@ -198,7 +210,7 @@ public class CrearPreferenciaMPServlet extends HttpServlet {
                 String failureUrl = mpConfig.getFailureUrl(token, String.valueOf(reservaId));
                 String pendingUrl = mpConfig.getPendingUrl(token, String.valueOf(reservaId));
                 
-                System.out.println("📍 URLs configuradas CON TOKEN:");
+                System.out.println("🔗 URLs configuradas CON TOKEN:");
                 System.out.println("   Success: " + successUrl);
                 System.out.println("   Failure: " + failureUrl);
                 System.out.println("   Pending: " + pendingUrl);
@@ -221,7 +233,7 @@ public class CrearPreferenciaMPServlet extends HttpServlet {
                 PreferenceRequest preferenceRequest = PreferenceRequest.builder()
                         .items(items)
                         .backUrls(backUrls)
-//                        .autoReturn("approved")
+                        .autoReturn("approved")  // ✅ Activar auto-return
                         .externalReference("RESERVA_" + reservaId)
                         .statementDescriptor("HOTEL ARMONIA")
                         .payer(payer)
@@ -229,117 +241,120 @@ public class CrearPreferenciaMPServlet extends HttpServlet {
                         .build();
                 
                 System.out.println("✅ Request de preferencia creado");
-                System.out.println("🔄 Enviando a API de Mercado Pago...");
+                System.out.println("📤 Enviando a API de Mercado Pago...");
+                
+                PreferenceClient client = new PreferenceClient();
+                Preference preference = client.create(preferenceRequest);
+                
+                System.out.println("========================================");
+                System.out.println("✅✅✅ PREFERENCIA CREADA EXITOSAMENTE");
+                System.out.println("========================================");
+                System.out.println("   Preference ID: " + preference.getId());
+                System.out.println("   Init Point: " + preference.getInitPoint());
+                System.out.println("   Sandbox Init Point: " + preference.getSandboxInitPoint());
+                System.out.println("   Token guardado: " + token);
+                System.out.println("========================================");
+                
+                // Guardar preference ID en BD
+                String sqlUpdate = "UPDATE reservas SET mercadopago_preference_id = ? WHERE id = ?";
+                PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate);
+                psUpdate.setString(1, preference.getId());
+                psUpdate.setInt(2, reservaId);
+                int updated = psUpdate.executeUpdate();
+                psUpdate.close();
+                
+                System.out.println("✅ Preference ID guardado en BD (filas: " + updated + ")");
+                
+                // ⭐ RESPUESTA CON INIT POINT
+                Map<String, Object> respuesta = new HashMap<>();
+                respuesta.put("success", true);
+                respuesta.put("preference_id", preference.getId());
+                respuesta.put("init_point", preference.getInitPoint());
+                respuesta.put("sandbox_init_point", preference.getSandboxInitPoint());
+                respuesta.put("public_key", mpConfig.getPublicKey());
+                respuesta.put("token", token);
+                
+                Gson gson = new Gson();
+                String jsonResponse = gson.toJson(respuesta);
+                out.print(jsonResponse);
+                
+                System.out.println("✅ Respuesta enviada al cliente");
+                System.out.println("📦 JSON: " + jsonResponse);
+                System.out.println("========================================");
+                
+            } catch (com.mercadopago.exceptions.MPApiException apiEx) {
+                tokenStorage.remove(token);
+                
+                System.err.println("========================================");
+                System.err.println("❌ ERROR DE API DE MERCADO PAGO");
+                System.err.println("========================================");
+                System.err.println("   Status Code: " + apiEx.getStatusCode());
+                System.err.println("   Message: " + apiEx.getMessage());
                 
                 try {
-                    PreferenceClient client = new PreferenceClient();
-                    Preference preference = client.create(preferenceRequest);
-                    
-                    System.out.println("========================================");
-                    System.out.println("✅✅✅ PREFERENCIA CREADA EXITOSAMENTE");
-                    System.out.println("========================================");
-                    System.out.println("   Preference ID: " + preference.getId());
-                    System.out.println("   Init Point: " + preference.getInitPoint());
-                    System.out.println("   Sandbox Init Point: " + preference.getSandboxInitPoint());
-                    System.out.println("   Token guardado: " + token);
-                    System.out.println("========================================");
-                    
-                    // Guardar preference ID en BD
-                    String sqlUpdate = "UPDATE reservas SET mercadopago_preference_id = ? WHERE id = ?";
-                    PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate);
-                    psUpdate.setString(1, preference.getId());
-                    psUpdate.setInt(2, reservaId);
-                    int updated = psUpdate.executeUpdate();
-                    psUpdate.close();
-                    
-                    System.out.println("✅ Preference ID guardado en BD (filas: " + updated + ")");
-                    
-                    // ⭐ RESPUESTA CON INIT POINT
-                    Map<String, Object> respuesta = new HashMap<>();
-                    respuesta.put("success", true);
-                    respuesta.put("preference_id", preference.getId());
-                    respuesta.put("init_point", preference.getInitPoint());
-                    respuesta.put("sandbox_init_point", preference.getSandboxInitPoint());
-                    respuesta.put("public_key", mpConfig.getPublicKey());
-                    respuesta.put("token", token);
-                    
-                    Gson gson = new Gson();
-                    out.print(gson.toJson(respuesta));
-                    
-                    System.out.println("✅ Respuesta enviada al cliente");
-                    System.out.println("========================================");
-                    
-                } catch (com.mercadopago.exceptions.MPApiException apiEx) {
-                    tokenStorage.remove(token); // Limpiar token en caso de error
-                    
-                    System.err.println("========================================");
-                    System.err.println("❌ ERROR DE API DE MERCADO PAGO");
-                    System.err.println("========================================");
-                    System.err.println("   Status Code: " + apiEx.getStatusCode());
-                    System.err.println("   Message: " + apiEx.getMessage());
-                    
-                    try {
-                        if (apiEx.getApiResponse() != null) {
-                            System.err.println("   API Response: " + apiEx.getApiResponse().getContent());
-                        }
-                    } catch (Exception responseEx) {
-                        System.err.println("   (No se pudo obtener API Response)");
+                    if (apiEx.getApiResponse() != null) {
+                        System.err.println("   API Response: " + apiEx.getApiResponse().getContent());
                     }
-                    
-                    apiEx.printStackTrace();
-                    System.err.println("========================================");
-                    
-                    String mensajeUsuario;
-                    switch (apiEx.getStatusCode()) {
-                        case 400:
-                            mensajeUsuario = "Datos inválidos: " + apiEx.getMessage();
-                            break;
-                        case 401:
-                            mensajeUsuario = "Credenciales inválidas. Verifica tu Access Token.";
-                            break;
-                        case 403:
-                            mensajeUsuario = "Acceso denegado. Tu aplicación no tiene permisos.";
-                            break;
-                        case 404:
-                            mensajeUsuario = "Recurso no encontrado";
-                            break;
-                        case 429:
-                            mensajeUsuario = "Demasiadas solicitudes. Intenta más tarde.";
-                            break;
-                        default:
-                            mensajeUsuario = "Error de Mercado Pago (" + apiEx.getStatusCode() + "): " + apiEx.getMessage();
-                            break;
-                    }
-                    
-                    enviarError(out, mensajeUsuario);
-                    return;
-                    
-                } catch (com.mercadopago.exceptions.MPException mpEx) {
-                    tokenStorage.remove(token);
-                    
-                    System.err.println("========================================");
-                    System.err.println("❌ ERROR DEL SDK DE MERCADO PAGO");
-                    System.err.println("========================================");
-                    System.err.println("Message: " + mpEx.getMessage());
-                    mpEx.printStackTrace();
-                    System.err.println("========================================");
-                    
-                    enviarError(out, "Error de comunicación con Mercado Pago: " + mpEx.getMessage());
-                    return;
+                } catch (Exception responseEx) {
+                    System.err.println("   (No se pudo obtener API Response)");
                 }
+                
+                apiEx.printStackTrace();
+                System.err.println("========================================");
+                
+                String mensajeUsuario;
+                switch (apiEx.getStatusCode()) {
+                    case 400:
+                        mensajeUsuario = "Datos inválidos para crear el pago";
+                        break;
+                    case 401:
+                        mensajeUsuario = "Error de autenticación con Mercado Pago. Contacta al administrador.";
+                        break;
+                    case 403:
+                        mensajeUsuario = "Acceso denegado por Mercado Pago";
+                        break;
+                    case 404:
+                        mensajeUsuario = "Recurso no encontrado en Mercado Pago";
+                        break;
+                    case 429:
+                        mensajeUsuario = "Demasiadas solicitudes. Intenta en unos minutos.";
+                        break;
+                    default:
+                        mensajeUsuario = "Error de Mercado Pago. Intenta nuevamente.";
+                        break;
+                }
+                
+                enviarError(out, mensajeUsuario);
+                
+            } catch (com.mercadopago.exceptions.MPException mpEx) {
+                tokenStorage.remove(token);
+                
+                System.err.println("========================================");
+                System.err.println("❌ ERROR DEL SDK DE MERCADO PAGO");
+                System.err.println("========================================");
+                System.err.println("Message: " + mpEx.getMessage());
+                mpEx.printStackTrace();
+                System.err.println("========================================");
+                
+                enviarError(out, "Error de comunicación con Mercado Pago. Intenta nuevamente.");
                 
             } catch (SQLException e) {
                 tokenStorage.remove(token);
-                System.err.println("❌ Error de base de datos");
+                System.err.println("❌ Error de base de datos: " + e.getMessage());
                 e.printStackTrace();
-                enviarError(out, "Error de base de datos");
+                enviarError(out, "Error de base de datos. Contacta al administrador.");
+                
             } finally {
                 DatabaseManager.closeResources(rs, ps, conn);
             }
             
         } catch (NumberFormatException e) {
-            System.err.println("❌ ID de reserva inválido: " + reservaIdStr);
-            enviarError(out, "ID de reserva inválido");
+            System.err.println("❌ ID de reserva inválido: " + request.getParameter("reserva_id"));
+            e.printStackTrace();
+            if (out != null) {
+                enviarError(out, "ID de reserva inválido");
+            }
+            
         } catch (Exception e) {
             System.err.println("========================================");
             System.err.println("❌ ERROR INESPERADO");
@@ -348,10 +363,15 @@ public class CrearPreferenciaMPServlet extends HttpServlet {
             System.err.println("Message: " + e.getMessage());
             e.printStackTrace();
             System.err.println("========================================");
-            enviarError(out, "Error inesperado: " + e.getMessage());
+            
+            if (out != null) {
+                enviarError(out, "Error inesperado. Intenta nuevamente.");
+            }
+            
         } finally {
-            out.flush();
-            out.close();
+            if (out != null) {
+                out.flush();
+            }
         }
     }
     
@@ -366,71 +386,83 @@ public class CrearPreferenciaMPServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
         
-        String action = request.getParameter("action");
-        
-        if ("validarToken".equals(action)) {
-            String token = request.getParameter("token");
+        try {
+            String action = request.getParameter("action");
             
-            System.out.println("🔄 Validando token: " + token);
-            
-            if (token == null || !tokenStorage.containsKey(token)) {
-                System.err.println("❌ Token inválido o no existe");
-                out.print("{\"success\": false, \"error\": \"Token inválido o expirado\"}");
-                out.flush();
-                return;
-            }
-            
-            Map<String, Object> sessionData = tokenStorage.get(token);
-            
-            // Verificar expiración (1 hora)
-            long timestamp = (Long) sessionData.get("timestamp");
-            long now = System.currentTimeMillis();
-            if (now - timestamp > 3600000) {
-                System.err.println("❌ Token expirado");
+            if ("validarToken".equals(action)) {
+                String token = request.getParameter("token");
+                
+                System.out.println("🔄 Validando token: " + token);
+                
+                if (token == null || !tokenStorage.containsKey(token)) {
+                    System.err.println("❌ Token inválido o no existe");
+                    out.print("{\"success\": false, \"error\": \"Token inválido o expirado\"}");
+                    return;
+                }
+                
+                Map<String, Object> sessionData = tokenStorage.get(token);
+                
+                // Verificar expiración (1 hora)
+                long timestamp = (Long) sessionData.get("timestamp");
+                long now = System.currentTimeMillis();
+                if (now - timestamp > 3600000) {
+                    System.err.println("❌ Token expirado");
+                    tokenStorage.remove(token);
+                    out.print("{\"success\": false, \"error\": \"Token expirado\"}");
+                    return;
+                }
+                
+                // ⭐ RESTAURAR SESIÓN
+                HttpSession session = request.getSession(true);
+                session.setAttribute("logueado", true);
+                session.setAttribute("userId", sessionData.get("userId"));
+                session.setAttribute("usuario", sessionData.get("usuario"));
+                session.setAttribute("email", sessionData.get("email"));
+                session.setAttribute("esAdmin", sessionData.get("esAdmin"));
+                session.setMaxInactiveInterval(30 * 60);
+                
+                // Eliminar token usado
                 tokenStorage.remove(token);
-                out.print("{\"success\": false, \"error\": \"Token expirado\"}");
-                out.flush();
-                return;
+                
+                System.out.println("✅ Sesión restaurada para: " + sessionData.get("usuario"));
+                System.out.println("   Reserva: " + sessionData.get("reservaId"));
+                
+                Gson gson = new Gson();
+                Map<String, Object> respuesta = new HashMap<>();
+                respuesta.put("success", true);
+                respuesta.put("usuario", sessionData.get("usuario"));
+                respuesta.put("reservaId", sessionData.get("reservaId"));
+                
+                out.print(gson.toJson(respuesta));
+                
+            } else {
+                out.print("{\"success\": false, \"error\": \"Acción no válida\"}");
             }
             
-            // ⭐ RESTAURAR SESIÓN
-            HttpSession session = request.getSession(true);
-            session.setAttribute("logueado", true);
-            session.setAttribute("userId", sessionData.get("userId"));
-            session.setAttribute("usuario", sessionData.get("usuario"));
-            session.setAttribute("email", sessionData.get("email"));
-            session.setAttribute("esAdmin", sessionData.get("esAdmin"));
-            session.setMaxInactiveInterval(30 * 60);
-            
-            // Eliminar token usado
-            tokenStorage.remove(token);
-            
-            System.out.println("✅ Sesión restaurada para: " + sessionData.get("usuario"));
-            System.out.println("   Reserva: " + sessionData.get("reservaId"));
-            
-            Gson gson = new Gson();
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("success", true);
-            respuesta.put("usuario", sessionData.get("usuario"));
-            respuesta.put("reservaId", sessionData.get("reservaId"));
-            
-            out.print(gson.toJson(respuesta));
-            
-        } else {
-            out.print("{\"success\": false, \"error\": \"Acción no válida\"}");
+        } catch (Exception e) {
+            System.err.println("❌ Error en doGet: " + e.getMessage());
+            e.printStackTrace();
+            out.print("{\"success\": false, \"error\": \"Error del servidor\"}");
+        } finally {
+            out.flush();
         }
-        
-        out.flush();
     }
     
     /**
      * Envía una respuesta de error en formato JSON
      */
     private void enviarError(PrintWriter out, String mensaje) {
-        Map<String, Object> error = new HashMap<>();
-        error.put("success", false);
-        error.put("error", mensaje);
-        Gson gson = new Gson();
-        out.print(gson.toJson(error));
+        try {
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("error", mensaje);
+            Gson gson = new Gson();
+            String jsonError = gson.toJson(error);
+            out.print(jsonError);
+            System.err.println("📤 Error enviado: " + jsonError);
+        } catch (Exception e) {
+            System.err.println("❌ Error al enviar respuesta de error: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

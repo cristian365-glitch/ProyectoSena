@@ -952,7 +952,7 @@
                 alerta.style.opacity = '0';
                 setTimeout(() => alerta.remove(), 300);
             }, 5000);
-        }
+        
     </script>
 </body>
 </html> + subtotal.toLocaleString('es-CO');
@@ -1005,57 +1005,104 @@
 </html> + subtotal.toLocaleString('es-CO');
         }
 
-        document.getElementById('reservaForm').addEventListener('submit', function(e) {
-            const checkinInput = document.getElementById('checkin');
-            const checkoutInput = document.getElementById('checkout');
-            
-            const checkin = checkinInput.dataset.fecha;
-            const checkout = checkoutInput.dataset.fecha;
+        // ✅ MANEJO CORRECTO DEL FORMULARIO - Reemplaza el evento submit existente
 
-            if (!checkin || !checkout) {
-                e.preventDefault();
-                alert('Debes seleccionar las fechas de tu estadía');
-                return;
-            }
+document.getElementById('reservaForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Prevenir envío por defecto
+    
+    const checkinInput = document.getElementById('checkin');
+    const checkoutInput = document.getElementById('checkout');
+    
+    const checkin = checkinInput.dataset.fecha; // Formato ISO: yyyy-MM-dd
+    const checkout = checkoutInput.dataset.fecha;
 
-            const fecha1 = new Date(checkin);
-            const fecha2 = new Date(checkout);
+    console.log('📋 Validando formulario...');
+    console.log('   Check-in ISO:', checkin);
+    console.log('   Check-out ISO:', checkout);
 
-            if (fecha2 <= fecha1) {
-                e.preventDefault();
-                alert('La fecha de salida debe ser posterior a la de llegada');
-                return;
-            }
-            
-            if (!validarRangoFechas(checkin, checkout)) {
-                e.preventDefault();
-                alert('⚠️ Las fechas seleccionadas incluyen días ocupados. Por favor elige otras fechas.');
-                return;
-            }
-            
-            const personas = parseInt(document.getElementById('personas').value);
-            if (habitacion && personas > habitacion.capacidad) {
-                e.preventDefault();
-                alert(`La habitación tiene capacidad máxima de ${habitacion.capacidad} personas`);
-                return;
-            }
+    // ✅ VALIDACIÓN 1: Fechas seleccionadas
+    if (!checkin || !checkout) {
+        alert('Debes seleccionar las fechas de tu estadía');
+        return;
+    }
 
-            // Crear campos hidden con las fechas en formato ISO para el servidor
-            const hiddenCheckin = document.createElement('input');
-            hiddenCheckin.type = 'hidden';
-            hiddenCheckin.name = 'fecha_checkin_iso';
-            hiddenCheckin.value = checkin;
-            
-            const hiddenCheckout = document.createElement('input');
-            hiddenCheckout.type = 'hidden';
-            hiddenCheckout.name = 'fecha_checkout_iso';
-            hiddenCheckout.value = checkout;
-            
-            this.appendChild(hiddenCheckin);
-            this.appendChild(hiddenCheckout);
-            
-            console.log('✅ Reserva válida, enviando...');
-        });
+    const fecha1 = new Date(checkin);
+    const fecha2 = new Date(checkout);
+
+    // ✅ VALIDACIÓN 2: Check-out después de check-in
+    if (fecha2 <= fecha1) {
+        alert('La fecha de salida debe ser posterior a la de llegada');
+        return;
+    }
+    
+    // ✅ VALIDACIÓN 3: Rango no contiene fechas ocupadas
+    if (!validarRangoFechas(checkin, checkout)) {
+        alert('⚠️ Las fechas seleccionadas incluyen días ocupados. Por favor elige otras fechas.');
+        checkoutInput.value = '';
+        delete checkoutInput.dataset.fecha;
+        return;
+    }
+    
+    // ✅ VALIDACIÓN 4: Capacidad
+    const personas = parseInt(document.getElementById('personas').value);
+    if (habitacion && personas > habitacion.capacidad) {
+        alert(`La habitación tiene capacidad máxima de ${habitacion.capacidad} personas`);
+        return;
+    }
+
+    // ✅ CREAR CAMPOS HIDDEN CON FECHAS ISO
+    // Remover campos previos si existen
+    const prevHiddenCheckin = this.querySelector('input[name="fecha_checkin_iso"]');
+    const prevHiddenCheckout = this.querySelector('input[name="fecha_checkout_iso"]');
+    if (prevHiddenCheckin) prevHiddenCheckin.remove();
+    if (prevHiddenCheckout) prevHiddenCheckout.remove();
+    
+    const hiddenCheckin = document.createElement('input');
+    hiddenCheckin.type = 'hidden';
+    hiddenCheckin.name = 'fecha_checkin_iso';
+    hiddenCheckin.value = checkin; // yyyy-MM-dd
+    
+    const hiddenCheckout = document.createElement('input');
+    hiddenCheckout.type = 'hidden';
+    hiddenCheckout.name = 'fecha_checkout_iso';
+    hiddenCheckout.value = checkout; // yyyy-MM-dd
+    
+    this.appendChild(hiddenCheckin);
+    this.appendChild(hiddenCheckout);
+    
+    console.log('✅ Validaciones completadas, enviando formulario...');
+    console.log('   Check-in ISO a enviar:', checkin);
+    console.log('   Check-out ISO a enviar:', checkout);
+    
+    // ✅ ENVIAR FORMULARIO
+    this.submit();
+});
+
+// ✅ FUNCIÓN PARA VALIDAR RANGO (debe estar antes del submit)
+function validarRangoFechas(checkin, checkout) {
+    console.log('🔍 Validando rango de fechas...');
+    console.log('   Desde:', checkin);
+    console.log('   Hasta:', checkout);
+    console.log('   Fechas ocupadas:', fechasOcupadas);
+    
+    const inicio = new Date(checkin);
+    const fin = new Date(checkout);
+    
+    let fechaActual = new Date(inicio);
+    while (fechaActual < fin) {
+        const fechaStr = formatoISO(fechaActual);
+        
+        if (fechasOcupadas.includes(fechaStr)) {
+            console.warn('⚠️ Fecha ocupada detectada en rango:', fechaStr);
+            return false;
+        }
+        
+        fechaActual.setDate(fechaActual.getDate() + 1);
+    }
+    
+    console.log('✅ Rango de fechas válido');
+    return true;
+}
 
         function mostrarErrores() {
             const params = new URLSearchParams(window.location.search);

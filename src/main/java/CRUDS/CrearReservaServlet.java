@@ -57,15 +57,25 @@ public class CrearReservaServlet extends HttpServlet {
         
         // Obtener datos del formulario
         String habitacionIdStr = request.getParameter("habitacion_id");
-        String fechaCheckin = request.getParameter("fecha_checkin");
-        String fechaCheckout = request.getParameter("fecha_checkout");
         String numPersonasStr = request.getParameter("num_personas");
         String nombreCliente = request.getParameter("nombre_cliente");
         String email = request.getParameter("email");
         String telefono = request.getParameter("telefono");
         String solicitudes = request.getParameter("solicitudes");
         
-        System.out.println("📥 Datos recibidos:");
+        // ✅ USAR LAS FECHAS ISO QUE VIENEN DEL FORMULARIO
+        String fechaCheckin = request.getParameter("fecha_checkin_iso");
+        String fechaCheckout = request.getParameter("fecha_checkout_iso");
+        
+        // Si no vienen las ISO, intentar con las normales (fallback)
+        if (fechaCheckin == null || fechaCheckin.isEmpty()) {
+            fechaCheckin = request.getParameter("fecha_checkin");
+        }
+        if (fechaCheckout == null || fechaCheckout.isEmpty()) {
+            fechaCheckout = request.getParameter("fecha_checkout");
+        }
+        
+        System.out.println("🔥 Datos recibidos:");
         System.out.println("   Habitación ID: " + habitacionIdStr);
         System.out.println("   Check-in: " + fechaCheckin);
         System.out.println("   Check-out: " + fechaCheckout);
@@ -89,7 +99,7 @@ public class CrearReservaServlet extends HttpServlet {
             int habitacionId = Integer.parseInt(habitacionIdStr);
             int numPersonas = Integer.parseInt(numPersonasStr);
             
-            // Validar formato de fechas
+            // Validar formato de fechas (debe ser yyyy-MM-dd)
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate checkin = LocalDate.parse(fechaCheckin, formatter);
             LocalDate checkout = LocalDate.parse(fechaCheckout, formatter);
@@ -159,19 +169,26 @@ public class CrearReservaServlet extends HttpServlet {
                 System.out.println("🔍 Verificando disponibilidad...");
                 System.out.println("   Rango solicitado: " + fechaCheckin + " → " + fechaCheckout);
                 
+                // ✅ QUERY CORREGIDA - Detecta CUALQUIER solapamiento
                 String sqlDisponibilidad = 
                     "SELECT id, fecha_checkin, fecha_checkout, estado " +
                     "FROM reservas " +
                     "WHERE habitacion_id = ? " +
                     "AND estado IN ('pendiente', 'confirmada') " +
-                    "AND NOT (" +
-                    "  fecha_checkout <= ? OR fecha_checkin >= ?" +
+                    "AND (" +
+                    "  (fecha_checkin < ? AND fecha_checkout > ?) OR " +  // Caso 1: Reserva envuelve la nueva
+                    "  (fecha_checkin >= ? AND fecha_checkin < ?) OR " +  // Caso 2: Inicia dentro del rango
+                    "  (fecha_checkout > ? AND fecha_checkout <= ?) " +   // Caso 3: Termina dentro del rango
                     ")";
                 
                 psDisponibilidad = conn.prepareStatement(sqlDisponibilidad);
                 psDisponibilidad.setInt(1, habitacionId);
-                psDisponibilidad.setString(2, fechaCheckin);  // checkout de reserva existente <= checkin solicitado
-                psDisponibilidad.setString(3, fechaCheckout); // checkin de reserva existente >= checkout solicitado
+                psDisponibilidad.setString(2, fechaCheckout);  // Caso 1: checkout nueva
+                psDisponibilidad.setString(3, fechaCheckin);   // Caso 1: checkin nueva
+                psDisponibilidad.setString(4, fechaCheckin);   // Caso 2: inicio rango
+                psDisponibilidad.setString(5, fechaCheckout);  // Caso 2: fin rango
+                psDisponibilidad.setString(6, fechaCheckin);   // Caso 3: inicio rango
+                psDisponibilidad.setString(7, fechaCheckout);  // Caso 3: fin rango
                 
                 rsDisponibilidad = psDisponibilidad.executeQuery();
                 
@@ -186,7 +203,7 @@ public class CrearReservaServlet extends HttpServlet {
                     } while (rsDisponibilidad.next());
                     
                     response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
-                                        habitacionId + "&error=no_disponible");
+                                        habitacionId + "&error=no_disponible&checkin=" + fechaCheckin + "&checkout=" + fechaCheckout);
                     return;
                 }
                 
@@ -224,8 +241,9 @@ public class CrearReservaServlet extends HttpServlet {
                     System.out.println("   Reserva ID: " + reservaId);
                     System.out.println("   Usuario ID: " + userId);
                     System.out.println("   Total: $" + total);
+                    System.out.println("   Check-in: " + fechaCheckin);
+                    System.out.println("   Check-out: " + fechaCheckout);
                     
-                    // ✅ RUTA CORREGIDA - confirmacion-reserva.html está en /login/
                     response.sendRedirect(request.getContextPath() + "/login/confirmacion-reserva.html?id=" + reservaId);
                 } else {
                     conn.rollback();

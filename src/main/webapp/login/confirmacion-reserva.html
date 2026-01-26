@@ -539,72 +539,150 @@
             btnPagar.addEventListener('click', procesarPago);
         }
 
-        async function procesarPago() {
-            if (!metodoSeleccionado || !reservaData) {
-                alert('Por favor selecciona un método de pago');
-                return;
+        // ✅ SCRIPT CORREGIDO PARA confirmacion-reserva.html
+// Reemplaza la función procesarPago() completa
+
+async function procesarPago() {
+    if (!metodoSeleccionado || !reservaData) {
+        alert('Por favor selecciona un método de pago');
+        return;
+    }
+
+    const btnPagar = document.getElementById('btnPagar');
+    const textoOriginal = btnPagar.textContent;
+    btnPagar.disabled = true;
+    btnPagar.textContent = 'Procesando...';
+
+    console.log('💳 Procesando pago...');
+    console.log('   Método:', metodoSeleccionado);
+    console.log('   Reserva ID:', reservaData.id);
+
+    if (metodoSeleccionado === 'hotel') {
+        // ✅ PAGO EN HOTEL
+        try {
+            console.log('🏨 Confirmando pago en hotel...');
+            
+            const response = await fetch('../ActualizarEstadoReservaServlet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                credentials: 'include',
+                body: `reserva_id=${reservaData.id}&estado=confirmada`
+            });
+
+            console.log('📡 Response status:', response.status);
+            console.log('📡 Response headers:', response.headers.get('content-type'));
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const btnPagar = document.getElementById('btnPagar');
-            btnPagar.disabled = true;
-            btnPagar.textContent = 'Procesando...';
+            const result = await response.json();
+            console.log('📦 Resultado:', result);
+            
+            if (result.success) {
+                alert('✅ Reserva confirmada. Podrás pagar en el hotel al hacer check-in.');
+                setTimeout(() => {
+                    window.location.href = 'usuario/reservas.html';
+                }, 2000);
+            } else {
+                throw new Error(result.error || 'Error al confirmar');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error al confirmar:', error);
+            alert('Error al confirmar: ' + error.message);
+            btnPagar.disabled = false;
+            btnPagar.textContent = textoOriginal;
+        }
+        
+    } else if (metodoSeleccionado === 'mercadopago') {
+        // ✅ PAGO CON MERCADO PAGO
+        try {
+            console.log('💳 Creando preferencia de Mercado Pago...');
+            
+            const response = await fetch('../CrearPreferenciaMPServlet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                credentials: 'include',
+                body: `reserva_id=${reservaData.id}`
+            });
 
-            if (metodoSeleccionado === 'hotel') {
-                try {
-                    const response = await fetch('../ActualizarEstadoReservaServlet', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        credentials: 'include',
-                        body: `reserva_id=${reservaData.id}&estado=confirmada`
-                    });
+            console.log('📡 Response status:', response.status);
+            console.log('📡 Response Content-Type:', response.headers.get('content-type'));
 
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        alert('✅ Reserva confirmada. Podrás pagar en el hotel al hacer check-in.');
-                        setTimeout(() => {
-                            window.location.href = 'usuario/reservas.html';
-                        }, 2000);
-                    } else {
-                        throw new Error(result.error || 'Error al confirmar');
-                    }
-                } catch (error) {
-                    alert('Error al confirmar: ' + error.message);
-                    btnPagar.disabled = false;
-                    btnPagar.textContent = 'Proceder al Pago';
+            // ✅ VERIFICAR QUE SEA JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                console.error('❌ Response no es JSON, es:', contentType);
+                
+                // Leer como texto para debug
+                const text = await response.text();
+                console.error('📄 Contenido recibido:', text.substring(0, 500));
+                
+                throw new Error('El servidor no devolvió JSON. Verifica la consola del servidor.');
+            }
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('📦 Resultado:', result);
+
+            if (result.success) {
+                const initPoint = result.sandbox_init_point || result.init_point;
+                
+                if (!initPoint) {
+                    throw new Error('No se recibió URL de pago');
                 }
                 
-            } else if (metodoSeleccionado === 'mercadopago') {
-                try {
-                    const response = await fetch('../CrearPreferenciaMPServlet', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        credentials: 'include',
-                        body: `reserva_id=${reservaData.id}`
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        const initPoint = result.sandbox_init_point || result.init_point;
-                        setTimeout(() => {
-                            window.location.href = initPoint;
-                        }, 1000);
-                    } else {
-                        throw new Error(result.error || 'No se pudo crear el pago');
-                    }
-                    
-                } catch (error) {
-                    alert('Error al procesar: ' + error.message);
-                    btnPagar.disabled = false;
-                    btnPagar.textContent = 'Proceder al Pago';
-                }
+                console.log('✅ Preferencia creada exitosamente');
+                console.log('🔗 Redirigiendo a:', initPoint);
+                
+                // Pequeño delay para mostrar mensaje
+                btnPagar.textContent = 'Redirigiendo a Mercado Pago...';
+                
+                setTimeout(() => {
+                    window.location.href = initPoint;
+                }, 1000);
+            } else {
+                throw new Error(result.error || 'No se pudo crear el pago');
             }
+            
+        } catch (error) {
+            console.error('❌ Error al procesar pago MP:', error);
+            
+            let mensaje = 'Error al procesar el pago: ' + error.message;
+            
+            if (error.message.includes('JSON')) {
+                mensaje += '\n\nEsto puede indicar:\n' +
+                          '1. Error de configuración en el servidor\n' +
+                          '2. Sesión expirada\n' +
+                          '3. Error de Mercado Pago\n\n' +
+                          'Revisa la consola del navegador y del servidor para más detalles.';
+            }
+            
+            alert(mensaje);
+            btnPagar.disabled = false;
+            btnPagar.textContent = textoOriginal;
         }
+    }
+}
+
+// ✅ FUNCIÓN DE DEBUG (agregar al final del script)
+function debugResponse(response) {
+    console.log('🔍 DEBUG RESPONSE:');
+    console.log('   Status:', response.status);
+    console.log('   StatusText:', response.statusText);
+    console.log('   Headers:');
+    for (let [key, value] of response.headers.entries()) {
+        console.log(`     ${key}: ${value}`);
+    }
+}
     </script>
 </body>
 </html>
