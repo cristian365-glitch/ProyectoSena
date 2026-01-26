@@ -134,6 +134,7 @@
             text-align: center;
             font-size: 1.15rem;
             color: #666;
+
             max-width: 700px;
             margin-left: auto;
             margin-right: auto;
@@ -155,10 +156,12 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: all 0.4s ease;
             display: block;
+            /* ANIMACIÓN AGREGADA */
             opacity: 0;
             animation: fadeInUp 0.8s ease forwards;
         }
 
+        /* DELAYS ESCALONADOS PARA EXPERIENCIAS */
         .contenedor-img:nth-child(1) {
             animation-delay: 0.1s;
         }
@@ -520,6 +523,7 @@
     </ul>
 </header>
 
+
 <!-- Menú móvil desplegable (fuera del header) -->
 <div class="nav-mobile-menu" id="mobileMenu">
     <ul>
@@ -633,7 +637,7 @@
     </div>
 </section>
 
-<!-- CSS para las tarjetas de habitaciones (TU CSS ORIGINAL + ANIMACIONES) -->
+<!-- CSS para las tarjetas de habitaciones (TU CSS ORIGINAL) -->
 <style>
     .filtros-habitaciones {
         display: flex;
@@ -679,6 +683,7 @@
         cursor: pointer;
         display: flex;
         flex-direction: column;
+        /* ANIMACIÓN AGREGADA */
         opacity: 0;
         animation: fadeInUp 0.6s ease forwards;
     }
@@ -864,7 +869,7 @@
     </form>
 </section>
 
-<!-- JavaScript para cargar y filtrar habitaciones (MODIFICADO CON ANIMACIONES) -->
+<!-- JavaScript para cargar y filtrar habitaciones (MODIFICADO) -->
 <script>
     
     let habitacionesOriginal = [];
@@ -886,6 +891,7 @@
             habitacionesOriginal = todasLasHabitaciones.filter(hab => 
                 IDS_PERMITIDOS.includes(hab.id)
             );
+            
             mostrarHabitaciones(habitacionesOriginal);
         } catch (error) {
             console.error('Error al cargar habitaciones:', error);
@@ -903,11 +909,13 @@
             return;
         }
 
-        habitaciones.forEach(hab => {
+        habitaciones.forEach((hab, index) => {
             const card = document.createElement('div');
             card.className = 'habitacion-card';
             card.onclick = () => verDetalleHabitacion(hab.id);
-            card.style.animationDelay = `${index * 0.1}s`;
+            
+            // DELAY ESCALONADO PARA ANIMACIÓN
+            card.style.animationDelay = `${index * 0.15}s`;
 
             const icono = hab.experiencia === 'bosque' ? '🌲' : 
                          hab.experiencia === 'mar' ? '🌊' : '🌾';
@@ -1018,3 +1026,5 @@ if (menuToggle && mobileMenu) {
 }
 
 </script>
+</body>
+</html>
