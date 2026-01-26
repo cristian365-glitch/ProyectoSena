@@ -24,6 +24,141 @@
             padding: 0 20px;
         }
 
+        /* ✅ ESTILOS PARA CALENDARIO PERSONALIZADO */
+        .calendario-custom {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            z-index: 1000;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .calendario-custom.active {
+            display: block;
+        }
+
+        .calendario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #f8f9fa;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .calendario-header button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #d4af37;
+            padding: 5px 10px;
+            transition: all 0.3s;
+        }
+
+        .calendario-header button:hover {
+            background: #d4af37;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .calendario-mes-ano {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #000;
+        }
+
+        .calendario-dias-semana {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+
+        .calendario-dias-semana span {
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #666;
+            padding: 8px 0;
+        }
+
+        .calendario-dias {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            padding: 10px;
+        }
+
+        .calendario-dia {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .calendario-dia:not(.otro-mes):not(.ocupado):not(.pasado):hover {
+            background: #e8f5e9;
+            border-color: #4caf50;
+            transform: scale(1.05);
+        }
+
+        .calendario-dia.otro-mes {
+            color: #ccc;
+            cursor: default;
+        }
+
+        .calendario-dia.pasado {
+            color: #ccc;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+
+        .calendario-dia.ocupado {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: white;
+            cursor: not-allowed;
+            font-weight: 700;
+        }
+
+        .calendario-dia.ocupado::after {
+            content: '🔒';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 0.7rem;
+        }
+
+        .calendario-dia.disponible {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+
+        .calendario-dia.seleccionado {
+            background: #d4af37;
+            color: white;
+            font-weight: 700;
+            border-color: #b8860b;
+        }
+
+        .calendario-dia.hoy {
+            border: 2px solid #2196F3;
+        }
+
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -375,19 +510,14 @@
                     <div class="row">
                         <div class="form-group">
                             <label for="checkin">Fecha de Llegada *</label>
-                            <input type="date" id="checkin" name="fecha_checkin" required>
-                            <div class="loading-fechas" id="loadingCheckin" style="display: none;"></div>
-                            <div class="fecha-warning" id="warningCheckin">
-                                ⚠️ Esta fecha está ocupada. Por favor selecciona otra.
-                            </div>
+                            <input type="text" id="checkin" name="fecha_checkin" placeholder="Selecciona una fecha" readonly required>
+                            <div class="calendario-custom" id="calendarioCheckin"></div>
                         </div>
 
                         <div class="form-group">
                             <label for="checkout">Fecha de Salida *</label>
-                            <input type="date" id="checkout" name="fecha_checkout" required>
-                            <div class="fecha-warning" id="warningCheckout">
-                                ⚠️ Esta fecha está ocupada. Por favor selecciona otra.
-                            </div>
+                            <input type="text" id="checkout" name="fecha_checkout" placeholder="Selecciona una fecha" readonly required>
+                            <div class="calendario-custom" id="calendarioCheckout"></div>
                         </div>
                     </div>
 
@@ -478,6 +608,13 @@
     <script>
         let habitacion = null;
         let fechasOcupadas = [];
+        let calendarioActual = null;
+        let mesActual = new Date().getMonth();
+        let anoActual = new Date().getFullYear();
+
+        const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        const diasSemana = ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA'];
 
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Iniciando carga de reservar.html');
@@ -493,42 +630,156 @@
 
             console.log('📋 Habitación ID:', habitacionId);
 
-            // Verificar sesión primero
             await verificarSesionYCargarDatos();
-
-            // Cargar habitación y fechas ocupadas
             await cargarHabitacion(habitacionId);
             await cargarFechasOcupadas(habitacionId);
 
-            // Configurar fechas mínimas
-            const hoy = new Date().toISOString().split('T')[0];
-            document.getElementById('checkin').min = hoy;
-            document.getElementById('checkout').min = hoy;
-
-            // Event listeners para validar y aplicar colores
-            document.getElementById('checkin').addEventListener('change', function() {
-                aplicarColorFecha(this);
-                validarFechaSeleccionada('checkin');
-                calcularPrecio();
-            });
-            
-            document.getElementById('checkout').addEventListener('change', function() {
-                aplicarColorFecha(this);
-                validarFechaSeleccionada('checkout');
-                calcularPrecio();
-            });
-
-            // ✅ LISTENER PARA CUANDO SE ABRE EL CALENDARIO
-            document.getElementById('checkin').addEventListener('click', function() {
-                aplicarColorFecha(this);
-            });
-            
-            document.getElementById('checkout').addEventListener('click', function() {
-                aplicarColorFecha(this);
-            });
+            // Configurar calendarios personalizados
+            configurarCalendarios();
             
             mostrarErrores();
         });
+
+        function configurarCalendarios() {
+            const inputCheckin = document.getElementById('checkin');
+            const inputCheckout = document.getElementById('checkout');
+            const calCheckin = document.getElementById('calendarioCheckin');
+            const calCheckout = document.getElementById('calendarioCheckout');
+
+            // Abrir calendario al hacer clic
+            inputCheckin.addEventListener('click', (e) => {
+                e.stopPropagation();
+                calCheckout.classList.remove('active');
+                calCheckin.classList.add('active');
+                calendarioActual = 'checkin';
+                renderizarCalendario(calCheckin);
+            });
+
+            inputCheckout.addEventListener('click', (e) => {
+                e.stopPropagation();
+                calCheckin.classList.remove('active');
+                calCheckout.classList.add('active');
+                calendarioActual = 'checkout';
+                renderizarCalendario(calCheckout);
+            });
+
+            // Cerrar calendario al hacer clic fuera
+            document.addEventListener('click', () => {
+                calCheckin.classList.remove('active');
+                calCheckout.classList.remove('active');
+            });
+
+            calCheckin.addEventListener('click', (e) => e.stopPropagation());
+            calCheckout.addEventListener('click', (e) => e.stopPropagation());
+        }
+
+        function renderizarCalendario(contenedor) {
+            const primerDia = new Date(anoActual, mesActual, 1).getDay();
+            const diasEnMes = new Date(anoActual, mesActual + 1, 0).getDate();
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+
+            let html = `
+                <div class="calendario-header">
+                    <button onclick="cambiarMes(-1)">◀</button>
+                    <span class="calendario-mes-ano">${meses[mesActual]} ${anoActual}</span>
+                    <button onclick="cambiarMes(1)">▶</button>
+                </div>
+                <div class="calendario-dias-semana">
+                    ${diasSemana.map(dia => `<span>${dia}</span>`).join('')}
+                </div>
+                <div class="calendario-dias">
+            `;
+
+            // Días del mes anterior
+            const diasMesAnterior = new Date(anoActual, mesActual, 0).getDate();
+            for (let i = primerDia - 1; i >= 0; i--) {
+                html += `<div class="calendario-dia otro-mes">${diasMesAnterior - i}</div>`;
+            }
+
+            // Días del mes actual
+            for (let dia = 1; dia <= diasEnMes; dia++) {
+                const fecha = new Date(anoActual, mesActual, dia);
+                fecha.setHours(0, 0, 0, 0);
+                const fechaStr = formatoISO(fecha);
+                
+                let clases = ['calendario-dia'];
+                
+                // Marcar día actual
+                if (fecha.getTime() === hoy.getTime()) {
+                    clases.push('hoy');
+                }
+                
+                // Marcar días pasados
+                if (fecha < hoy) {
+                    clases.push('pasado');
+                }
+                // Marcar días ocupados (DORADO)
+                else if (fechasOcupadas.includes(fechaStr)) {
+                    clases.push('ocupado');
+                }
+                // Marcar días disponibles (VERDE)
+                else {
+                    clases.push('disponible');
+                }
+
+                const clickHandler = clases.includes('ocupado') || clases.includes('pasado') 
+                    ? '' 
+                    : `onclick="seleccionarFecha('${fechaStr}')"`;
+
+                html += `<div class="${clases.join(' ')}" ${clickHandler}>${dia}</div>`;
+            }
+
+            // Días del siguiente mes
+            const diasRestantes = 42 - (primerDia + diasEnMes);
+            for (let dia = 1; dia <= diasRestantes; dia++) {
+                html += `<div class="calendario-dia otro-mes">${dia}</div>`;
+            }
+
+            html += '</div>';
+            contenedor.innerHTML = html;
+        }
+
+        function cambiarMes(direccion) {
+            mesActual += direccion;
+            if (mesActual < 0) {
+                mesActual = 11;
+                anoActual--;
+            } else if (mesActual > 11) {
+                mesActual = 0;
+                anoActual++;
+            }
+            
+            const contenedor = calendarioActual === 'checkin' 
+                ? document.getElementById('calendarioCheckin')
+                : document.getElementById('calendarioCheckout');
+            
+            renderizarCalendario(contenedor);
+        }
+
+        function seleccionarFecha(fechaStr) {
+            const [ano, mes, dia] = fechaStr.split('-');
+            const fechaFormateada = `${dia}/${mes}/${ano}`;
+            
+            if (calendarioActual === 'checkin') {
+                document.getElementById('checkin').value = fechaFormateada;
+                document.getElementById('checkin').dataset.fecha = fechaStr;
+                document.getElementById('calendarioCheckin').classList.remove('active');
+            } else {
+                document.getElementById('checkout').value = fechaFormateada;
+                document.getElementById('checkout').dataset.fecha = fechaStr;
+                document.getElementById('calendarioCheckout').classList.remove('active');
+            }
+            
+            calcularPrecio();
+        }
+
+        function formatoISO(fecha) {
+            const ano = fecha.getFullYear();
+            const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+            const dia = String(fecha.getDate()).padStart(2, '0');
+            return `${ano}-${mes}-${dia}`;
+        }
 
         async function verificarSesionYCargarDatos() {
             try {
@@ -609,74 +860,13 @@
             }
         }
 
-        // ✅ NUEVA FUNCIÓN: Aplicar color según disponibilidad
-        function aplicarColorFecha(input) {
-            const fechaSeleccionada = input.value;
-            
-            if (!fechaSeleccionada) {
-                // Si no hay fecha seleccionada, remover todas las clases
-                input.classList.remove('fecha-ocupada', 'fecha-disponible');
-                return;
-            }
-            
-            console.log('🎨 Aplicando color a fecha:', fechaSeleccionada);
-            console.log('📋 Fechas ocupadas:', fechasOcupadas);
-            
-            // Verificar si la fecha está ocupada
-            if (fechasOcupadas.includes(fechaSeleccionada)) {
-                console.log('🟡 Fecha OCUPADA - aplicando dorado');
-                input.classList.remove('fecha-disponible');
-                input.classList.add('fecha-ocupada');
-            } else {
-                console.log('🟢 Fecha DISPONIBLE - aplicando verde');
-                input.classList.remove('fecha-ocupada');
-                input.classList.add('fecha-disponible');
-            }
-        }
-
-        function validarFechaSeleccionada(inputId) {
-            const input = document.getElementById(inputId);
-            const warning = document.getElementById('warning' + inputId.charAt(0).toUpperCase() + inputId.slice(1));
-            const fechaSeleccionada = input.value;
-            
-            if (!fechaSeleccionada) return true;
-            
-            if (fechasOcupadas.includes(fechaSeleccionada)) {
-                console.warn('⚠️ Fecha ocupada seleccionada:', fechaSeleccionada);
-                
-                // Mostrar warning
-                if (warning) {
-                    warning.classList.add('show');
-                }
-                
-                // Mostrar alerta
-                alert('⚠️ Esta fecha está ocupada. Por favor selecciona otra.');
-                
-                // Limpiar el input
-                input.value = '';
-                input.classList.remove('fecha-ocupada', 'fecha-disponible');
-                
-                if (warning) {
-                    setTimeout(() => warning.classList.remove('show'), 3000);
-                }
-                
-                return false;
-            } else {
-                // Ocultar warning si estaba visible
-                if (warning) {
-                    warning.classList.remove('show');
-                }
-                return true;
-            }
-        }
-
         function validarRangoFechas(checkin, checkout) {
             const inicio = new Date(checkin);
             const fin = new Date(checkout);
             
             let fechaActual = new Date(inicio);
             while (fechaActual < fin) {
-                const fechaStr = fechaActual.toISOString().split('T')[0];
+                const fechaStr = formatoISO(fechaActual);
                 if (fechasOcupadas.includes(fechaStr)) {
                     console.warn('⚠️ Rango contiene fecha ocupada:', fechaStr);
                     return false;
@@ -693,8 +883,11 @@
         };
 
         function calcularPrecio() {
-            const checkin = document.getElementById('checkin').value;
-            const checkout = document.getElementById('checkout').value;
+            const checkinInput = document.getElementById('checkin');
+            const checkoutInput = document.getElementById('checkout');
+            
+            const checkin = checkinInput.dataset.fecha;
+            const checkout = checkoutInput.dataset.fecha;
 
             if (!checkin || !checkout || !habitacion) return;
 
@@ -705,24 +898,119 @@
 
             if (noches <= 0) {
                 alert('La fecha de salida debe ser posterior a la de llegada');
-                document.getElementById('checkout').value = '';
-                document.getElementById('checkout').classList.remove('fecha-ocupada', 'fecha-disponible');
+                checkoutInput.value = '';
+                delete checkoutInput.dataset.fecha;
                 return;
             }
 
-            document.getElementById('fechaLlegada').textContent = formatearFecha(checkin);
-            document.getElementById('fechaSalida').textContent = formatearFecha(checkout);
+            document.getElementById('fechaLlegada').textContent = checkinInput.value;
+            document.getElementById('fechaSalida').textContent = checkoutInput.value;
             document.getElementById('numNoches').textContent = noches + (noches === 1 ? ' noche' : ' noches');
             document.getElementById('nochesCalculo').textContent = noches + (noches === 1 ? ' noche' : ' noches');
 
             const subtotal = habitacion.precio_noche * noches;
-            document.getElementById('subtotal').textContent = '$' + subtotal.toLocaleString('es-CO');
-            document.getElementById('total').textContent = '$' + subtotal.toLocaleString('es-CO');
+            document.getElementById('subtotal').textContent = '
+
+        function mostrarErrores() {
+            const params = new URLSearchParams(window.location.search);
+            const error = params.get('error');
+            
+            if (!error) return;
+            
+            const mensajes = {
+                'campos_vacios': 'Por favor completa todos los campos requeridos',
+                'fecha_pasada': 'La fecha de llegada no puede ser en el pasado',
+                'fechas_invalidas': 'Las fechas seleccionadas no son válidas',
+                'excede_capacidad': 'El número de personas excede la capacidad de la habitación',
+                'no_disponible': 'La habitación no está disponible en las fechas seleccionadas',
+                'no_guardado': 'No se pudo procesar la reserva. Intenta nuevamente',
+                'error_sistema': 'Error en el sistema. Por favor intenta más tarde',
+                'datos_invalidos': 'Los datos ingresados no son válidos'
+            };
+            
+            const mensaje = mensajes[error] || 'Ha ocurrido un error';
+            
+            const alerta = document.createElement('div');
+            alerta.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #ff4444;
+                color: white;
+                padding: 15px 30px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 10000;
+                font-weight: 600;
+            `;
+            alerta.textContent = mensaje;
+            
+            document.body.appendChild(alerta);
+            
+            setTimeout(() => {
+                alerta.style.opacity = '0';
+                setTimeout(() => alerta.remove(), 300);
+            }, 5000);
+        }
+    </script>
+</body>
+</html> + subtotal.toLocaleString('es-CO');
+            document.getElementById('total').textContent = '
+
+        function mostrarErrores() {
+            const params = new URLSearchParams(window.location.search);
+            const error = params.get('error');
+            
+            if (!error) return;
+            
+            const mensajes = {
+                'campos_vacios': 'Por favor completa todos los campos requeridos',
+                'fecha_pasada': 'La fecha de llegada no puede ser en el pasado',
+                'fechas_invalidas': 'Las fechas seleccionadas no son válidas',
+                'excede_capacidad': 'El número de personas excede la capacidad de la habitación',
+                'no_disponible': 'La habitación no está disponible en las fechas seleccionadas',
+                'no_guardado': 'No se pudo procesar la reserva. Intenta nuevamente',
+                'error_sistema': 'Error en el sistema. Por favor intenta más tarde',
+                'datos_invalidos': 'Los datos ingresados no son válidos'
+            };
+            
+            const mensaje = mensajes[error] || 'Ha ocurrido un error';
+            
+            const alerta = document.createElement('div');
+            alerta.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #ff4444;
+                color: white;
+                padding: 15px 30px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 10000;
+                font-weight: 600;
+            `;
+            alerta.textContent = mensaje;
+            
+            document.body.appendChild(alerta);
+            
+            setTimeout(() => {
+                alerta.style.opacity = '0';
+                setTimeout(() => alerta.remove(), 300);
+            }, 5000);
+        }
+    </script>
+</body>
+</html> + subtotal.toLocaleString('es-CO');
         }
 
         document.getElementById('reservaForm').addEventListener('submit', function(e) {
-            const checkin = document.getElementById('checkin').value;
-            const checkout = document.getElementById('checkout').value;
+            const checkinInput = document.getElementById('checkin');
+            const checkoutInput = document.getElementById('checkout');
+            
+            const checkin = checkinInput.dataset.fecha;
+            const checkout = checkoutInput.dataset.fecha;
 
             if (!checkin || !checkout) {
                 e.preventDefault();
@@ -751,6 +1039,20 @@
                 alert(`La habitación tiene capacidad máxima de ${habitacion.capacidad} personas`);
                 return;
             }
+
+            // Crear campos hidden con las fechas en formato ISO para el servidor
+            const hiddenCheckin = document.createElement('input');
+            hiddenCheckin.type = 'hidden';
+            hiddenCheckin.name = 'fecha_checkin_iso';
+            hiddenCheckin.value = checkin;
+            
+            const hiddenCheckout = document.createElement('input');
+            hiddenCheckout.type = 'hidden';
+            hiddenCheckout.name = 'fecha_checkout_iso';
+            hiddenCheckout.value = checkout;
+            
+            this.appendChild(hiddenCheckin);
+            this.appendChild(hiddenCheckout);
             
             console.log('✅ Reserva válida, enviando...');
         });
