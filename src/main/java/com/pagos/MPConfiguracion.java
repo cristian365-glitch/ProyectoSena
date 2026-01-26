@@ -26,9 +26,20 @@ public class MPConfiguracion {
         return System.getenv("MERCADOPAGO_PUBLIC_KEY");
     }
     
+    /**
+     * ⭐ ACTUALIZADO: Reconoce tanto "test" como "prod"
+     */
     public boolean isModoTest() {
         String modo = System.getenv("MERCADOPAGO_MODO");
-        return modo == null || "test".equals(modo);
+        
+        // Si no está definido, por defecto es TEST
+        if (modo == null || modo.trim().isEmpty()) {
+            return true;
+        }
+        
+        // Si es "prod" o "production" → PRODUCCIÓN (false)
+        // Si es "test" → TEST (true)
+        return !"prod".equalsIgnoreCase(modo) && !"production".equalsIgnoreCase(modo);
     }
     
     // ============================================
@@ -139,35 +150,38 @@ public class MPConfiguracion {
         // Mercado Pago
         System.out.println("\n💳 MERCADO PAGO:");
         String token = getAccessToken();
-        System.out.println("   Access Token: " + (token != null && !token.isEmpty() ? "✅ OK" : "❌ NO"));
+        System.out.println("   Access Token: " + (token != null && !token.isEmpty() ? "✅ OK (" + token.substring(0, Math.min(15, token.length())) + "...)" : "❌ NO CONFIGURADO"));
         
         String pubKey = getPublicKey();
-        System.out.println("   Public Key: " + (pubKey != null && !pubKey.isEmpty() ? "✅ OK" : "❌ NO"));
+        System.out.println("   Public Key: " + (pubKey != null && !pubKey.isEmpty() ? "✅ OK (" + pubKey.substring(0, Math.min(15, pubKey.length())) + "...)" : "❌ NO CONFIGURADO"));
+        
+        String modoEnv = System.getenv("MERCADOPAGO_MODO");
+        System.out.println("   Variable MERCADOPAGO_MODO: " + (modoEnv != null ? modoEnv : "NO DEFINIDA (usará TEST)"));
+        System.out.println("   Modo detectado: " + (isModoTest() ? "🧪 TEST (Sandbox)" : "🚀 PRODUCCIÓN"));
         System.out.println("   Base URL: " + getBaseUrl());
-        System.out.println("   Modo: " + (isModoTest() ? "TEST" : "PRODUCCIÓN"));
         
         String webhookUrl = getWebhookUrl();
-        System.out.println("   Webhook URL: " + (webhookUrl != null ? "✅ " + webhookUrl : "❌ NO"));
+        System.out.println("   Webhook URL: " + (webhookUrl != null ? "✅ " + webhookUrl : "❌ NO CONFIGURADO"));
         
         String webhookSecret = getWebhookSecret();
-        System.out.println("   Webhook Secret: " + (webhookSecret != null && !webhookSecret.isEmpty() ? "✅ OK" : "❌ NO"));
+        System.out.println("   Webhook Secret: " + (webhookSecret != null && !webhookSecret.isEmpty() ? "✅ OK" : "⚠️ NO CONFIGURADO (validación deshabilitada)"));
         
         // Google OAuth
         System.out.println("\n🔐 GOOGLE OAUTH:");
         String clientId = getGoogleClientId();
-        System.out.println("   Client ID: " + (clientId != null && !clientId.isEmpty() ? "✅ OK" : "❌ NO"));
+        System.out.println("   Client ID: " + (clientId != null && !clientId.isEmpty() ? "✅ OK" : "❌ NO CONFIGURADO"));
         
         String clientSecret = getGoogleClientSecret();
-        System.out.println("   Client Secret: " + (clientSecret != null && !clientSecret.isEmpty() ? "✅ OK" : "❌ NO"));
+        System.out.println("   Client Secret: " + (clientSecret != null && !clientSecret.isEmpty() ? "✅ OK" : "❌ NO CONFIGURADO"));
         System.out.println("   Redirect URI: " + getGoogleRedirectUri());
         
         // Cloudinary
         System.out.println("\n☁️ CLOUDINARY:");
         String cloudName = getCloudinaryCloudName();
-        System.out.println("   Cloud Name: " + (cloudName != null && !cloudName.isEmpty() ? "✅ OK" : "❌ NO"));
+        System.out.println("   Cloud Name: " + (cloudName != null && !cloudName.isEmpty() ? "✅ OK" : "❌ NO CONFIGURADO"));
         
         String uploadPreset = getCloudinaryUploadPreset();
-        System.out.println("   Upload Preset: " + (uploadPreset != null && !uploadPreset.isEmpty() ? "✅ OK" : "❌ NO"));
+        System.out.println("   Upload Preset: " + (uploadPreset != null && !uploadPreset.isEmpty() ? "✅ OK" : "❌ NO CONFIGURADO"));
         
         System.out.println("========================================");
     }
