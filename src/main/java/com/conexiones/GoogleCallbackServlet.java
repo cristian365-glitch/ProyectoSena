@@ -149,6 +149,20 @@ public class GoogleCallbackServlet extends HttpServlet {
         int responseCode = conn.getResponseCode();
         if (responseCode != 200) {
             System.err.println("❌ Error al obtener token. Código: " + responseCode);
+            
+            // Leer el error del servidor
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(conn.getErrorStream(), StandardCharsets.UTF_8))) {
+                String line;
+                StringBuilder errorResponse = new StringBuilder();
+                while ((line = br.readLine()) != null) {
+                    errorResponse.append(line);
+                }
+                System.err.println("   Respuesta de error: " + errorResponse.toString());
+            } catch (Exception e) {
+                // Ignorar si no se puede leer el error
+            }
+            
             return null;
         }
         
@@ -217,7 +231,7 @@ public class GoogleCallbackServlet extends HttpServlet {
             conn = dbManager.getConnection();
             conn.setAutoCommit(false);
             
-            String checkSql = "SELECT id, nombre, telefono FROM usuarios WHERE email = ?";
+            String checkSql = "SELECT id, nombre, telefono, foto_url FROM usuarios WHERE email = ?";
             psCheck = conn.prepareStatement(checkSql);
             psCheck.setString(1, userInfo.email.toLowerCase());
             rs = psCheck.executeQuery();
@@ -225,74 +239,120 @@ public class GoogleCallbackServlet extends HttpServlet {
             int userId;
             String nombre;
             String telefono;
+            String fotoUrl;
             
             if (rs.next()) {
+                // Usuario ya existe - solo actualizar datos de Google
                 userId = rs.getInt("id");
                 nombre = rs.getString("nombre");
                 telefono = rs.getString("telefono");
+                fotoUrl = rs.getString("foto_url");
                 
                 System.out.println("✅ Usuario existente encontrado: " + userInfo.email);
                 
-                String updateSql = "UPDATE usuarios SET google_id = ?, foto_url = ? WHERE id = ? AND (google_id IS NULL OR foto_url IS NULL)";
+                // Actualizar google_id y foto si no están establecidos
+                String updateSql = "UPDATE usuarios SET google_id = ?, foto_url = ? WHERE id = ? AND (google_id IS NULL OR google_id = '')";
                 psUpdate = conn.prepareStatement(updateSql);
                 psUpdate.setString(1, userInfo.googleId);
                 psUpdate.setString(2, userInfo.picture);
                 psUpdate.setInt(3, userId);
-                psUpdate.executeUpdate();
+                int updated = psUpdate.executeUpdate();
+                
+                if (updated > 0) {
+                    System.out.println("✅ Datos de Google vinculados a cuenta existente");
+                }
+                
+                // Usar la foto de Google si está disponible
+                if (userInfo.picture != null && !userInfo.picture.isEmpty()) {
+                    fotoUrl = userInfo.picture;
+                }
                 
             } else {
+                // Usuario NO existe - crear nuevo usuario
                 System.out.println("🆕 Creando nuevo usuario desde Google: " + userInfo.email);
                 
+                // Generar salt y hash aleatorio para la contraseña
+                // (el usuario no podrá hacer login con contraseña hasta que la establezca)
                 byte[] salt = PasswordHasher.generarSalt();
                 String saltBase64 = Base64.getEncoder().encodeToString(salt);
                 String passwordHash = PasswordHasher.hashPassword(generarPasswordAleatorio(), salt);
                 
+                System.out.println("   📝 Generando credenciales seguras para nuevo usuario...");
+                System.out.println("   📝 Salt: " + saltBase64.substring(0, Math.min(10, saltBase64.length())) + "...");
+                System.out.println("   📝 Hash: " + passwordHash.substring(0, Math.min(10, passwordHash.length())) + "...");
+                
+                // Nombre: usar el nombre de Google o valor por defecto
+                nombre = (userInfo.name != null && !userInfo.name.trim().isEmpty()) 
+                         ? userInfo.name.trim() 
+                         : "Usuario de Google";
+                
+                // Teléfono: campo vacío (puede llenarlo después)
+                telefono = "";
+                
+                // Foto: usar la de Google
+                fotoUrl = userInfo.picture;
+                
+                // INSERT con TODOS los campos requeridos
                 String insertSql = "INSERT INTO usuarios (nombre, email, telefono, password_hash, salt, google_id, foto_url) " +
                                   "VALUES (?, ?, ?, ?, ?, ?, ?)";
                 psInsert = conn.prepareStatement(insertSql, PreparedStatement.RETURN_GENERATED_KEYS);
-                psInsert.setString(1, userInfo.name != null ? userInfo.name : "Usuario de Google");
+                psInsert.setString(1, nombre);
                 psInsert.setString(2, userInfo.email.toLowerCase());
-                psInsert.setString(3, "");
-                psInsert.setString(4, passwordHash);
-                psInsert.setString(5, saltBase64);
+                psInsert.setString(3, telefono);
+                psInsert.setString(4, passwordHash);   // Hash seguro generado
+                psInsert.setString(5, saltBase64);      // Salt único
                 psInsert.setString(6, userInfo.googleId);
                 psInsert.setString(7, userInfo.picture);
                 
+                System.out.println("   📝 Ejecutando INSERT...");
                 int filas = psInsert.executeUpdate();
                 
                 if (filas == 0) {
+                    System.err.println("❌ No se insertó ninguna fila");
                     conn.rollback();
                     return false;
                 }
                 
+                System.out.println("   ✅ Usuario insertado correctamente");
+                
+                // Obtener el ID generado
                 ResultSet generatedKeys = psInsert.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     userId = generatedKeys.getInt(1);
-                    nombre = userInfo.name;
-                    telefono = "";
+                    System.out.println("   ✅ ID generado: " + userId);
                 } else {
+                    System.err.println("❌ No se pudo obtener el ID generado");
                     conn.rollback();
                     return false;
                 }
+                
+                generatedKeys.close();
             }
             
+            // COMMIT - Todo salió bien
             conn.commit();
+            System.out.println("✅ Transacción completada exitosamente");
             
+            // Crear sesión para el usuario
             HttpSession session = request.getSession(true);
             session.setAttribute("usuario", nombre);
             session.setAttribute("userId", userId);
             session.setAttribute("email", userInfo.email);
             session.setAttribute("telefono", telefono);
-            session.setAttribute("foto_url", userInfo.picture);
+            session.setAttribute("foto_url", fotoUrl);
             session.setAttribute("logueado", true);
             session.setAttribute("esAdmin", false);
             session.setAttribute("loginMethod", "google");
             session.setMaxInactiveInterval(30 * 60);
             
+            // Regenerar ID de sesión por seguridad
             request.changeSessionId();
             
+            // Registrar el login en logs
             String clientIp = getClientIP(request);
             LogManager.registrarLog(userId, clientIp, false);
+            
+            System.out.println("✅ Sesión creada para usuario: " + nombre);
             
             return true;
             
@@ -300,12 +360,16 @@ public class GoogleCallbackServlet extends HttpServlet {
             if (conn != null) {
                 try {
                     conn.rollback();
+                    System.out.println("🔄 Rollback ejecutado");
                 } catch (SQLException ex) {
-                    System.err.println("Error en rollback: " + ex.getMessage());
+                    System.err.println("❌ Error en rollback: " + ex.getMessage());
                 }
             }
             
             System.err.println("❌ Error SQL procesando usuario Google:");
+            System.err.println("   Mensaje: " + e.getMessage());
+            System.err.println("   SQL State: " + e.getSQLState());
+            System.err.println("   Error Code: " + e.getErrorCode());
             e.printStackTrace();
             return false;
             
@@ -313,21 +377,36 @@ public class GoogleCallbackServlet extends HttpServlet {
             if (conn != null) {
                 try {
                     conn.rollback();
+                    System.out.println("🔄 Rollback ejecutado");
                 } catch (SQLException ex) {
-                    System.err.println("Error en rollback: " + ex.getMessage());
+                    System.err.println("❌ Error en rollback: " + ex.getMessage());
                 }
             }
             
-            System.err.println("❌ Error procesando usuario Google:");
+            System.err.println("❌ Error general procesando usuario Google:");
             e.printStackTrace();
             return false;
             
         } finally {
-            if (rs != null) try { rs.close(); } catch (SQLException e) {}
-            if (psCheck != null) try { psCheck.close(); } catch (SQLException e) {}
-            if (psInsert != null) try { psInsert.close(); } catch (SQLException e) {}
-            if (psUpdate != null) try { psUpdate.close(); } catch (SQLException e) {}
-            if (conn != null) try { conn.close(); } catch (SQLException e) {}
+            // Cerrar recursos en orden inverso
+            if (rs != null) try { rs.close(); } catch (SQLException e) { 
+                System.err.println("Error cerrando ResultSet: " + e.getMessage());
+            }
+            if (psCheck != null) try { psCheck.close(); } catch (SQLException e) {
+                System.err.println("Error cerrando psCheck: " + e.getMessage());
+            }
+            if (psInsert != null) try { psInsert.close(); } catch (SQLException e) {
+                System.err.println("Error cerrando psInsert: " + e.getMessage());
+            }
+            if (psUpdate != null) try { psUpdate.close(); } catch (SQLException e) {
+                System.err.println("Error cerrando psUpdate: " + e.getMessage());
+            }
+            if (conn != null) try { 
+                conn.close(); 
+                System.out.println("🔌 Conexión cerrada");
+            } catch (SQLException e) {
+                System.err.println("Error cerrando conexión: " + e.getMessage());
+            }
         }
     }
     
@@ -342,12 +421,19 @@ public class GoogleCallbackServlet extends HttpServlet {
         return ip;
     }
     
+    /**
+     * Genera una contraseña aleatoria fuerte
+     * Esta contraseña NO será conocida por el usuario - solo se usa como placeholder
+     */
     private String generarPasswordAleatorio() {
         byte[] bytes = new byte[32];
         new java.security.SecureRandom().nextBytes(bytes);
         return Base64.getEncoder().encodeToString(bytes);
     }
     
+    /**
+     * Clase interna para almacenar info del usuario de Google
+     */
     private static class GoogleUserInfo {
         String email;
         String name;

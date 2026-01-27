@@ -148,12 +148,59 @@
             margin-bottom: 30px;
         }
 
-        /* CALENDARIO VISUAL */
+        /* CALENDARIO VISUAL RETRAÍBLE */
         .calendario-container {
             background: #f8f9fa;
-            padding: 20px;
             border-radius: 12px;
             margin-bottom: 30px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .calendario-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            cursor: pointer;
+            background: #ffffff;
+            border-bottom: 2px solid #e0e0e0;
+            user-select: none;
+        }
+
+        .calendario-toggle:hover {
+            background: #f8f9fa;
+        }
+
+        .calendario-toggle h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            margin: 0;
+            color: #000000;
+        }
+
+        .calendario-toggle-icon {
+            font-size: 1.5rem;
+            color: #d4af37;
+            transition: transform 0.3s;
+        }
+
+        .calendario-toggle-icon.abierto {
+            transform: rotate(180deg);
+        }
+
+        .calendario-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .calendario-content.abierto {
+            max-height: 800px;
+        }
+
+        .calendario-inner {
+            padding: 20px;
         }
 
         .calendario-header {
@@ -163,9 +210,9 @@
             margin-bottom: 20px;
         }
 
-        .calendario-header h3 {
+        .calendario-header h4 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             margin: 0;
             color: #000000;
         }
@@ -362,9 +409,22 @@
             box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
         }
 
-        .form-group input[readonly] {
-            background: #f8f9fa;
-            cursor: default;
+        .fechas-seleccionadas {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .fechas-seleccionadas p {
+            margin: 0 0 8px 0;
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .fechas-seleccionadas p:last-child {
+            margin-bottom: 0;
         }
 
         .row {
@@ -469,50 +529,56 @@
                 <h2>Completa tu Reserva</h2>
                 <p class="subtitulo">Selecciona tus fechas en el calendario</p>
 
-                <!-- CALENDARIO VISUAL -->
+                <!-- CALENDARIO VISUAL RETRAÍBLE -->
                 <div class="calendario-container">
-                    <div class="calendario-header">
-                        <h3 id="calendarioMesAnio">Enero 2026</h3>
-                        <div class="calendario-nav">
-                            <button type="button" id="mesAnterior">◀ Anterior</button>
-                            <button type="button" id="mesSiguiente">Siguiente ▶</button>
-                        </div>
+                    <div class="calendario-toggle" onclick="toggleCalendario()">
+                        <h3>📅 Seleccionar Fechas</h3>
+                        <span class="calendario-toggle-icon abierto">▼</span>
                     </div>
+                    
+                    <div class="calendario-content abierto" id="calendarioContent">
+                        <div class="calendario-inner">
+                            <div class="calendario-header">
+                                <h4 id="calendarioMesAnio">Enero 2026</h4>
+                                <div class="calendario-nav">
+                                    <button type="button" id="mesAnterior">◀ Anterior</button>
+                                    <button type="button" id="mesSiguiente">Siguiente ▶</button>
+                                </div>
+                            </div>
 
-                    <div class="calendario-grid" id="calendarioGrid">
-                        <!-- Se genera dinámicamente -->
-                    </div>
+                            <div class="calendario-grid" id="calendarioGrid">
+                                <!-- Se genera dinámicamente -->
+                            </div>
 
-                    <div class="leyenda-calendario">
-                        <div class="leyenda-item">
-                            <div class="leyenda-muestra disponible"></div>
-                            <span>Disponible</span>
-                        </div>
-                        <div class="leyenda-item">
-                            <div class="leyenda-muestra ocupado"></div>
-                            <span>Ocupado</span>
-                        </div>
-                        <div class="leyenda-item">
-                            <div class="leyenda-muestra seleccionado"></div>
-                            <span>Seleccionado</span>
+                            <div class="leyenda-calendario">
+                                <div class="leyenda-item">
+                                    <div class="leyenda-muestra disponible"></div>
+                                    <span>Disponible</span>
+                                </div>
+                                <div class="leyenda-item">
+                                    <div class="leyenda-muestra ocupado"></div>
+                                    <span>Ocupado</span>
+                                </div>
+                                <div class="leyenda-item">
+                                    <div class="leyenda-muestra seleccionado"></div>
+                                    <span>Seleccionado</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Mostrar fechas seleccionadas -->
+                <div class="fechas-seleccionadas" id="fechasSeleccionadas" style="display: none;">
+                    <p>✅ <strong>Llegada:</strong> <span id="llegadaTexto">-</span></p>
+                    <p>✅ <strong>Salida:</strong> <span id="salidaTexto">-</span></p>
+                    <p>📅 <strong>Noches:</strong> <span id="nochesTexto">0</span></p>
+                </div>
+
                 <form id="reservaForm" action="../CrearReservaServlet" method="POST">
                     <input type="hidden" id="habitacionId" name="habitacion_id">
-
-                    <div class="row">
-                        <div class="form-group">
-                            <label for="checkin">Fecha de Llegada *</label>
-                            <input type="date" id="checkin" name="fecha_checkin" readonly required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="checkout">Fecha de Salida *</label>
-                            <input type="date" id="checkout" name="fecha_checkout" readonly required>
-                        </div>
-                    </div>
+                    <input type="hidden" id="checkin" name="fecha_checkin">
+                    <input type="hidden" id="checkout" name="fecha_checkout">
 
                     <div class="form-group">
                         <label for="personas">Número de Personas *</label>
@@ -608,6 +674,15 @@
         const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         const DIAS_SEMANA = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
+        // Función para abrir/cerrar calendario
+        function toggleCalendario() {
+            const content = document.getElementById('calendarioContent');
+            const icon = document.querySelector('.calendario-toggle-icon');
+            
+            content.classList.toggle('abierto');
+            icon.classList.toggle('abierto');
+        }
 
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Iniciando carga de reservar.html');
@@ -852,7 +927,25 @@
             }
 
             generarCalendario();
+            actualizarFechasSeleccionadas();
             calcularPrecio();
+        }
+
+        function actualizarFechasSeleccionadas() {
+            const container = document.getElementById('fechasSeleccionadas');
+            
+            if (fechaCheckin && fechaCheckout) {
+                const diff = fechaCheckout - fechaCheckin;
+                const noches = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                
+                document.getElementById('llegadaTexto').textContent = formatearFecha(formatearFechaISO(fechaCheckin));
+                document.getElementById('salidaTexto').textContent = formatearFecha(formatearFechaISO(fechaCheckout));
+                document.getElementById('nochesTexto').textContent = noches + (noches === 1 ? ' noche' : ' noches');
+                
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
         }
 
         function hayFechasOcupadasEnRango(inicio, fin) {
@@ -914,6 +1007,8 @@
             }
             
             console.log('✅ Reserva válida, enviando...');
+            console.log('Check-in:', document.getElementById('checkin').value);
+            console.log('Check-out:', document.getElementById('checkout').value);
         });
 
         function mostrarErrores() {
