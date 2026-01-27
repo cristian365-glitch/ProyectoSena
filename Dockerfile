@@ -1,5 +1,5 @@
 # Etapa 1: Compilar con Maven
-FROM maven:3.8.6-openjdk-11 AS build
+FROM maven:3.8.6-openjdk-17 AS build
 WORKDIR /app
 
 # Copiar archivos del proyecto
@@ -10,7 +10,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Ejecutar
-FROM eclipse-temurin:11-jre
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 # Copiar el JAR compilado
