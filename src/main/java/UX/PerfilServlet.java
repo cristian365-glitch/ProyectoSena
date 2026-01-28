@@ -1,30 +1,44 @@
 package UX;
 
+import com.conexiones.DatabaseManager;
 import java.io.IOException;
 import java.io.PrintWriter;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import com.google.gson.Gson;
-import com.conexiones.DatabaseManager;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
-import org.mindrot.jbcrypt.BCrypt;
 import java.security.MessageDigest;
+import org.json.JSONObject;
+import org.mindrot.jbcrypt.BCrypt;
 
 /**
  * Servlet para gestionar el perfil de usuario
  * @author Calixto
  */
-@WebServlet(name = "PerfilServlet", urlPatterns = {"/PerfilServlet"})
+@WebServlet("/PerfilServlet")
 public class PerfilServlet extends HttpServlet {
-    
-    private Gson gson = new Gson();
-    private DatabaseManager dbManager = DatabaseManager.getInstance();
+    private static final long serialVersionUID = 1L;
+    private DatabaseManager dbManager;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        try {
+            dbManager = DatabaseManager.getInstance();
+            
+            if (!dbManager.testConnection()) {
+                throw new ServletException("No se puede conectar a la base de datos");
+            }
+            System.out.println("✅ PerfilServlet inicializado correctamente");
+        } catch (Exception e) {
+            System.err.println("❌ Error al inicializar PerfilServlet: " + e.getMessage());
+            e.printStackTrace();
+            throw new ServletException("Error al inicializar servlet", e);
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -66,10 +80,14 @@ public class PerfilServlet extends HttpServlet {
     private void obtenerDatosPerfil(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+        
         HttpSession session = request.getSession(false);
         
-        if (session == null || session.getAttribute("usuario") == null) {
-            enviarErrorJSON(response, "No hay sesión activa");
+        if (session == null || session.getAttribute("logueado") == null) {
+            enviarError(response, out, "No hay sesión activa", 401);
             return;
         }
         
@@ -81,7 +99,7 @@ public class PerfilServlet extends HttpServlet {
         try {
             conn = dbManager.getConnection();
             
-            String sql = "SELECT usuario, email, nombre, telefono, fecha_registro, esAdmin " +
+            String sql = "SELECT id, nombre, email, telefono, fecha_ultimo_login " +
                         "FROM usuarios WHERE email = ?";
             
             stmt = conn.prepareStatement(sql);
@@ -95,32 +113,33 @@ public class PerfilServlet extends HttpServlet {
                 String avatarUrl = generarGravatarURL(email);
                 
                 // Formatear fecha de registro
-                Date fechaRegistro = rs.getDate("fecha_registro");
-                String fechaRegistroStr = fechaRegistro != null ? fechaRegistro.toString() : null;
+                Date fechaUltimoLogin = rs.getDate("fecha_ultimo_login");
+                String fechaRegistroStr = fechaUltimoLogin != null ? fechaUltimoLogin.toString() : null;
                 
                 // Crear objeto usuario con los datos
-                Map<String, Object> usuario = new HashMap<>();
-                usuario.put("usuario", rs.getString("usuario"));
+                JSONObject usuario = new JSONObject();
+                usuario.put("usuario", rs.getString("nombre"));
                 usuario.put("email", email);
                 usuario.put("nombre", rs.getString("nombre"));
                 usuario.put("telefono", rs.getString("telefono"));
                 usuario.put("fechaRegistro", fechaRegistroStr);  // Formato: "YYYY-MM-DD"
-                usuario.put("esAdmin", rs.getBoolean("esAdmin"));
                 usuario.put("avatarUrl", avatarUrl);  // URL del avatar de Gravatar
                 
                 // Crear respuesta con la estructura correcta
-                Map<String, Object> perfil = new HashMap<>();
+                JSONObject perfil = new JSONObject();
                 perfil.put("success", true);
-                perfil.put("usuario", usuario);  // ⭐ El HTML espera data.usuario
+                perfil.put("usuario", usuario);
                 
-                enviarJSON(response, perfil);
+                out.print(perfil.toString());
+                out.flush();
+                
             } else {
-                enviarErrorJSON(response, "Usuario no encontrado");
+                enviarError(response, out, "Usuario no encontrado", 404);
             }
             
         } catch (SQLException e) {
             e.printStackTrace();
-            enviarErrorJSON(response, "Error al consultar la base de datos");
+            enviarError(response, out, "Error al consultar la base de datos", 500);
         } finally {
             DatabaseManager.closeResources(rs, stmt, conn);
         }
@@ -162,10 +181,14 @@ public class PerfilServlet extends HttpServlet {
     private void actualizarDatosPersonales(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+        
         HttpSession session = request.getSession(false);
         
-        if (session == null || session.getAttribute("usuario") == null) {
-            enviarErrorJSON(response, "No hay sesión activa");
+        if (session == null || session.getAttribute("logueado") == null) {
+            enviarError(response, out, "No hay sesión activa", 401);
             return;
         }
         
@@ -189,17 +212,19 @@ public class PerfilServlet extends HttpServlet {
             int rowsAffected = stmt.executeUpdate();
             
             if (rowsAffected > 0) {
-                Map<String, Object> resultado = new HashMap<>();
+                JSONObject resultado = new JSONObject();
                 resultado.put("success", true);
                 resultado.put("mensaje", "Datos actualizados correctamente");
-                enviarJSON(response, resultado);
+                
+                out.print(resultado.toString());
+                out.flush();
             } else {
-                enviarErrorJSON(response, "No se pudo actualizar los datos");
+                enviarError(response, out, "No se pudo actualizar los datos", 400);
             }
             
         } catch (SQLException e) {
             e.printStackTrace();
-            enviarErrorJSON(response, "Error al actualizar los datos");
+            enviarError(response, out, "Error al actualizar los datos", 500);
         } finally {
             DatabaseManager.closeResources(stmt, conn);
         }
@@ -211,10 +236,14 @@ public class PerfilServlet extends HttpServlet {
     private void actualizarEmail(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+        
         HttpSession session = request.getSession(false);
         
-        if (session == null || session.getAttribute("usuario") == null) {
-            enviarErrorJSON(response, "No hay sesión activa");
+        if (session == null || session.getAttribute("logueado") == null) {
+            enviarError(response, out, "No hay sesión activa", 401);
             return;
         }
         
@@ -230,20 +259,20 @@ public class PerfilServlet extends HttpServlet {
             conn = dbManager.getConnection();
             
             // Verificar la contraseña actual
-            String sqlVerificar = "SELECT password FROM usuarios WHERE email = ?";
+            String sqlVerificar = "SELECT password_hash FROM usuarios WHERE email = ?";
             stmt = conn.prepareStatement(sqlVerificar);
             stmt.setString(1, emailActual);
             rs = stmt.executeQuery();
             
             if (rs.next()) {
-                String passwordHash = rs.getString("password");
+                String passwordHash = rs.getString("password_hash");
                 
                 if (!BCrypt.checkpw(password, passwordHash)) {
-                    enviarErrorJSON(response, "Contraseña incorrecta");
+                    enviarError(response, out, "Contraseña incorrecta", 403);
                     return;
                 }
             } else {
-                enviarErrorJSON(response, "Usuario no encontrado");
+                enviarError(response, out, "Usuario no encontrado", 404);
                 return;
             }
             
@@ -256,7 +285,7 @@ public class PerfilServlet extends HttpServlet {
             rs = stmt.executeQuery();
             
             if (rs.next() && rs.getInt(1) > 0) {
-                enviarErrorJSON(response, "El email ya está en uso");
+                enviarError(response, out, "El email ya está en uso", 400);
                 return;
             }
             
@@ -274,17 +303,19 @@ public class PerfilServlet extends HttpServlet {
                 // Actualizar la sesión
                 session.setAttribute("email", nuevoEmail);
                 
-                Map<String, Object> resultado = new HashMap<>();
+                JSONObject resultado = new JSONObject();
                 resultado.put("success", true);
                 resultado.put("mensaje", "Email actualizado correctamente");
-                enviarJSON(response, resultado);
+                
+                out.print(resultado.toString());
+                out.flush();
             } else {
-                enviarErrorJSON(response, "No se pudo actualizar el email");
+                enviarError(response, out, "No se pudo actualizar el email", 400);
             }
             
         } catch (SQLException e) {
             e.printStackTrace();
-            enviarErrorJSON(response, "Error al actualizar el email");
+            enviarError(response, out, "Error al actualizar el email", 500);
         } finally {
             DatabaseManager.closeResources(rs, stmt, conn);
         }
@@ -296,10 +327,14 @@ public class PerfilServlet extends HttpServlet {
     private void cambiarPassword(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+        
         HttpSession session = request.getSession(false);
         
-        if (session == null || session.getAttribute("usuario") == null) {
-            enviarErrorJSON(response, "No hay sesión activa");
+        if (session == null || session.getAttribute("logueado") == null) {
+            enviarError(response, out, "No hay sesión activa", 401);
             return;
         }
         
@@ -315,20 +350,20 @@ public class PerfilServlet extends HttpServlet {
             conn = dbManager.getConnection();
             
             // Verificar la contraseña actual
-            String sqlVerificar = "SELECT password FROM usuarios WHERE email = ?";
+            String sqlVerificar = "SELECT password_hash FROM usuarios WHERE email = ?";
             stmt = conn.prepareStatement(sqlVerificar);
             stmt.setString(1, emailUsuario);
             rs = stmt.executeQuery();
             
             if (rs.next()) {
-                String passwordHash = rs.getString("password");
+                String passwordHash = rs.getString("password_hash");
                 
                 if (!BCrypt.checkpw(passwordActual, passwordHash)) {
-                    enviarErrorJSON(response, "La contraseña actual es incorrecta");
+                    enviarError(response, out, "La contraseña actual es incorrecta", 403);
                     return;
                 }
             } else {
-                enviarErrorJSON(response, "Usuario no encontrado");
+                enviarError(response, out, "Usuario no encontrado", 404);
                 return;
             }
             
@@ -336,7 +371,7 @@ public class PerfilServlet extends HttpServlet {
             
             // Actualizar con la nueva contraseña
             String nuevoHash = BCrypt.hashpw(passwordNueva, BCrypt.gensalt());
-            String sqlUpdate = "UPDATE usuarios SET password = ? WHERE email = ?";
+            String sqlUpdate = "UPDATE usuarios SET password_hash = ? WHERE email = ?";
             
             stmt = conn.prepareStatement(sqlUpdate);
             stmt.setString(1, nuevoHash);
@@ -345,45 +380,46 @@ public class PerfilServlet extends HttpServlet {
             int rowsAffected = stmt.executeUpdate();
             
             if (rowsAffected > 0) {
-                Map<String, Object> resultado = new HashMap<>();
+                JSONObject resultado = new JSONObject();
                 resultado.put("success", true);
                 resultado.put("mensaje", "Contraseña actualizada correctamente");
-                enviarJSON(response, resultado);
+                
+                out.print(resultado.toString());
+                out.flush();
             } else {
-                enviarErrorJSON(response, "No se pudo actualizar la contraseña");
+                enviarError(response, out, "No se pudo actualizar la contraseña", 400);
             }
             
         } catch (SQLException e) {
             e.printStackTrace();
-            enviarErrorJSON(response, "Error al actualizar la contraseña");
+            enviarError(response, out, "Error al actualizar la contraseña", 500);
         } finally {
             DatabaseManager.closeResources(rs, stmt, conn);
         }
     }
     
     /**
-     * Enviar respuesta JSON exitosa
+     * Método auxiliar para enviar errores en formato JSON
      */
-    private void enviarJSON(HttpServletResponse response, Map<String, Object> data) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
-        out.print(gson.toJson(data));
+    private void enviarError(HttpServletResponse response, PrintWriter out, String mensaje, int statusCode) 
+            throws IOException {
+        response.setStatus(statusCode);
+        JSONObject error = new JSONObject();
+        error.put("success", false);
+        error.put("error", mensaje);
+        
+        out.print(error.toString());
         out.flush();
     }
     
     /**
-     * Enviar respuesta JSON de error
+     * Enviar respuesta JSON de error (versión sin PrintWriter)
      */
     private void enviarErrorJSON(HttpServletResponse response, String mensaje) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
-        Map<String, Object> error = new HashMap<>();
-        error.put("success", false);
-        error.put("error", mensaje);
-        out.print(gson.toJson(error));
-        out.flush();
+        enviarError(response, out, mensaje, 400);
     }
 
     @Override
