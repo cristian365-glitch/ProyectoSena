@@ -1,4 +1,4 @@
-package com.conexiones;
+package UX;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import com.google.gson.Gson;
+import com.conexiones.DatabaseManager;
+import com.conexiones.DatabaseManager;
 import com.conexiones.DatabaseManager;
 import java.sql.*;
 import java.util.HashMap;
