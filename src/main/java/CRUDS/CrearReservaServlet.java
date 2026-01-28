@@ -62,24 +62,17 @@ public class CrearReservaServlet extends HttpServlet {
         String email = request.getParameter("email");
         String telefono = request.getParameter("telefono");
         String solicitudes = request.getParameter("solicitudes");
+        String fechaCheckin = request.getParameter("fecha_checkin");
+        String fechaCheckout = request.getParameter("fecha_checkout");
         
-        // ✅ USAR LAS FECHAS ISO QUE VIENEN DEL FORMULARIO
-        String fechaCheckin = request.getParameter("fecha_checkin_iso");
-        String fechaCheckout = request.getParameter("fecha_checkout_iso");
-        
-        // Si no vienen las ISO, intentar con las normales (fallback)
-        if (fechaCheckin == null || fechaCheckin.isEmpty()) {
-            fechaCheckin = request.getParameter("fecha_checkin");
-        }
-        if (fechaCheckout == null || fechaCheckout.isEmpty()) {
-            fechaCheckout = request.getParameter("fecha_checkout");
-        }
-        
-        System.out.println("🔥 Datos recibidos:");
+        System.out.println("========================================");
+        System.out.println("🔥 CREAR RESERVA - Datos recibidos:");
         System.out.println("   Habitación ID: " + habitacionIdStr);
         System.out.println("   Check-in: " + fechaCheckin);
         System.out.println("   Check-out: " + fechaCheckout);
         System.out.println("   Usuario ID: " + userId);
+        System.out.println("   Personas: " + numPersonasStr);
+        System.out.println("========================================");
         
         // Validaciones básicas
         if (habitacionIdStr == null || habitacionIdStr.trim().isEmpty() ||
@@ -90,6 +83,7 @@ public class CrearReservaServlet extends HttpServlet {
             email == null || email.trim().isEmpty() ||
             telefono == null || telefono.trim().isEmpty()) {
             
+            System.err.println("❌ Error: Campos vacíos");
             response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
                                 habitacionIdStr + "&error=campos_vacios");
             return;
@@ -107,14 +101,14 @@ public class CrearReservaServlet extends HttpServlet {
             
             // Validaciones de fechas
             if (checkin.isBefore(hoy)) {
-                System.out.println("❌ Error: Fecha de check-in en el pasado");
+                System.err.println("❌ Error: Fecha de check-in en el pasado");
                 response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
                                     habitacionId + "&error=fecha_pasada");
                 return;
             }
             
             if (checkout.isBefore(checkin) || checkout.isEqual(checkin)) {
-                System.out.println("❌ Error: Fechas inválidas");
+                System.err.println("❌ Error: Fechas inválidas");
                 response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
                                     habitacionId + "&error=fechas_invalidas");
                 return;
@@ -142,7 +136,7 @@ public class CrearReservaServlet extends HttpServlet {
                 rsHabitacion = psHabitacion.executeQuery();
                 
                 if (!rsHabitacion.next()) {
-                    System.out.println("❌ Error: Habitación no existe");
+                    System.err.println("❌ Error: Habitación no existe");
                     response.sendRedirect(request.getContextPath() + "/index.html?error=habitacion_no_existe");
                     return;
                 }
@@ -155,7 +149,7 @@ public class CrearReservaServlet extends HttpServlet {
                 
                 // Verificar capacidad
                 if (numPersonas > capacidad) {
-                    System.out.println("❌ Error: Excede capacidad (" + numPersonas + " > " + capacidad + ")");
+                    System.err.println("❌ Error: Excede capacidad (" + numPersonas + " > " + capacidad + ")");
                     response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
                                         habitacionId + "&error=excede_capacidad");
                     return;
@@ -169,37 +163,33 @@ public class CrearReservaServlet extends HttpServlet {
                 System.out.println("🔍 Verificando disponibilidad...");
                 System.out.println("   Rango solicitado: " + fechaCheckin + " → " + fechaCheckout);
                 
-                // ✅ QUERY CORREGIDA - Detecta CUALQUIER solapamiento
+                // ✅ QUERY MEJORADA - Detecta CUALQUIER solapamiento
+                // Excluye solo reservas canceladas y finalizadas
                 String sqlDisponibilidad = 
                     "SELECT id, fecha_checkin, fecha_checkout, estado " +
                     "FROM reservas " +
                     "WHERE habitacion_id = ? " +
-                    "AND estado IN ('pendiente', 'confirmada') " +
-                    "AND (" +
-                    "  (fecha_checkin < ? AND fecha_checkout > ?) OR " +  // Caso 1: Reserva envuelve la nueva
-                    "  (fecha_checkin >= ? AND fecha_checkin < ?) OR " +  // Caso 2: Inicia dentro del rango
-                    "  (fecha_checkout > ? AND fecha_checkout <= ?) " +   // Caso 3: Termina dentro del rango
+                    "AND estado NOT IN ('cancelada', 'finalizada') " +
+                    "AND NOT (" +
+                    "  fecha_checkout <= ? OR " +  // Termina antes o el mismo día del checkin
+                    "  fecha_checkin >= ? " +       // Empieza el día del checkout o después
                     ")";
                 
                 psDisponibilidad = conn.prepareStatement(sqlDisponibilidad);
                 psDisponibilidad.setInt(1, habitacionId);
-                psDisponibilidad.setString(2, fechaCheckout);  // Caso 1: checkout nueva
-                psDisponibilidad.setString(3, fechaCheckin);   // Caso 1: checkin nueva
-                psDisponibilidad.setString(4, fechaCheckin);   // Caso 2: inicio rango
-                psDisponibilidad.setString(5, fechaCheckout);  // Caso 2: fin rango
-                psDisponibilidad.setString(6, fechaCheckin);   // Caso 3: inicio rango
-                psDisponibilidad.setString(7, fechaCheckout);  // Caso 3: fin rango
+                psDisponibilidad.setString(2, fechaCheckin);
+                psDisponibilidad.setString(3, fechaCheckout);
                 
                 rsDisponibilidad = psDisponibilidad.executeQuery();
                 
                 if (rsDisponibilidad.next()) {
                     // Hay conflicto de fechas
-                    System.out.println("❌ CONFLICTO DE FECHAS DETECTADO:");
+                    System.err.println("❌ CONFLICTO DE FECHAS DETECTADO:");
                     do {
-                        System.out.println("   Reserva ID: " + rsDisponibilidad.getInt("id"));
-                        System.out.println("   Ocupada desde: " + rsDisponibilidad.getString("fecha_checkin"));
-                        System.out.println("   Hasta: " + rsDisponibilidad.getString("fecha_checkout"));
-                        System.out.println("   Estado: " + rsDisponibilidad.getString("estado"));
+                        System.err.println("   Reserva ID: " + rsDisponibilidad.getInt("id"));
+                        System.err.println("   Ocupada desde: " + rsDisponibilidad.getString("fecha_checkin"));
+                        System.err.println("   Hasta: " + rsDisponibilidad.getString("fecha_checkout"));
+                        System.err.println("   Estado: " + rsDisponibilidad.getString("estado"));
                     } while (rsDisponibilidad.next());
                     
                     response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
@@ -211,8 +201,11 @@ public class CrearReservaServlet extends HttpServlet {
                 
                 // Insertar reserva
                 String sqlInsert = "INSERT INTO reservas (habitacion_id, id_usuario, nombre_cliente, email, telefono, " +
-                                  "fecha_checkin, fecha_checkout, num_personas, total, estado, fecha_reserva) " +
-                                  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', NOW())";
+                                  "fecha_checkin, fecha_checkout, num_personas, total, estado, fecha_reserva" +
+                                  (solicitudes != null && !solicitudes.trim().isEmpty() ? ", solicitudes" : "") +
+                                  ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', NOW()" +
+                                  (solicitudes != null && !solicitudes.trim().isEmpty() ? ", ?" : "") +
+                                  ")";
                 
                 psInsert = conn.prepareStatement(sqlInsert, PreparedStatement.RETURN_GENERATED_KEYS);
                 psInsert.setInt(1, habitacionId);
@@ -224,6 +217,10 @@ public class CrearReservaServlet extends HttpServlet {
                 psInsert.setString(7, fechaCheckout);
                 psInsert.setInt(8, numPersonas);
                 psInsert.setDouble(9, total);
+                
+                if (solicitudes != null && !solicitudes.trim().isEmpty()) {
+                    psInsert.setString(10, solicitudes.trim());
+                }
                 
                 int filasAfectadas = psInsert.executeUpdate();
                 
@@ -237,17 +234,18 @@ public class CrearReservaServlet extends HttpServlet {
                     
                     conn.commit();
                     
-                    System.out.println("✅ Reserva creada exitosamente!");
+                    System.out.println("✅ RESERVA CREADA EXITOSAMENTE!");
                     System.out.println("   Reserva ID: " + reservaId);
                     System.out.println("   Usuario ID: " + userId);
                     System.out.println("   Total: $" + total);
                     System.out.println("   Check-in: " + fechaCheckin);
                     System.out.println("   Check-out: " + fechaCheckout);
+                    System.out.println("========================================");
                     
                     response.sendRedirect(request.getContextPath() + "/login/confirmacion-reserva.html?id=" + reservaId);
                 } else {
                     conn.rollback();
-                    System.out.println("❌ Error: No se pudo guardar la reserva");
+                    System.err.println("❌ Error: No se pudo guardar la reserva");
                     response.sendRedirect(request.getContextPath() + "/login/reservar.html?habitacion=" + 
                                         habitacionId + "&error=no_guardado");
                 }

@@ -123,7 +123,7 @@ public class LoginServlet extends HttpServlet {
                     
                     if (PasswordHasher.verificarPassword(password, storedHash, salt)) {
                         String nombreAdmin = rs.getString("nombre");
-                        long adminId = rs.getLong("id");
+                        int adminId = rs.getInt("id");
                         
                         HttpSession session = request.getSession(true);
                         session.setAttribute("usuario", nombreAdmin);
@@ -179,7 +179,7 @@ public class LoginServlet extends HttpServlet {
                     if (PasswordHasher.verificarPassword(password, storedHash, salt)) {
                         String nombreUsuario = rs.getString("nombre");
                         String telefono = rs.getString("telefono");
-                        long userId = rs.getLong("id");
+                        int userId = rs.getInt("id");
                         
                         HttpSession session = request.getSession(true);
                         session.setAttribute("usuario", nombreUsuario);
@@ -221,7 +221,7 @@ public class LoginServlet extends HttpServlet {
     /**
      * Actualiza la fecha de último login del usuario
      */
-    private void actualizarUltimoLogin(long userId, boolean esAdmin) {
+    private void actualizarUltimoLogin(int userId, boolean esAdmin) {
         Connection conn = null;
         PreparedStatement ps = null;
         
@@ -233,7 +233,7 @@ public class LoginServlet extends HttpServlet {
                 "UPDATE usuarios SET fecha_ultimo_login = NOW() WHERE id = ?";
             
             ps = conn.prepareStatement(sql);
-            ps.setLong(1, userId);
+            ps.setInt(1, userId);
             ps.executeUpdate();
             
             System.out.println("✅ Fecha de último login actualizada para usuario ID: " + userId);

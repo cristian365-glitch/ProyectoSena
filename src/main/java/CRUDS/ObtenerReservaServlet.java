@@ -69,12 +69,16 @@ public class ObtenerReservaServlet extends HttpServlet {
     }
     
     /**
-     * ⭐ NUEVO: Obtiene todas las fechas ocupadas de una habitación específica
-     * Se usa para marcar fechas en el calendario de reservas
+     * ⭐ CORREGIDO: Obtiene todas las fechas ocupadas de una habitación específica
+     * Ahora busca TODOS los estados que bloquean la habitación
      */
     private void obtenerFechasOcupadas(HttpServletRequest request, 
                                       HttpServletResponse response,
                                       String habitacionIdStr) throws IOException {
+        System.out.println("========================================");
+        System.out.println("🔍 OBTENIENDO FECHAS OCUPADAS");
+        System.out.println("   Habitación ID: " + habitacionIdStr);
+        
         try {
             int habitacionId = Integer.parseInt(habitacionIdStr);
             
@@ -85,40 +89,66 @@ public class ObtenerReservaServlet extends HttpServlet {
             try {
                 conn = dbManager.getConnection();
                 
-                // Obtener reservas confirmadas o pendientes de verificación
-                String sql = "SELECT fecha_checkin, fecha_checkout " +
+                // ✅ CORREGIDO: Buscar TODAS las reservas que bloquean la habitación
+                // Incluye: pendiente, confirmada, pendiente_verificacion, en_proceso
+                // Excluye solo: cancelada, finalizada
+                String sql = "SELECT id, fecha_checkin, fecha_checkout, estado " +
                            "FROM reservas " +
                            "WHERE habitacion_id = ? " +
-                           "AND estado IN ('confirmada', 'pendiente_verificacion') " +
-                           "AND fecha_checkout >= CURDATE()";
+                           "AND estado NOT IN ('cancelada', 'finalizada') " +
+                           "AND fecha_checkout >= CURDATE() " +
+                           "ORDER BY fecha_checkin";
+                
+                System.out.println("📋 Ejecutando query:");
+                System.out.println("   SQL: " + sql);
+                System.out.println("   Habitación ID: " + habitacionId);
                 
                 ps = conn.prepareStatement(sql);
                 ps.setInt(1, habitacionId);
                 rs = ps.executeQuery();
                 
                 List<String> fechasOcupadas = new ArrayList<>();
+                int reservasEncontradas = 0;
                 
                 while (rs.next()) {
+                    reservasEncontradas++;
+                    int reservaId = rs.getInt("id");
                     String checkin = rs.getString("fecha_checkin");
                     String checkout = rs.getString("fecha_checkout");
+                    String estado = rs.getString("estado");
+                    
+                    System.out.println("   📅 Reserva #" + reservaId + ":");
+                    System.out.println("      Estado: " + estado);
+                    System.out.println("      Check-in: " + checkin);
+                    System.out.println("      Check-out: " + checkout);
                     
                     // Generar todas las fechas entre checkin y checkout
                     LocalDate inicio = LocalDate.parse(checkin);
                     LocalDate fin = LocalDate.parse(checkout);
                     
-                    // Incluir desde checkin hasta checkout (no incluir la fecha de checkout)
+                    // ✅ IMPORTANTE: Incluir desde checkin hasta checkout-1
+                    // El día de checkout NO se marca como ocupado (el cliente ya se fue)
                     LocalDate fecha = inicio;
-                    while (!fecha.isAfter(fin.minusDays(1))) {
-                        fechasOcupadas.add(fecha.toString());
+                    while (fecha.isBefore(fin)) {
+                        String fechaStr = fecha.toString();
+                        if (!fechasOcupadas.contains(fechaStr)) {
+                            fechasOcupadas.add(fechaStr);
+                            System.out.println("      ✓ Bloqueando: " + fechaStr);
+                        }
                         fecha = fecha.plusDays(1);
                     }
                 }
                 
-                System.out.println("✅ Fechas ocupadas habitación " + habitacionId + ": " + fechasOcupadas.size());
+                System.out.println("✅ Total de reservas encontradas: " + reservasEncontradas);
+                System.out.println("✅ Total de fechas ocupadas: " + fechasOcupadas.size());
+                System.out.println("📋 Fechas ocupadas: " + fechasOcupadas);
+                System.out.println("========================================");
                 
                 Map<String, Object> resultado = new HashMap<>();
                 resultado.put("success", true);
                 resultado.put("fechas_ocupadas", fechasOcupadas);
+                resultado.put("total_reservas", reservasEncontradas);
+                resultado.put("habitacion_id", habitacionId);
                 
                 PrintWriter out = response.getWriter();
                 Gson gson = new Gson();
@@ -126,6 +156,7 @@ public class ObtenerReservaServlet extends HttpServlet {
                 out.flush();
                 
             } catch (SQLException e) {
+                System.err.println("❌ Error SQL: " + e.getMessage());
                 e.printStackTrace();
                 enviarError(response, "Error al consultar fechas ocupadas");
             } finally {
@@ -133,6 +164,7 @@ public class ObtenerReservaServlet extends HttpServlet {
             }
             
         } catch (NumberFormatException e) {
+            System.err.println("❌ ID de habitación inválido: " + habitacionIdStr);
             enviarError(response, "ID de habitación inválido");
         }
     }
@@ -210,9 +242,10 @@ public class ObtenerReservaServlet extends HttpServlet {
         try {
             conn = dbManager.getConnection();
             
+            // ✅ CORREGIDO: Incluir todas las reservas activas
             String sql = "SELECT habitacion_id, fecha_checkin, fecha_checkout, estado " +
                         "FROM reservas " +
-                        "WHERE estado IN ('confirmada', 'pendiente')";
+                        "WHERE estado NOT IN ('cancelada', 'finalizada')";
             
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
