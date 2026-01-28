@@ -161,7 +161,7 @@ button:hover,
 /* ========================================
    TÍTULO PRINCIPAL (H1)
 ======================================== */
-h1 {
+.index h1 {
   font-family: 'Playfair Display', serif;
   text-align: center;
   color: #1a1a1a;
@@ -172,7 +172,7 @@ h1 {
   font-weight: 400;
 }
 
-h1::after {
+.index h1::after {
   content: '';
   position: absolute;
   bottom: 0;

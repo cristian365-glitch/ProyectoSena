@@ -456,7 +456,12 @@
                 const respHab = await fetch('../ObtenerHabitacionesServlet');
                 habitacionesOriginal = await respHab.json();
                 
-                console.log('📦 Habitaciones cargadas:', habitacionesOriginal);
+                console.log('📦 Habitaciones cargadas:', habitacionesOriginal.length);
+                
+                // DEBUG: Mostrar la primera habitación
+                if (habitacionesOriginal.length > 0) {
+                    console.log('🔍 Ejemplo de habitación:', habitacionesOriginal[0]);
+                }
                 
                 // PRECARGA DE IMÁGENES
                 await precargarImagenes(habitacionesOriginal);
@@ -483,7 +488,6 @@
             }
         }
 
-        // PRECARGA DE IMÁGENES para que no aparezcan toscas
         function precargarImagenes(habitaciones) {
             return Promise.all(
                 habitaciones.map(hab => {
@@ -498,7 +502,7 @@
                             imagenesPreCargadas.add(hab.imagen_principal);
                             resolve();
                         };
-                        img.onerror = () => resolve(); // Continúa aunque falle
+                        img.onerror = () => resolve();
                         img.src = hab.imagen_principal;
                     });
                 })
@@ -534,10 +538,8 @@
             ejecutarFiltrado();
         }
 
-        // FUNCIÓN UNIFICADA - Maneja TODOS los filtros igual
         function toggleChip(elemento, tipo, valor) {
             if (tipo === 'experiencia') {
-                // Desactiva todos los de experiencia
                 document.querySelectorAll('[data-tipo="experiencia"]').forEach(chip => {
                     chip.classList.remove('active');
                 });
@@ -545,7 +547,6 @@
                 filtros.experiencia = valor;
                 
             } else if (tipo === 'servicio') {
-                // Toggle para servicios
                 elemento.classList.toggle('active');
                 
                 if (elemento.classList.contains('active')) {
@@ -556,52 +557,58 @@
                     filtros.servicios = filtros.servicios.filter(s => s !== valor);
                 }
                 
-                console.log('🔧 Servicios activos:', filtros.servicios);
+                console.log('🔧 Servicios seleccionados:', filtros.servicios);
             }
             
             ejecutarFiltrado();
         }
 
         function ejecutarFiltrado() {
-            console.log('🔍 Filtros activos:', filtros);
+            console.log('🔍 Aplicando filtros:', filtros);
             
             let resultado = habitacionesOriginal.filter(hab => {
                 // FILTRO 1: Experiencia
-                if (filtros.experiencia !== 'todas' && hab.experiencia !== filtros.experiencia) {
+                if (filtros.experiencia !== 'todas' && hab.vista !== filtros.experiencia) {
+                    console.log(`❌ ${hab.nombre} - experiencia no coincide (${hab.vista} !== ${filtros.experiencia})`);
                     return false;
                 }
                 
                 // FILTRO 2: Precio
                 if (hab.precio_noche > filtros.precioMax) {
+                    console.log(`❌ ${hab.nombre} - precio alto (${hab.precio_noche} > ${filtros.precioMax})`);
                     return false;
                 }
                 
                 // FILTRO 3: Capacidad
                 if (filtros.numHuespedes > 0 && hab.capacidad < filtros.numHuespedes) {
+                    console.log(`❌ ${hab.nombre} - capacidad insuficiente (${hab.capacidad} < ${filtros.numHuespedes})`);
                     return false;
                 }
                 
                 // FILTRO 4: Disponibilidad
                 if (filtros.fechaEntrada && filtros.fechaSalida) {
                     if (!estaDisponible(hab.id, filtros.fechaEntrada, filtros.fechaSalida)) {
+                        console.log(`❌ ${hab.nombre} - no disponible en fechas seleccionadas`);
                         return false;
                     }
                 }
                 
-                // FILTRO 5: Servicios - TODOS deben cumplirse
+                // FILTRO 5: Servicios (CORREGIDO)
                 for (let servicio of filtros.servicios) {
                     const valor = hab[servicio];
-                    // Acepta: 1, "1", true, "true"
-                    if (valor != 1 && valor !== true && valor !== "true") {
-                        console.log(`❌ Habitación ${hab.id} no tiene ${servicio} (valor: ${valor})`);
+                    
+                    // Convierte a número y verifica si es 1
+                    if (Number(valor) !== 1) {
+                        console.log(`❌ ${hab.nombre} - no tiene ${servicio} (valor: ${valor}, tipo: ${typeof valor})`);
                         return false;
                     }
                 }
                 
+                console.log(`✅ ${hab.nombre} - pasa todos los filtros`);
                 return true;
             });
             
-            console.log('✅ Resultados:', resultado.length);
+            console.log(`📊 Resultados: ${resultado.length} de ${habitacionesOriginal.length} habitaciones`);
             mostrarHabitaciones(resultado);
             actualizarContador(resultado.length);
         }
@@ -647,6 +654,7 @@
                 precioMax: Infinity
             };
             
+            console.log('🔄 Filtros limpiados');
             mostrarHabitaciones(habitacionesOriginal);
             actualizarContador(habitacionesOriginal.length);
         }
@@ -670,13 +678,15 @@
                 card.className = 'habitacion-card';
                 card.onclick = () => verDetalle(hab.id);
                 
-                const icono = hab.experiencia === 'bosque' ? '🌲' : 
-                             hab.experiencia === 'mar' ? '🌊' : '🌾';
+                // Usa la columna 'vista' en lugar de 'experiencia'
+                const vista = hab.vista || 'campo';
+                const icono = vista.toLowerCase() === 'bosque' ? '🌲' : 
+                             vista.toLowerCase() === 'mar' ? '🌊' : '🌾';
                 
                 card.innerHTML = `
                     <img src="${hab.imagen_principal || 'recursos/placeholder.jpg'}" alt="${hab.nombre}">
                     <div class="habitacion-info">
-                        <span class="experiencia-badge ${hab.experiencia}">${icono} ${hab.experiencia.toUpperCase()}</span>
+                        <span class="experiencia-badge ${vista.toLowerCase()}">${icono} ${vista.toUpperCase()}</span>
                         <h3>${hab.nombre}</h3>
                         <p class="habitacion-descripcion">${hab.descripcion ? (hab.descripcion.substring(0, 80) + '...') : 'Experiencia única'}</p>
                         <div class="habitacion-detalles">

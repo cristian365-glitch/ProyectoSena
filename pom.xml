@@ -82,6 +82,14 @@
             <version>7.0.23</version>
         </dependency>
         
+        <!-- BCrypt para hashing de contraseñas -->
+        <dependency>
+            <groupId>org.connectbot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>1.0.2</version>
+            <type>jar</type>
+        </dependency>
+        
         <!-- JavaEE Web API -->
         <dependency>
             <groupId>javax</groupId>
@@ -130,6 +138,32 @@
             <artifactId>google-http-client-jackson2</artifactId>
             <version>1.43.3</version>
         </dependency>
+        
+        <!-- ========================================
+             DEPENDENCIAS PARA EMAILSERVICE
+             ======================================== -->
+        
+        <!-- JavaMail API - Para envío de correos electrónicos -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+        
+        <!-- Jakarta Mail (alternativa moderna a javax.mail) -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        
+        <!-- Jakarta Activation (requerido por Jakarta Mail) -->
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        
     </dependencies>
 
     <build>
