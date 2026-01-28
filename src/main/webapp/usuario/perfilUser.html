@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="../indexCSS.css">
     <link rel="stylesheet" href="../login/auth-ui.css">
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-    
+    <link rel="apple-touch-icon" sizes="180x180" href="../recursos/imagen icon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../recursos/imagen icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../recursos/imagen icon/favicon-16x16.png">
     <script src="../login/auth-session.js"></script>
     <style>
         /* ========================================
@@ -775,6 +777,12 @@
                     </div>
                 </div>
             </div>
+            
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #f5f5f5;">
+                <button class="btn btn-secondary" onclick="window.location.href='RecuperarPassword.html'" style="width: 100%;">
+                    📧 ¿Olvidaste tu contraseña? Recupérala aquí
+                </button>
+            </div>
         </div>
     </div>
     
@@ -1361,26 +1369,6 @@
         }
         
         console.log('✅ Script de perfil cargado correctamente');
-        
-        // ============================================
-        // DEBUG: Verificar estado de autenticación
-        // ============================================
-        
-        // Log cada 5 segundos para debugging (comentar en producción)
-        if (window.location.hostname === 'localhost') {
-            setInterval(() => {
-                if (typeof auth !== 'undefined') {
-                    console.log('📊 Estado Auth:', {
-                        logueado: auth.estaLogueado(),
-                        usuario: auth.usuario,
-                        email: auth.email,
-                        esAdmin: auth.esAdmin
-                    });
-                } else {
-                    console.log('⚠️ Auth no está definido');
-                }
-            }, 5000);
-        }
     </script>
 </body>
 </html>
