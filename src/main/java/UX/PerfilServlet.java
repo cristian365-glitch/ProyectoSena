@@ -10,12 +10,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import com.google.gson.Gson;
 import com.conexiones.DatabaseManager;
-import com.conexiones.DatabaseManager;
-import com.conexiones.DatabaseManager;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import org.mindrot.jbcrypt.BCrypt;
+import java.security.MessageDigest;
 
 /**
  * Servlet para gestionar el perfil de usuario
@@ -90,14 +89,24 @@ public class PerfilServlet extends HttpServlet {
             rs = stmt.executeQuery();
             
             if (rs.next()) {
+                String email = rs.getString("email");
+                
+                // Generar hash MD5 del email para Gravatar
+                String avatarUrl = generarGravatarURL(email);
+                
+                // Formatear fecha de registro
+                Date fechaRegistro = rs.getDate("fecha_registro");
+                String fechaRegistroStr = fechaRegistro != null ? fechaRegistro.toString() : null;
+                
                 // Crear objeto usuario con los datos
                 Map<String, Object> usuario = new HashMap<>();
                 usuario.put("usuario", rs.getString("usuario"));
-                usuario.put("email", rs.getString("email"));
+                usuario.put("email", email);
                 usuario.put("nombre", rs.getString("nombre"));
                 usuario.put("telefono", rs.getString("telefono"));
-                usuario.put("miembroDesde", rs.getDate("fecha_registro"));
+                usuario.put("fechaRegistro", fechaRegistroStr);  // Formato: "YYYY-MM-DD"
                 usuario.put("esAdmin", rs.getBoolean("esAdmin"));
+                usuario.put("avatarUrl", avatarUrl);  // URL del avatar de Gravatar
                 
                 // Crear respuesta con la estructura correcta
                 Map<String, Object> perfil = new HashMap<>();
@@ -114,6 +123,36 @@ public class PerfilServlet extends HttpServlet {
             enviarErrorJSON(response, "Error al consultar la base de datos");
         } finally {
             DatabaseManager.closeResources(rs, stmt, conn);
+        }
+    }
+    
+    /**
+     * Generar URL del avatar de Gravatar basado en el email
+     */
+    private String generarGravatarURL(String email) {
+        try {
+            // Convertir email a minúsculas y quitar espacios
+            String emailLimpio = email.trim().toLowerCase();
+            
+            // Generar hash MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] array = md.digest(emailLimpio.getBytes("UTF-8"));
+            
+            // Convertir a hexadecimal
+            StringBuilder sb = new StringBuilder();
+            for (byte b : array) {
+                sb.append(String.format("%02x", b));
+            }
+            
+            String hash = sb.toString();
+            
+            // Retornar URL de Gravatar
+            return "https://www.gravatar.com/avatar/" + hash + "?d=mp&s=200";
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            // En caso de error, retornar avatar por defecto
+            return "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200";
         }
     }
     
