@@ -148,6 +148,28 @@
             margin-bottom: 30px;
         }
 
+        /* DEBUG INFO */
+        .debug-info {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            font-family: monospace;
+        }
+
+        .debug-info h4 {
+            margin: 0 0 10px 0;
+            color: #856404;
+        }
+
+        .debug-info pre {
+            margin: 5px 0;
+            white-space: pre-wrap;
+            color: #856404;
+        }
+
         /* CALENDARIO VISUAL RETRAÍBLE */
         .calendario-container {
             background: #f8f9fa;
@@ -196,7 +218,7 @@
         }
 
         .calendario-content.abierto {
-            max-height: 800px;
+            max-height: 900px;
         }
 
         .calendario-inner {
@@ -529,6 +551,12 @@
                 <h2>Completa tu Reserva</h2>
                 <p class="subtitulo">Selecciona tus fechas en el calendario</p>
 
+                <!-- DEBUG INFO -->
+                <div class="debug-info" id="debugInfo" style="display: none;">
+                    <h4>🔍 Información de Debug</h4>
+                    <pre id="debugContent"></pre>
+                </div>
+
                 <!-- CALENDARIO VISUAL RETRAÍBLE -->
                 <div class="calendario-container">
                     <div class="calendario-toggle" onclick="toggleCalendario()">
@@ -670,10 +698,23 @@
         let mesActual = new Date();
         let fechaCheckin = null;
         let fechaCheckout = null;
+        let DEBUG_MODE = true; // Cambiar a false en producción
 
         const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         const DIAS_SEMANA = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
+        // Función para mostrar debug
+        function mostrarDebug(mensaje) {
+            if (!DEBUG_MODE) return;
+            
+            const debugInfo = document.getElementById('debugInfo');
+            const debugContent = document.getElementById('debugContent');
+            
+            debugInfo.style.display = 'block';
+            debugContent.textContent += mensaje + '\n';
+            console.log('🔍 DEBUG:', mensaje);
+        }
 
         // Función para abrir/cerrar calendario
         function toggleCalendario() {
@@ -686,6 +727,7 @@
 
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 Iniciando carga de reservar.html');
+            mostrarDebug('🚀 Iniciando aplicación');
             
             const params = new URLSearchParams(window.location.search);
             const habitacionId = params.get('habitacion');
@@ -696,7 +738,7 @@
                 return;
             }
 
-            console.log('📋 Habitación ID:', habitacionId);
+            mostrarDebug(`📋 Habitación ID: ${habitacionId}`);
 
             // Verificar sesión primero
             await verificarSesionYCargarDatos();
@@ -724,7 +766,7 @@
 
         async function verificarSesionYCargarDatos() {
             try {
-                console.log('🔐 Verificando sesión...');
+                mostrarDebug('🔐 Verificando sesión...');
                 const response = await fetch('../ObtenerSesionServlet', {
                     credentials: 'include'
                 });
@@ -737,13 +779,14 @@
                     return;
                 }
                 
-                console.log('✅ Sesión verificada:', data.nombre);
+                mostrarDebug(`✅ Sesión verificada: ${data.nombre}`);
                 
                 if (data.nombre) document.getElementById('nombre').value = data.nombre;
                 if (data.email) document.getElementById('email').value = data.email;
                 if (data.telefono) document.getElementById('telefono').value = data.telefono;
                 
             } catch (error) {
+                mostrarDebug(`❌ Error al verificar sesión: ${error.message}`);
                 console.error('❌ Error al verificar sesión:', error);
                 window.location.href = 'Login.html?redirect=reservar';
             }
@@ -751,7 +794,7 @@
 
         async function cargarHabitacion(id) {
             try {
-                console.log('🏨 Cargando habitación...');
+                mostrarDebug('🏨 Cargando habitación...');
                 const response = await fetch(`../DetalleHabitacionServlet?id=${id}`, {
                     credentials: 'include'
                 });
@@ -761,7 +804,7 @@
                 }
 
                 habitacion = await response.json();
-                console.log('✅ Habitación cargada:', habitacion);
+                mostrarDebug(`✅ Habitación cargada: ${habitacion.nombre}`);
 
                 if (!habitacion || habitacion.error) {
                     alert('Habitación no encontrada');
@@ -777,6 +820,7 @@
                 document.getElementById('personas').max = habitacion.capacidad;
                 
             } catch (error) {
+                mostrarDebug(`❌ Error al cargar habitación: ${error.message}`);
                 console.error('❌ Error al cargar habitación:', error);
                 alert('Error al cargar la habitación: ' + error.message);
             }
@@ -784,19 +828,29 @@
 
         async function cargarFechasOcupadas(habitacionId) {
             try {
-                console.log('📅 Cargando fechas ocupadas...');
-                const response = await fetch(`../ObtenerReservaServlet?fechas_ocupadas=${habitacionId}`, {
+                mostrarDebug('📅 Cargando fechas ocupadas...');
+                const url = `../ObtenerReservaServlet?fechas_ocupadas=${habitacionId}`;
+                mostrarDebug(`📡 URL: ${url}`);
+                
+                const response = await fetch(url, {
                     credentials: 'include'
                 });
                 
+                mostrarDebug(`📡 Response status: ${response.status}`);
+                
                 const data = await response.json();
+                mostrarDebug(`📡 Response data: ${JSON.stringify(data)}`);
                 
                 if (data.success) {
                     fechasOcupadas = data.fechas_ocupadas || [];
-                    console.log('✅ Fechas ocupadas:', fechasOcupadas);
+                    mostrarDebug(`✅ Fechas ocupadas cargadas: ${fechasOcupadas.length} fechas`);
+                    mostrarDebug(`📅 Fechas: ${JSON.stringify(fechasOcupadas)}`);
                     generarCalendario(); // Regenerar después de cargar fechas
+                } else {
+                    mostrarDebug(`⚠️ No se pudieron cargar fechas ocupadas`);
                 }
             } catch (error) {
+                mostrarDebug(`❌ Error al cargar fechas: ${error.message}`);
                 console.error('❌ Error al cargar fechas:', error);
             }
         }
@@ -804,6 +858,8 @@
         function generarCalendario() {
             const grid = document.getElementById('calendarioGrid');
             grid.innerHTML = '';
+
+            mostrarDebug(`📆 Generando calendario para ${MESES[mesActual.getMonth()]} ${mesActual.getFullYear()}`);
 
             // Actualizar título
             document.getElementById('calendarioMesAnio').textContent = 
@@ -856,6 +912,7 @@
                 // Marcar día ocupado
                 else if (fechasOcupadas.includes(fechaStr)) {
                     elemento.classList.add('ocupado');
+                    mostrarDebug(`🚫 Fecha ocupada: ${fechaStr}`);
                 }
                 // Marcar día disponible
                 else {
@@ -886,6 +943,7 @@
 
         function seleccionarFecha(fecha) {
             const fechaStr = formatearFechaISO(fecha);
+            mostrarDebug(`👆 Fecha seleccionada: ${fechaStr}`);
 
             // Si hay fecha ocupada en el medio, no permitir
             if (fechaCheckin && !fechaCheckout) {
@@ -906,6 +964,7 @@
                 // Primera selección: check-in
                 fechaCheckin = fecha;
                 document.getElementById('checkin').value = fechaStr;
+                mostrarDebug(`✅ Check-in seleccionado: ${fechaStr}`);
             } else if (!fechaCheckout) {
                 // Segunda selección: check-out
                 if (fecha <= fechaCheckin) {
@@ -914,9 +973,19 @@
                     fechaCheckout = null;
                     document.getElementById('checkin').value = fechaStr;
                     document.getElementById('checkout').value = '';
+                    mostrarDebug(`🔄 Reiniciando selección. Nuevo check-in: ${fechaStr}`);
                 } else {
                     fechaCheckout = fecha;
                     document.getElementById('checkout').value = fechaStr;
+                    mostrarDebug(`✅ Check-out seleccionado: ${fechaStr}`);
+                    
+                    // Validar nuevamente todo el rango
+                    if (hayFechasOcupadasEnRango(fechaCheckin, fechaCheckout)) {
+                        alert('⚠️ El rango seleccionado contiene fechas ocupadas. Por favor selecciona otras fechas.');
+                        fechaCheckout = null;
+                        document.getElementById('checkout').value = '';
+                        mostrarDebug(`❌ Rango inválido - contiene fechas ocupadas`);
+                    }
                 }
             } else {
                 // Ya hay ambas fechas, reinicia la selección
@@ -924,6 +993,7 @@
                 fechaCheckout = null;
                 document.getElementById('checkin').value = fechaStr;
                 document.getElementById('checkout').value = '';
+                mostrarDebug(`🔄 Reiniciando selección completa. Nuevo check-in: ${fechaStr}`);
             }
 
             generarCalendario();
@@ -943,6 +1013,7 @@
                 document.getElementById('nochesTexto').textContent = noches + (noches === 1 ? ' noche' : ' noches');
                 
                 container.style.display = 'block';
+                mostrarDebug(`📊 Resumen actualizado: ${noches} noches`);
             } else {
                 container.style.display = 'none';
             }
@@ -950,15 +1021,21 @@
 
         function hayFechasOcupadasEnRango(inicio, fin) {
             let fechaActual = new Date(inicio);
-            fechaActual.setDate(fechaActual.getDate() + 1); // Empezar desde el día siguiente
-
-            while (fechaActual < fin) {
+            // IMPORTANTE: Incluir el día de check-in en la validación
+            
+            const fechasEnRango = [];
+            while (fechaActual <= fin) {
                 const fechaStr = formatearFechaISO(fechaActual);
+                fechasEnRango.push(fechaStr);
+                
                 if (fechasOcupadas.includes(fechaStr)) {
+                    mostrarDebug(`⚠️ Fecha ocupada encontrada en rango: ${fechaStr}`);
                     return true;
                 }
                 fechaActual.setDate(fechaActual.getDate() + 1);
             }
+            
+            mostrarDebug(`✅ Rango validado OK: ${fechasEnRango.join(', ')}`);
             return false;
         }
 
@@ -990,12 +1067,15 @@
             const subtotal = habitacion.precio_noche * noches;
             document.getElementById('subtotal').textContent = '$' + subtotal.toLocaleString('es-CO');
             document.getElementById('total').textContent = '$' + subtotal.toLocaleString('es-CO');
+            
+            mostrarDebug(`💰 Precio calculado: ${noches} noches x $${habitacion.precio_noche} = $${subtotal}`);
         }
 
         document.getElementById('reservaForm').addEventListener('submit', function(e) {
             if (!fechaCheckin || !fechaCheckout) {
                 e.preventDefault();
                 alert('Debes seleccionar las fechas de tu estadía en el calendario');
+                mostrarDebug(`❌ Formulario bloqueado: Fechas no seleccionadas`);
                 return;
             }
 
@@ -1003,17 +1083,38 @@
             if (habitacion && personas > habitacion.capacidad) {
                 e.preventDefault();
                 alert(`La habitación tiene capacidad máxima de ${habitacion.capacidad} personas`);
+                mostrarDebug(`❌ Formulario bloqueado: Excede capacidad`);
                 return;
             }
             
-            console.log('✅ Reserva válida, enviando...');
-            console.log('Check-in:', document.getElementById('checkin').value);
-            console.log('Check-out:', document.getElementById('checkout').value);
+            // Validación final antes de enviar
+            if (hayFechasOcupadasEnRango(fechaCheckin, fechaCheckout)) {
+                e.preventDefault();
+                alert('⚠️ ERROR: Las fechas seleccionadas incluyen días ocupados. No se puede procesar la reserva.');
+                mostrarDebug(`❌ VALIDACIÓN FINAL FALLIDA: Fechas ocupadas en el rango`);
+                return;
+            }
+            
+            const checkinValue = document.getElementById('checkin').value;
+            const checkoutValue = document.getElementById('checkout').value;
+            
+            mostrarDebug(`✅ Formulario válido - Enviando...`);
+            mostrarDebug(`📤 Check-in: ${checkinValue}`);
+            mostrarDebug(`📤 Check-out: ${checkoutValue}`);
+            mostrarDebug(`📤 Habitación: ${habitacion.id}`);
+            mostrarDebug(`📤 Personas: ${personas}`);
         });
 
         function mostrarErrores() {
             const params = new URLSearchParams(window.location.search);
             const error = params.get('error');
+            const checkinParam = params.get('checkin');
+            const checkoutParam = params.get('checkout');
+            
+            if (error) {
+                mostrarDebug(`❌ ERROR RECIBIDO: ${error}`);
+                mostrarDebug(`📅 Fechas que causaron error - Check-in: ${checkinParam}, Check-out: ${checkoutParam}`);
+            }
             
             if (!error) return;
             
@@ -1022,7 +1123,7 @@
                 'fecha_pasada': 'La fecha de llegada no puede ser en el pasado',
                 'fechas_invalidas': 'Las fechas seleccionadas no son válidas',
                 'excede_capacidad': 'El número de personas excede la capacidad de la habitación',
-                'no_disponible': 'La habitación no está disponible en las fechas seleccionadas',
+                'no_disponible': '⚠️ FECHAS NO DISPONIBLES - Las fechas que seleccionaste están ocupadas en el servidor. Esto puede indicar que:\n1. Alguien reservó mientras seleccionabas\n2. Hay un problema de sincronización con el servidor\n3. Las fechas ocupadas no se cargaron correctamente',
                 'no_guardado': 'No se pudo procesar la reserva. Intenta nuevamente',
                 'error_sistema': 'Error en el sistema. Por favor intenta más tarde',
                 'datos_invalidos': 'Los datos ingresados no son válidos'
@@ -1043,6 +1144,8 @@
                 box-shadow: 0 4px 12px rgba(0,0,0,0.2);
                 z-index: 10000;
                 font-weight: 600;
+                max-width: 500px;
+                text-align: center;
             `;
             alerta.textContent = mensaje;
             
@@ -1051,7 +1154,7 @@
             setTimeout(() => {
                 alerta.style.opacity = '0';
                 setTimeout(() => alerta.remove(), 300);
-            }, 5000);
+            }, 8000);
         }
     </script>
 </body>

@@ -5,211 +5,423 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle Habitación - Hotel Armonía</title>
     <link rel="stylesheet" href="../indexCSS.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="auth-ui.css">
     <script src="auth-session.js"></script>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            background: linear-gradient(135deg, #fafbfc 0%, #f0f2f5 50%, #e8ecf0 100%);
+            font-family: 'Inter', sans-serif;
         }
 
         .detalle-container {
-            max-width: 1200px;
-            margin: 120px auto 60px;
-            padding: 0 20px;
+            max-width: 1400px;
+            margin: 140px auto 80px;
+            padding: 0 30px;
         }
 
         .back-btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            color: #000000;
+            gap: 10px;
+            color: #2c3e50;
             text-decoration: none;
             font-weight: 600;
-            margin-bottom: 30px;
-            transition: all 0.3s;
+            margin-bottom: 40px;
+            padding: 12px 24px;
+            border-radius: 50px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
         }
 
         .back-btn:hover {
             color: #d4af37;
+            transform: translateX(-5px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
         }
 
+        /* GALERÍA MEJORADA */
         .galeria {
             display: grid;
             grid-template-columns: 2fr 1fr;
-            gap: 15px;
-            margin-bottom: 40px;
-            border-radius: 15px;
+            gap: 20px;
+            margin-bottom: 50px;
+            border-radius: 20px;
             overflow: hidden;
         }
 
         .imagen-principal {
             position: relative;
-            height: 500px;
+            height: 600px;
             cursor: pointer;
             overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
         }
 
         .imagen-principal img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.3s;
+            transition: transform 0.5s ease;
         }
 
         .imagen-principal:hover img {
-            transform: scale(1.05);
+            transform: scale(1.08);
+        }
+
+        .imagen-principal::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .imagen-principal:hover::after {
+            opacity: 1;
         }
 
         .imagenes-secundarias {
             display: grid;
             grid-template-rows: repeat(2, 1fr);
-            gap: 15px;
+            gap: 20px;
         }
 
         .imagen-secundaria {
             position: relative;
-            height: 242.5px;
+            height: 290px;
             cursor: pointer;
             overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
         }
 
         .imagen-secundaria img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.3s;
+            transition: transform 0.5s ease;
         }
 
         .imagen-secundaria:hover img {
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
 
         .ver-todas {
             position: absolute;
-            bottom: 15px;
-            right: 15px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 8px;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 50px;
             font-weight: 600;
-            color: #000000;
+            color: #2c3e50;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            font-size: 0.9rem;
         }
 
         .ver-todas:hover {
             background: #d4af37;
             color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
         }
 
+        /* CONTENIDO MEJORADO */
         .habitacion-contenido {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 40px;
+            grid-template-columns: 1.8fr 1.2fr;
+            gap: 50px;
             background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 60px;
+            border-radius: 30px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
         }
 
         .info-principal h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.5rem;
-            color: #000000;
-            margin-bottom: 15px;
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
         }
 
         .experiencia-tag {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 50px;
             font-weight: 600;
+            font-size: 0.85rem;
             color: white;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
-        .experiencia-tag.bosque { background: linear-gradient(135deg, #2d5016, #4a7c2a); }
-        .experiencia-tag.mar { background: linear-gradient(135deg, #1e88e5, #1565c0); }
-        .experiencia-tag.campo { background: linear-gradient(135deg, #558b2f, #7cb342); }
+        .experiencia-tag.bosque { 
+            background: linear-gradient(135deg, #2d5016, #4a7c2a); 
+        }
+        .experiencia-tag.mar { 
+            background: linear-gradient(135deg, #1e88e5, #1565c0); 
+        }
+        .experiencia-tag.campo { 
+            background: linear-gradient(135deg, #558b2f, #7cb342); 
+        }
 
         .descripcion {
-            color: #666666;
-            line-height: 1.8;
-            margin-bottom: 30px;
-            font-size: 1.05rem;
+            color: #4a5568;
+            line-height: 1.9;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+            font-weight: 400;
         }
 
+        /* DETALLES RÁPIDOS MEJORADOS */
         .detalles-rapidos {
-            display: flex;
-            gap: 30px;
-            padding: 20px 0;
-            border-top: 1px solid #e0e0e0;
-            border-bottom: 1px solid #e0e0e0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            padding: 30px 0;
+            margin: 30px 0;
+            border-top: 2px solid #f0f0f0;
+            border-bottom: 2px solid #f0f0f0;
         }
 
         .detalle-quick {
             text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #fafbfc, #f8f9fa);
+            border-radius: 15px;
+            transition: all 0.3s;
+            border: 1px solid #e8ecf0;
+        }
+
+        .detalle-quick:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.15);
+            border-color: #d4af37;
         }
 
         .detalle-quick strong {
             display: block;
-            font-size: 1.5rem;
-            color: #d4af37;
-            margin-bottom: 5px;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            font-weight: 700;
         }
 
         .detalle-quick span {
-            color: #666666;
-            font-size: 0.9rem;
+            color: #718096;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .panel-reserva {
-            background: #f8f9fa;
-            padding: 30px;
+        /* INFORMACIÓN DE CAMAS */
+        #camas-info {
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa, #f0f2f5);
             border-radius: 15px;
+            border-left: 4px solid #d4af37;
+            display: none;
+        }
+
+        #camas-info strong {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #camas-texto {
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        /* COMODIDADES MEJORADAS */
+        #comodidades-container {
+            margin: 40px 0;
+        }
+
+        #comodidades-container h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #1a1a1a;
+        }
+
+        #comodidades-lista {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .comodidad-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 18px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s;
+        }
+
+        .comodidad-item:hover {
+            border-color: #d4af37;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.1);
+        }
+
+        .comodidad-item span:first-child {
+            font-size: 1.4rem;
+        }
+
+        .comodidad-item span:last-child {
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        /* PANEL DE RESERVA MEJORADO */
+        .panel-reserva {
+            background: linear-gradient(135deg, #ffffff, #fafbfc);
+            padding: 40px;
+            border-radius: 25px;
             height: fit-content;
             position: sticky;
-            top: 100px;
+            top: 120px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+            border: 1px solid #f0f0f0;
+        }
+
+        .precio-contenedor {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
         }
 
         .precio-destacado {
-            font-size: 2.5rem;
-            color: #d4af37;
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
             font-weight: 700;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
+            line-height: 1;
         }
 
         .precio-destacado small {
-            font-size: 1rem;
-            color: #999999;
+            font-size: 1.1rem;
+            color: #718096;
             font-weight: 400;
+            display: block;
+            margin-top: 8px;
+            font-family: 'Inter', sans-serif;
         }
 
         .btn-reservar-grande {
             width: 100%;
-            padding: 18px;
+            padding: 20px;
             background: linear-gradient(135deg, #d4af37, #b8860b);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 15px;
             font-weight: 700;
             font-size: 1.1rem;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
+            transition: all 0.4s ease;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-reservar-grande::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-reservar-grande:hover::before {
+            left: 100%;
         }
 
         .btn-reservar-grande:hover {
             background: linear-gradient(135deg, #b8860b, #9a7209);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(212, 175, 55, 0.5);
         }
 
+        .btn-reservar-grande:active {
+            transform: translateY(-1px);
+        }
+
+        .garantias {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .garantia-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #4a5568;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .garantia-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .garantia-item::before {
+            content: '✓';
+            color: #48bb78;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* MODAL MEJORADO */
         .modal-galeria {
             display: none;
             position: fixed;
@@ -217,36 +429,65 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.97);
             z-index: 10000;
             padding: 20px;
+            backdrop-filter: blur(10px);
         }
 
         .modal-galeria.active {
             display: flex;
             align-items: center;
             justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
-            max-width: 90%;
+            max-width: 95%;
             max-height: 90%;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .modal-content img {
             max-width: 100%;
-            max-height: 80vh;
+            max-height: 85vh;
             object-fit: contain;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
 
         .cerrar-modal {
             position: absolute;
-            top: 20px;
-            right: 40px;
+            top: 30px;
+            right: 50px;
             color: white;
-            font-size: 40px;
+            font-size: 50px;
             cursor: pointer;
             z-index: 10001;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .cerrar-modal:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
         }
 
         .navegacion-galeria {
@@ -255,48 +496,110 @@
             width: 100%;
             display: flex;
             justify-content: space-between;
-            padding: 0 20px;
+            padding: 0 30px;
             transform: translateY(-50%);
         }
 
         .nav-btn {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
             color: white;
-            border: none;
-            padding: 15px 20px;
-            font-size: 24px;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 18px 24px;
+            font-size: 28px;
             cursor: pointer;
             border-radius: 50%;
             transition: all 0.3s;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.4);
+            background: rgba(212, 175, 55, 0.8);
+            border-color: #d4af37;
+            transform: scale(1.1);
         }
 
+        /* MENSAJES DE ERROR Y CARGA */
         .error-message {
-            background: #ffebee;
+            background: linear-gradient(135deg, #fee, #fdd);
             color: #c62828;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
             text-align: center;
+            border: 2px solid #ffcdd2;
+        }
+
+        .error-message h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        .error-message button {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #d4af37;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .error-message button:hover {
+            background: #b8860b;
+            transform: translateY(-2px);
         }
 
         .loading {
             text-align: center;
-            padding: 40px;
-            font-size: 1.2rem;
-            color: #666;
+            padding: 60px;
+            font-size: 1.3rem;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .habitacion-contenido {
+                gap: 40px;
+                padding: 40px;
+            }
+
+            .info-principal h1 {
+                font-size: 2.5rem;
+            }
         }
 
         @media (max-width: 768px) {
+            .detalle-container {
+                margin: 100px auto 40px;
+                padding: 0 20px;
+            }
+
             .galeria {
                 grid-template-columns: 1fr;
+                gap: 15px;
             }
 
             .imagen-principal {
-                height: 300px;
+                height: 400px;
             }
 
             .imagenes-secundarias {
@@ -305,16 +608,42 @@
             }
 
             .imagen-secundaria {
-                height: 150px;
+                height: 200px;
             }
 
             .habitacion-contenido {
                 grid-template-columns: 1fr;
-                padding: 20px;
+                padding: 30px 20px;
+                gap: 30px;
+            }
+
+            .info-principal h1 {
+                font-size: 2rem;
             }
 
             .panel-reserva {
                 position: static;
+                padding: 30px;
+            }
+
+            #comodidades-lista {
+                grid-template-columns: 1fr;
+            }
+
+            .detalles-rapidos {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .cerrar-modal {
+                top: 20px;
+                right: 20px;
+                font-size: 40px;
+            }
+
+            .nav-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
             }
         }
     </style>
@@ -337,9 +666,11 @@
     </header>
 
     <div class="detalle-container">
-        <a href="../nav/disponibilidad.html" class="back-btn">← Volver a habitaciones</a>
+        <a href="../nav/disponibilidad.html" class="back-btn">
+            <span>←</span> Volver a habitaciones
+        </a>
 
-        <div id="loading" class="loading">Cargando habitación...</div>
+        <div id="loading" class="loading">Cargando habitación</div>
 
         <div class="galeria" id="galeria" style="display: none;"></div>
 
@@ -365,30 +696,33 @@
                     </div>
                 </div>
 
-                <div id="camas-info" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px; display: none;">
+                <div id="camas-info">
                     <strong>🛏️ Camas:</strong> <span id="camas-texto"></span>
                 </div>
 
-                <div id="comodidades-container" style="margin: 20px 0;">
-                    <h3 style="font-size: 1.3rem; margin-bottom: 15px;">Comodidades</h3>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;" id="comodidades-lista"></div>
+                <div id="comodidades-container">
+                    <h3>Comodidades incluidas</h3>
+                    <div id="comodidades-lista"></div>
                 </div>
             </div>
 
             <div class="panel-reserva">
-                <div class="precio-destacado">
-                    $<span id="precio">0</span>
-                    <small>/ noche</small>
+                <div class="precio-contenedor">
+                    <div class="precio-destacado">
+                        $<span id="precio">0</span>
+                        <small>por noche</small>
+                    </div>
                 </div>
                 
                 <button class="btn-reservar-grande" onclick="iniciarReserva()">
                     Reservar Ahora
                 </button>
 
-                <p style="text-align: center; color: #999; font-size: 0.85rem; margin-top: 15px;">
-                    ✓ Cancelación gratuita<br>
-                    ✓ Mejor precio garantizado
-                </p>
+                <div class="garantias">
+                    <div class="garantia-item">Cancelación gratuita</div>
+                    <div class="garantia-item">Mejor precio garantizado</div>
+                    <div class="garantia-item">Confirmación inmediata</div>
+                </div>
             </div>
         </div>
     </div>
@@ -428,9 +762,6 @@
             try {
                 console.log('🔍 Cargando habitación con ID:', id);
                 
-                // ✅ Ruta correcta según tu estructura
-                // detalle-habitacion.html está en /login/
-                // El servlet está mapeado en el contexto raíz
                 const response = await fetch(`../DetalleHabitacionServlet?id=${id}`);
                 
                 console.log('📡 Response status:', response.status);
@@ -467,8 +798,7 @@
                 <div class="error-message">
                     <h3>⚠️ Error</h3>
                     <p>${mensaje}</p>
-                    <button onclick="window.location.href='disponibilidad.html'" 
-                            style="margin-top: 15px; padding: 10px 20px; background: #d4af37; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    <button onclick="window.location.href='disponibilidad.html'">
                         Volver a habitaciones
                     </button>
                 </div>
@@ -519,8 +849,8 @@
             listaComodidades.innerHTML = '';
             comodidades.forEach(com => {
                 const div = document.createElement('div');
-                div.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 8px; background: white; border-radius: 6px; border: 1px solid #e0e0e0;';
-                div.innerHTML = `<span style="font-size: 1.2rem;">${com.icono}</span> <span>${com.texto}</span>`;
+                div.className = 'comodidad-item';
+                div.innerHTML = `<span>${com.icono}</span> <span>${com.texto}</span>`;
                 listaComodidades.appendChild(div);
             });
 
