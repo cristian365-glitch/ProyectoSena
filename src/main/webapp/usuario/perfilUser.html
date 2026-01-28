@@ -926,17 +926,12 @@
     </footer>
     
     <!-- SCRIPTS -->
-    <script src="../auth-session.js"></script>
     <script>
-        // ============================================
-        // CONFIGURACIÓN BASE
-        // ============================================
-        const BASE_PATH = '/ProyectoSena/';
-        let perfilData = null;
-        
         // ============================================
         // INICIALIZACIÓN
         // ============================================
+        let perfilData = null;
+        
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🔄 Inicializando página de perfil...');
             
@@ -946,7 +941,7 @@
             // Verificar sesión
             if (!auth || !auth.estaLogueado()) {
                 console.warn('⚠️ Usuario no logueado, redirigiendo...');
-                window.location.href = BASE_PATH + 'Login.html';
+                window.location.href = '../login/Login.html';
                 return;
             }
             
@@ -1000,7 +995,7 @@
         // Verificación directa con el servidor (fallback)
         async function verificarSesionDirecta() {
             try {
-                const response = await fetch(BASE_PATH + 'RegistroServlet?action=verificarSesion', {
+                const response = await fetch('../RegistroServlet?action=verificarSesion', {
                     credentials: 'include'
                 });
                 
@@ -1008,7 +1003,7 @@
                 
                 if (!data.logueado) {
                     console.warn('⚠️ Servidor confirma: no hay sesión activa');
-                    window.location.href = BASE_PATH + 'Login.html';
+                    window.location.href = '../login/Login.html';
                 } else {
                     console.log('✅ Servidor confirma sesión activa:', data);
                     // Crear objeto auth temporal si no existe
@@ -1023,7 +1018,7 @@
                 }
             } catch (error) {
                 console.error('❌ Error verificando sesión:', error);
-                window.location.href = BASE_PATH + 'Login.html';
+                window.location.href = '../login/Login.html';
             }
         }
         
@@ -1034,7 +1029,7 @@
             try {
                 console.log('📥 Cargando datos del perfil...');
                 
-                const response = await fetch(BASE_PATH + 'PerfilServlet?action=obtenerPerfil', {
+                const response = await fetch('../PerfilServlet?action=obtenerPerfil', {
                     credentials: 'include'
                 });
                 
@@ -1197,7 +1192,7 @@
             console.log('💾 Guardando datos personales...', { nombre, telefono });
             
             try {
-                const response = await fetch(BASE_PATH + 'PerfilServlet?action=actualizarDatos', {
+                const response = await fetch('../PerfilServlet?action=actualizarDatos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     credentials: 'include',
@@ -1253,7 +1248,7 @@
             console.log('📧 Cambiando email a:', email);
             
             try {
-                const response = await fetch(BASE_PATH + 'PerfilServlet?action=actualizarEmail', {
+                const response = await fetch('../PerfilServlet?action=actualizarEmail', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     credentials: 'include',
@@ -1326,7 +1321,7 @@
             console.log('🔒 Cambiando contraseña...');
             
             try {
-                const response = await fetch(BASE_PATH + 'PerfilServlet?action=cambiarPassword', {
+                const response = await fetch('../PerfilServlet?action=cambiarPassword', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     credentials: 'include',
@@ -1371,7 +1366,7 @@
         // DEBUG: Verificar estado de autenticación
         // ============================================
         
-        // Log cada 2 segundos para debugging (comentar en producción)
+        // Log cada 5 segundos para debugging (comentar en producción)
         if (window.location.hostname === 'localhost') {
             setInterval(() => {
                 if (typeof auth !== 'undefined') {

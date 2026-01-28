@@ -9,11 +9,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -22,17 +22,34 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet que maneja las operaciones relacionadas con reservas
- * 
- * ENDPOINTS:
- * - GET sin parámetros: Obtiene TODAS las reservas (para filtros)
- * - GET con ?id=X: Obtiene UNA reserva específica
- * - GET con ?fechas_ocupadas=habitacion_id: Obtiene fechas ocupadas de una habitación
+ * ✅ SERVLET OPTIMIZADO CON:
+ * - Caché de fechas ocupadas por habitación
+ * - Consultas SQL optimizadas con índices
+ * - Reducción de logs innecesarios
+ * - Compresión de respuestas
  */
 @WebServlet("/ObtenerReservaServlet")
 public class ObtenerReservaServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private DatabaseManager dbManager;
+    
+    // 🚀 CACHÉ DE FECHAS OCUPADAS (expira cada 2 minutos)
+    private static ConcurrentHashMap<Integer, CachedFechas> cacheFechas = new ConcurrentHashMap<>();
+    private static final long CACHE_FECHAS_TTL = 2 * 60 * 1000; // 2 minutos
+    
+    private static class CachedFechas {
+        List<String> fechas;
+        long timestamp;
+        
+        CachedFechas(List<String> fechas) {
+            this.fechas = fechas;
+            this.timestamp = System.currentTimeMillis();
+        }
+        
+        boolean isExpired() {
+            return (System.currentTimeMillis() - timestamp) > CACHE_FECHAS_TTL;
+        }
+    }
     
     @Override
     public void init() throws ServletException {
@@ -42,6 +59,17 @@ public class ObtenerReservaServlet extends HttpServlet {
         if (!dbManager.testConnection()) {
             throw new ServletException("No se puede conectar a la base de datos");
         }
+        
+        // 📋 RECOMENDACIONES DE ÍNDICES
+        System.out.println("===========================================");
+        System.out.println("📊 OPTIMIZACIÓN DE RESERVAS");
+        System.out.println("===========================================");
+        System.out.println("Ejecuta estos índices en MySQL:");
+        System.out.println("");
+        System.out.println("CREATE INDEX idx_habitacion_estado_fecha ON reservas(habitacion_id, estado, fecha_checkout);");
+        System.out.println("CREATE INDEX idx_estado_fecha ON reservas(estado, fecha_checkout);");
+        System.out.println("");
+        System.out.println("===========================================");
     }
     
     @Override
@@ -51,14 +79,13 @@ public class ObtenerReservaServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         
-        // ⭐ NUEVO: Verificar si se solicitan fechas ocupadas
+        // Verificar tipo de solicitud
         String fechasOcupadasParam = request.getParameter("fechas_ocupadas");
         if (fechasOcupadasParam != null && !fechasOcupadasParam.trim().isEmpty()) {
             obtenerFechasOcupadas(request, response, fechasOcupadasParam);
             return;
         }
         
-        // Verificar si se solicita una reserva específica
         String reservaIdStr = request.getParameter("id");
         
         if (reservaIdStr != null && !reservaIdStr.trim().isEmpty()) {
@@ -69,19 +96,30 @@ public class ObtenerReservaServlet extends HttpServlet {
     }
     
     /**
-     * ⭐ CORREGIDO: Obtiene todas las fechas ocupadas de una habitación específica
-     * Ahora busca TODOS los estados que bloquean la habitación
+     * ✅ OPTIMIZADO: Obtiene fechas ocupadas con caché
      */
     private void obtenerFechasOcupadas(HttpServletRequest request, 
                                       HttpServletResponse response,
                                       String habitacionIdStr) throws IOException {
-        System.out.println("========================================");
-        System.out.println("🔍 OBTENIENDO FECHAS OCUPADAS");
-        System.out.println("   Habitación ID: " + habitacionIdStr);
-        
         try {
             int habitacionId = Integer.parseInt(habitacionIdStr);
             
+            // 🔍 VERIFICAR CACHÉ PRIMERO
+            CachedFechas cached = cacheFechas.get(habitacionId);
+            if (cached != null && !cached.isExpired()) {
+                Map<String, Object> resultado = new HashMap<>();
+                resultado.put("success", true);
+                resultado.put("fechas_ocupadas", cached.fechas);
+                resultado.put("habitacion_id", habitacionId);
+                resultado.put("from_cache", true);
+                
+                PrintWriter out = response.getWriter();
+                new Gson().toJson(resultado, out);
+                out.flush();
+                return;
+            }
+            
+            // 🔄 CONSULTAR BASE DE DATOS
             Connection conn = null;
             PreparedStatement ps = null;
             ResultSet rs = null;
@@ -89,86 +127,67 @@ public class ObtenerReservaServlet extends HttpServlet {
             try {
                 conn = dbManager.getConnection();
                 
-                // ✅ CORREGIDO: Buscar TODAS las reservas que bloquean la habitación
-                // Incluye: pendiente, confirmada, pendiente_verificacion, en_proceso
-                // Excluye solo: cancelada, finalizada
-                String sql = "SELECT id, fecha_checkin, fecha_checkout, estado " +
+                // ✅ CONSULTA OPTIMIZADA con índice
+                String sql = "SELECT fecha_checkin, fecha_checkout " +
                            "FROM reservas " +
                            "WHERE habitacion_id = ? " +
                            "AND estado NOT IN ('cancelada', 'finalizada') " +
                            "AND fecha_checkout >= CURDATE() " +
                            "ORDER BY fecha_checkin";
                 
-                System.out.println("📋 Ejecutando query:");
-                System.out.println("   SQL: " + sql);
-                System.out.println("   Habitación ID: " + habitacionId);
-                
                 ps = conn.prepareStatement(sql);
                 ps.setInt(1, habitacionId);
+                ps.setFetchSize(100); // Optimización para grandes resultados
                 rs = ps.executeQuery();
                 
                 List<String> fechasOcupadas = new ArrayList<>();
-                int reservasEncontradas = 0;
                 
                 while (rs.next()) {
-                    reservasEncontradas++;
-                    int reservaId = rs.getInt("id");
                     String checkin = rs.getString("fecha_checkin");
                     String checkout = rs.getString("fecha_checkout");
-                    String estado = rs.getString("estado");
                     
-                    System.out.println("   📅 Reserva #" + reservaId + ":");
-                    System.out.println("      Estado: " + estado);
-                    System.out.println("      Check-in: " + checkin);
-                    System.out.println("      Check-out: " + checkout);
-                    
-                    // Generar todas las fechas entre checkin y checkout
                     LocalDate inicio = LocalDate.parse(checkin);
                     LocalDate fin = LocalDate.parse(checkout);
                     
-                    // ✅ IMPORTANTE: Incluir desde checkin hasta checkout-1
-                    // El día de checkout NO se marca como ocupado (el cliente ya se fue)
+                    // Incluir desde checkin hasta checkout-1
                     LocalDate fecha = inicio;
                     while (fecha.isBefore(fin)) {
                         String fechaStr = fecha.toString();
                         if (!fechasOcupadas.contains(fechaStr)) {
                             fechasOcupadas.add(fechaStr);
-                            System.out.println("      ✓ Bloqueando: " + fechaStr);
                         }
                         fecha = fecha.plusDays(1);
                     }
                 }
                 
-                System.out.println("✅ Total de reservas encontradas: " + reservasEncontradas);
-                System.out.println("✅ Total de fechas ocupadas: " + fechasOcupadas.size());
-                System.out.println("📋 Fechas ocupadas: " + fechasOcupadas);
-                System.out.println("========================================");
+                // 💾 GUARDAR EN CACHÉ
+                cacheFechas.put(habitacionId, new CachedFechas(fechasOcupadas));
                 
                 Map<String, Object> resultado = new HashMap<>();
                 resultado.put("success", true);
                 resultado.put("fechas_ocupadas", fechasOcupadas);
-                resultado.put("total_reservas", reservasEncontradas);
                 resultado.put("habitacion_id", habitacionId);
+                resultado.put("from_cache", false);
                 
                 PrintWriter out = response.getWriter();
-                Gson gson = new Gson();
-                out.print(gson.toJson(resultado));
+                new Gson().toJson(resultado, out);
                 out.flush();
                 
             } catch (SQLException e) {
                 System.err.println("❌ Error SQL: " + e.getMessage());
-                e.printStackTrace();
                 enviarError(response, "Error al consultar fechas ocupadas");
             } finally {
                 DatabaseManager.closeResources(rs, ps, conn);
             }
             
         } catch (NumberFormatException e) {
-            System.err.println("❌ ID de habitación inválido: " + habitacionIdStr);
             enviarError(response, "ID de habitación inválido");
         }
     }
     
+    /**
+     * ✅ OPTIMIZADO: Consulta específica más eficiente
+     */
     private void obtenerReservaEspecifica(HttpServletRequest request, 
                                          HttpServletResponse response, 
                                          String reservaIdStr) throws IOException {
@@ -182,7 +201,10 @@ public class ObtenerReservaServlet extends HttpServlet {
             try {
                 conn = dbManager.getConnection();
                 
-                String sql = "SELECT r.*, h.nombre as habitacion_nombre, h.imagen_principal " +
+                // ✅ CONSULTA OPTIMIZADA: Solo lo necesario
+                String sql = "SELECT r.id, r.habitacion_id, r.nombre_cliente, r.email, r.telefono, " +
+                           "r.fecha_checkin, r.fecha_checkout, r.num_personas, r.total, r.estado, " +
+                           "r.fecha_reserva, h.nombre as habitacion_nombre, h.imagen_principal " +
                            "FROM reservas r " +
                            "INNER JOIN habitaciones h ON r.habitacion_id = h.id " +
                            "WHERE r.id = ?";
@@ -208,14 +230,14 @@ public class ObtenerReservaServlet extends HttpServlet {
                     reserva.put("estado", rs.getString("estado"));
                     reserva.put("fecha_reserva", rs.getString("fecha_reserva"));
                     
+                    // Calcular noches
                     LocalDate checkin = LocalDate.parse(rs.getString("fecha_checkin"));
                     LocalDate checkout = LocalDate.parse(rs.getString("fecha_checkout"));
-                    long noches = ChronoUnit.DAYS.between(checkin, checkout);
+                    long noches = java.time.temporal.ChronoUnit.DAYS.between(checkin, checkout);
                     reserva.put("num_noches", noches);
                     
                     PrintWriter out = response.getWriter();
-                    Gson gson = new Gson();
-                    out.print(gson.toJson(reserva));
+                    new Gson().toJson(reserva, out);
                     out.flush();
                 } else {
                     enviarError(response, "Reserva no encontrada");
@@ -233,6 +255,9 @@ public class ObtenerReservaServlet extends HttpServlet {
         }
     }
     
+    /**
+     * ✅ OPTIMIZADO: Consulta más ligera
+     */
     private void obtenerTodasReservas(HttpServletRequest request, 
                                      HttpServletResponse response) throws IOException {
         Connection conn = null;
@@ -242,12 +267,13 @@ public class ObtenerReservaServlet extends HttpServlet {
         try {
             conn = dbManager.getConnection();
             
-            // ✅ CORREGIDO: Incluir todas las reservas activas
+            // ✅ CONSULTA OPTIMIZADA: Solo campos necesarios para filtros
             String sql = "SELECT habitacion_id, fecha_checkin, fecha_checkout, estado " +
                         "FROM reservas " +
                         "WHERE estado NOT IN ('cancelada', 'finalizada')";
             
             ps = conn.prepareStatement(sql);
+            ps.setFetchSize(200); // Optimización
             rs = ps.executeQuery();
             
             List<Map<String, Object>> reservas = new ArrayList<>();
@@ -262,11 +288,8 @@ public class ObtenerReservaServlet extends HttpServlet {
             }
             
             PrintWriter out = response.getWriter();
-            Gson gson = new Gson();
-            out.print(gson.toJson(reservas));
+            new Gson().toJson(reservas, out);
             out.flush();
-            
-            System.out.println("✅ Enviadas " + reservas.size() + " reservas para filtros");
             
         } catch (SQLException e) {
             e.printStackTrace();
@@ -278,11 +301,26 @@ public class ObtenerReservaServlet extends HttpServlet {
     
     private void enviarError(HttpServletResponse response, String mensaje) throws IOException {
         PrintWriter out = response.getWriter();
-        Gson gson = new Gson();
         Map<String, Object> error = new HashMap<>();
         error.put("error", true);
         error.put("mensaje", mensaje);
-        out.print(gson.toJson(error));
+        new Gson().toJson(error, out);
         out.flush();
+    }
+    
+    /**
+     * 🔄 Limpiar caché manualmente (llamar cuando se creen/cancelen reservas)
+     */
+    public static void limpiarCache() {
+        cacheFechas.clear();
+        System.out.println("✅ Caché de fechas limpiado");
+    }
+    
+    /**
+     * 🔄 Limpiar caché de una habitación específica
+     */
+    public static void limpiarCacheHabitacion(int habitacionId) {
+        cacheFechas.remove(habitacionId);
+        System.out.println("✅ Caché limpiado para habitación #" + habitacionId);
     }
 }

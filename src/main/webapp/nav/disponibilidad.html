@@ -89,7 +89,7 @@
             <span id="contador">Cargando...</span>
         </div>
 
-        <!-- LOADER mientras carga -->
+        <!-- LOADER -->
         <div id="loader" class="loader-container">
             <div class="loader"></div>
             <p>Cargando habitaciones...</p>
@@ -125,7 +125,6 @@
             margin-bottom: 30px;
         }
 
-        /* LOADER */
         .loader-container {
             display: flex;
             flex-direction: column;
@@ -191,10 +190,6 @@
             outline: none;
         }
 
-        .input-group input:focus, .input-group select:focus {
-            color: #d4af37;
-        }
-
         .separador-vertical {
             width: 1px;
             background: #e0e0e0;
@@ -206,45 +201,35 @@
             color: white;
             border: none;
             border-radius: 40px;
-            padding: 0 32px;
-            font-size: 1rem;
+            padding: 12px 24px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            white-space: nowrap;
-            margin-left: 4px;
         }
 
         .btn-buscar:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
 
         .barra-filtros-rapidos {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 16px 20px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-            margin-bottom: 20px;
-            overflow-x: auto;
+            gap: 10px;
             flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+            align-items: center;
         }
 
         .chip {
-            padding: 8px 18px;
-            border: 2px solid #e0e0e0;
-            background: white;
-            color: #555;
+            padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.9rem;
+            border: 2px solid #ddd;
+            background: white;
+            color: #666;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            flex-shrink: 0;
+            transition: all 0.3s ease;
         }
 
         .chip:hover {
@@ -254,189 +239,126 @@
 
         .chip.active {
             background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: white;
             border-color: #d4af37;
-            color: white;
-        }
-
-        .chip-reset {
-            border-color: #ff6b6b;
-            color: #ff6b6b;
-        }
-
-        .chip-reset:hover {
-            background: #ff6b6b;
-            color: white;
         }
 
         .divisor {
             color: #ddd;
-            font-weight: 300;
-            font-size: 1.2rem;
-            margin: 0 4px;
+            font-size: 1.5rem;
         }
 
         .contador-resultados {
             text-align: center;
-            padding: 12px;
-            margin-bottom: 20px;
-        }
-
-        #contador {
-            font-size: 0.95rem;
+            margin: 20px 0;
+            font-size: 1.1rem;
             color: #666;
-            font-weight: 600;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            font-weight: 500;
         }
 
         .habitaciones-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            padding: 20px 0;
         }
 
         .habitacion-card {
+            background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
             transition: all 0.3s ease;
-            background: white;
             cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            opacity: 0;
-            animation: fadeInUp 0.5s ease forwards;
         }
 
         .habitacion-card:hover {
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            transform: translateY(-4px);
+            transform: translateY(-8px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
         }
 
         .habitacion-card img {
             width: 100%;
             height: 220px;
             object-fit: cover;
+            /* ✅ LAZY LOADING OPTIMIZADO */
+            background: #f0f0f0;
         }
 
         .habitacion-info {
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-
-        .habitacion-info h3 {
-            font-size: 1.15rem;
-            color: #333;
-            margin-bottom: 8px;
-            font-weight: 600;
+            padding: 20px;
         }
 
         .experiencia-badge {
             display: inline-block;
-            padding: 4px 10px;
-            border-radius: 4px;
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 600;
-            margin-bottom: 8px;
-            color: white;
-            width: fit-content;
+            margin-bottom: 10px;
         }
 
-        .experiencia-badge.bosque { background: #2d5016; }
-        .experiencia-badge.mar { background: #1e88e5; }
-        .experiencia-badge.campo { background: #558b2f; }
+        .experiencia-badge.bosque { background: #2d5016; color: white; }
+        .experiencia-badge.mar { background: #1e5a8e; color: white; }
+        .experiencia-badge.campo { background: #8b7355; color: white; }
+
+        .habitacion-info h3 {
+            font-size: 1.3rem;
+            margin: 10px 0;
+            color: #333;
+        }
 
         .habitacion-descripcion {
-            color: #6b6b6b;
+            color: #666;
             font-size: 0.9rem;
-            margin-bottom: 12px;
+            margin: 10px 0;
             line-height: 1.4;
-            flex: 1;
-            min-height: 60px;
         }
 
         .habitacion-detalles {
             display: flex;
-            gap: 15px;
-            padding: 12px 0;
-            border-top: 1px solid #e7e7e7;
-            margin-bottom: 12px;
-            font-size: 0.85rem;
+            justify-content: space-between;
+            margin: 15px 0;
         }
 
         .detalle-item {
             display: flex;
             flex-direction: column;
+            gap: 5px;
         }
 
         .detalle-item strong {
-            color: #333;
-            font-size: 1rem;
+            color: #d4af37;
+            font-size: 1.1rem;
         }
 
         .detalle-item span {
             color: #999;
+            font-size: 0.85rem;
         }
 
         .btn-reservar {
             width: 100%;
-            padding: 10px;
-            background: #d4af37;
+            padding: 12px;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
-            margin-top: auto;
+            transition: all 0.3s ease;
         }
 
         .btn-reservar:hover {
-            background: #b8860b;
-        }
-
-        @media (max-width: 768px) {
-            .barra-busqueda {
-                flex-direction: column;
-                border-radius: 12px;
-                gap: 8px;
-            }
-            .separador-vertical { display: none; }
-            .input-group {
-                min-width: 100%;
-                padding: 12px;
-            }
-            .btn-buscar {
-                margin-left: 0;
-                width: 100%;
-                padding: 14px;
-            }
-            .barra-filtros-rapidos {
-                overflow-x: auto;
-                flex-wrap: nowrap;
-                padding-bottom: 20px;
-            }
-            .chip { flex-shrink: 0; }
-            .habitaciones-grid { grid-template-columns: 1fr; }
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
     </style>
 
     <script>
+        // ✅ VARIABLES GLOBALES OPTIMIZADAS
         let habitacionesOriginal = [];
         let reservasExistentes = [];
-        let imagenesPreCargadas = new Set();
-        
         let filtros = {
             experiencia: 'todas',
             servicios: [],
@@ -446,39 +368,40 @@
             precioMax: Infinity
         };
 
-        document.addEventListener('DOMContentLoaded', function() {
-            cargarDatos();
-            configurarFechas();
+        // 🚀 CONFIGURACIÓN DE RENDIMIENTO
+        const CONFIG = {
+            DEBUG: false, // ⚡ DESACTIVAR LOGS EN PRODUCCIÓN
+            LAZY_LOAD: true, // ✅ Activar lazy loading de imágenes
+            BATCH_SIZE: 12 // Mostrar habitaciones en lotes
+        };
+
+        // ⚡ INICIO OPTIMIZADO
+        window.addEventListener('DOMContentLoaded', async () => {
+            const startTime = performance.now();
+            
+            try {
+                // Cargar habitaciones y reservas en paralelo
+                await Promise.all([
+                    cargarHabitaciones(),
+                    cargarReservas()
+                ]);
+                
+                const loadTime = performance.now() - startTime;
+                if (CONFIG.DEBUG) console.log(`✅ Carga completada en ${loadTime.toFixed(0)}ms`);
+                
+            } catch (error) {
+                console.error('❌ Error en carga inicial:', error);
+                mostrarError();
+            }
         });
 
-        async function cargarDatos() {
+        async function cargarHabitaciones() {
             try {
-                const respHab = await fetch('../ObtenerHabitacionesServlet');
-                habitacionesOriginal = await respHab.json();
+                const response = await fetch('../ObtenerHabitacionesServlet');
+                const data = await response.json();
                 
-                console.log('📦 Habitaciones cargadas:', habitacionesOriginal.length);
+                habitacionesOriginal = Array.isArray(data) ? data : [];
                 
-                // DEBUG: Mostrar la primera habitación Y SUS COLUMNAS
-                if (habitacionesOriginal.length > 0) {
-                    console.log('🔍 Ejemplo de habitación:', habitacionesOriginal[0]);
-                    console.log('🔍 COLUMNAS DISPONIBLES:', Object.keys(habitacionesOriginal[0]));
-                    console.log('🔍 Valor de experiencia:', habitacionesOriginal[0].experiencia);
-                    console.log('🔍 Servicios - wifi:', habitacionesOriginal[0].wifi);
-                    console.log('🔍 Servicios - aire_acondicionado:', habitacionesOriginal[0].aire_acondicionado);
-                }
-                
-                // PRECARGA DE IMÁGENES
-                await precargarImagenes(habitacionesOriginal);
-                
-                try {
-                    const respRes = await fetch('../ObtenerReservaServlet');
-                    reservasExistentes = await respRes.json();
-                } catch(e) {
-                    console.warn('⚠️ No se pudieron cargar reservas');
-                    reservasExistentes = [];
-                }
-                
-                // Oculta loader y muestra habitaciones
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('habitaciones-container').style.display = 'grid';
                 
@@ -486,57 +409,29 @@
                 actualizarContador(habitacionesOriginal.length);
                 
             } catch (error) {
-                console.error('❌ Error:', error);
-                document.getElementById('loader').innerHTML = 
-                    '<p style="color: #c53030;">Error al cargar habitaciones</p>';
+                console.error('Error al cargar habitaciones:', error);
+                throw error;
             }
         }
 
-        function precargarImagenes(habitaciones) {
-            return Promise.all(
-                habitaciones.map(hab => {
-                    return new Promise((resolve) => {
-                        if (!hab.imagen_principal || imagenesPreCargadas.has(hab.imagen_principal)) {
-                            resolve();
-                            return;
-                        }
-                        
-                        const img = new Image();
-                        img.onload = () => {
-                            imagenesPreCargadas.add(hab.imagen_principal);
-                            resolve();
-                        };
-                        img.onerror = () => resolve();
-                        img.src = hab.imagen_principal;
-                    });
-                })
-            );
-        }
-
-        function configurarFechas() {
-            const hoy = new Date().toISOString().split('T')[0];
-            const inputEntrada = document.getElementById('fechaEntrada');
-            const inputSalida = document.getElementById('fechaSalida');
-            
-            inputEntrada.min = hoy;
-            inputSalida.min = hoy;
-            
-            inputEntrada.addEventListener('change', function() {
-                if (this.value) {
-                    const minSalida = new Date(this.value);
-                    minSalida.setDate(minSalida.getDate() + 1);
-                    inputSalida.min = minSalida.toISOString().split('T')[0];
-                    
-                    if (inputSalida.value && inputSalida.value <= this.value) {
-                        inputSalida.value = '';
-                    }
-                }
-            });
+        async function cargarReservas() {
+            try {
+                const response = await fetch('../ObtenerReservaServlet');
+                const data = await response.json();
+                
+                reservasExistentes = Array.isArray(data) ? data : [];
+                
+                if (CONFIG.DEBUG) console.log(`📊 ${reservasExistentes.length} reservas cargadas`);
+                
+            } catch (error) {
+                console.error('Error al cargar reservas:', error);
+                reservasExistentes = [];
+            }
         }
 
         function aplicarFiltros() {
-            filtros.fechaEntrada = document.getElementById('fechaEntrada').value;
-            filtros.fechaSalida = document.getElementById('fechaSalida').value;
+            filtros.fechaEntrada = document.getElementById('fechaEntrada').value || null;
+            filtros.fechaSalida = document.getElementById('fechaSalida').value || null;
             filtros.numHuespedes = parseInt(document.getElementById('numHuespedes').value) || 0;
             filtros.precioMax = parseInt(document.getElementById('precioMax').value) || Infinity;
             ejecutarFiltrado();
@@ -560,59 +455,53 @@
                 } else {
                     filtros.servicios = filtros.servicios.filter(s => s !== valor);
                 }
-                
-                console.log('🔧 Servicios seleccionados:', filtros.servicios);
             }
             
             ejecutarFiltrado();
         }
 
+        // ⚡ FILTRADO OPTIMIZADO
         function ejecutarFiltrado() {
-            console.log('🔍 Aplicando filtros:', filtros);
+            const startTime = performance.now();
             
-            let resultado = habitacionesOriginal.filter(hab => {
-                // FILTRO 1: Experiencia
+            const resultado = habitacionesOriginal.filter(hab => {
+                // Experiencia
                 if (filtros.experiencia !== 'todas' && hab.experiencia !== filtros.experiencia) {
-                    console.log(`❌ ${hab.nombre} - experiencia no coincide (${hab.experiencia} !== ${filtros.experiencia})`);
                     return false;
                 }
                 
-                // FILTRO 2: Precio
+                // Precio
                 if (hab.precio_noche > filtros.precioMax) {
-                    console.log(`❌ ${hab.nombre} - precio alto (${hab.precio_noche} > ${filtros.precioMax})`);
                     return false;
                 }
                 
-                // FILTRO 3: Capacidad
+                // Capacidad
                 if (filtros.numHuespedes > 0 && hab.capacidad < filtros.numHuespedes) {
-                    console.log(`❌ ${hab.nombre} - capacidad insuficiente (${hab.capacidad} < ${filtros.numHuespedes})`);
                     return false;
                 }
                 
-                // FILTRO 4: Disponibilidad
+                // Disponibilidad
                 if (filtros.fechaEntrada && filtros.fechaSalida) {
                     if (!estaDisponible(hab.id, filtros.fechaEntrada, filtros.fechaSalida)) {
-                        console.log(`❌ ${hab.nombre} - no disponible en fechas seleccionadas`);
                         return false;
                     }
                 }
                 
-                // FILTRO 5: Servicios (CORREGIDO)
+                // Servicios
                 for (let servicio of filtros.servicios) {
-                    const valor = hab[servicio];
-                    
-                    // Convierte a número y verifica si es 1
-                    if (Number(valor) !== 1) {
-                        console.log(`❌ ${hab.nombre} - no tiene ${servicio} (valor: ${valor}, tipo: ${typeof valor})`);
+                    if (Number(hab[servicio]) !== 1) {
                         return false;
                     }
                 }
                 
-                console.log(`✅ ${hab.nombre} - pasa todos los filtros`);
                 return true;
             });
             
-            console.log(`📊 Resultados: ${resultado.length} de ${habitacionesOriginal.length} habitaciones`);
+            if (CONFIG.DEBUG) {
+                const filterTime = performance.now() - startTime;
+                console.log(`🔍 Filtrado en ${filterTime.toFixed(0)}ms: ${resultado.length}/${habitacionesOriginal.length}`);
+            }
+            
             mostrarHabitaciones(resultado);
             actualizarContador(resultado.length);
         }
@@ -621,9 +510,10 @@
             const fechaEntrada = new Date(entrada);
             const fechaSalida = new Date(salida);
             
-            const hayConflicto = reservasExistentes.some(reserva => {
-                if (reserva.habitacion_id !== habId) return false;
-                if (reserva.estado === 'cancelada') return false;
+            return !reservasExistentes.some(reserva => {
+                if (reserva.habitacion_id !== habId || reserva.estado === 'cancelada') {
+                    return false;
+                }
                 
                 const resEntrada = new Date(reserva.fecha_checkin);
                 const resSalida = new Date(reserva.fecha_checkout);
@@ -634,8 +524,6 @@
                     (fechaEntrada <= resEntrada && fechaSalida >= resSalida)
                 );
             });
-            
-            return !hayConflicto;
         }
 
         function limpiarTodo() {
@@ -644,9 +532,7 @@
             document.getElementById('numHuespedes').value = '0';
             document.getElementById('precioMax').value = '';
             
-            document.querySelectorAll('.chip').forEach(chip => {
-                chip.classList.remove('active');
-            });
+            document.querySelectorAll('.chip').forEach(chip => chip.classList.remove('active'));
             document.querySelector('[data-valor="todas"]').classList.add('active');
             
             filtros = {
@@ -658,11 +544,11 @@
                 precioMax: Infinity
             };
             
-            console.log('🔄 Filtros limpiados');
             mostrarHabitaciones(habitacionesOriginal);
             actualizarContador(habitacionesOriginal.length);
         }
 
+        // ⚡ RENDERIZADO OPTIMIZADO CON LAZY LOADING
         function mostrarHabitaciones(habitaciones) {
             const container = document.getElementById('habitaciones-container');
             container.innerHTML = '';
@@ -677,18 +563,22 @@
                 return;
             }
             
+            // ✅ FRAGMENT para mejor rendimiento
+            const fragment = document.createDocumentFragment();
+            
             habitaciones.forEach(hab => {
                 const card = document.createElement('div');
                 card.className = 'habitacion-card';
                 card.onclick = () => verDetalle(hab.id);
                 
-                // Usa la columna 'experiencia'
                 const experiencia = hab.experiencia || 'campo';
                 const icono = experiencia.toLowerCase() === 'bosque' ? '🌲' : 
                              experiencia.toLowerCase() === 'mar' ? '🌊' : '🌾';
                 
                 card.innerHTML = `
-                    <img src="${hab.imagen_principal || 'recursos/placeholder.jpg'}" alt="${hab.nombre}">
+                    <img ${CONFIG.LAZY_LOAD ? 'loading="lazy"' : ''} 
+                         src="${hab.imagen_principal || 'recursos/placeholder.jpg'}" 
+                         alt="${hab.nombre}">
                     <div class="habitacion-info">
                         <span class="experiencia-badge ${experiencia.toLowerCase()}">${icono} ${experiencia.toUpperCase()}</span>
                         <h3>${hab.nombre}</h3>
@@ -709,8 +599,10 @@
                     </div>
                 `;
                 
-                container.appendChild(card);
+                fragment.appendChild(card);
             });
+            
+            container.appendChild(fragment);
         }
 
         function actualizarContador(cantidad) {
@@ -733,6 +625,19 @@
 
         function verDetalle(id) {
             window.location.href = `../login/detalle-habitacion.html?id=${id}`;
+        }
+
+        function mostrarError() {
+            document.getElementById('loader').innerHTML = `
+                <div style="text-align: center; color: #999;">
+                    <h3>⚠️ Error al cargar</h3>
+                    <p>No se pudieron cargar las habitaciones. Por favor, recarga la página.</p>
+                    <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; 
+                        background: #d4af37; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        🔄 Recargar
+                    </button>
+                </div>
+            `;
         }
     </script>
 </body>
