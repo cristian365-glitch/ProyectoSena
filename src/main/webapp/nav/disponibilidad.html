@@ -458,9 +458,13 @@
                 
                 console.log('📦 Habitaciones cargadas:', habitacionesOriginal.length);
                 
-                // DEBUG: Mostrar la primera habitación
+                // DEBUG: Mostrar la primera habitación Y SUS COLUMNAS
                 if (habitacionesOriginal.length > 0) {
                     console.log('🔍 Ejemplo de habitación:', habitacionesOriginal[0]);
+                    console.log('🔍 COLUMNAS DISPONIBLES:', Object.keys(habitacionesOriginal[0]));
+                    console.log('🔍 Valor de experiencia:', habitacionesOriginal[0].experiencia);
+                    console.log('🔍 Servicios - wifi:', habitacionesOriginal[0].wifi);
+                    console.log('🔍 Servicios - aire_acondicionado:', habitacionesOriginal[0].aire_acondicionado);
                 }
                 
                 // PRECARGA DE IMÁGENES
@@ -568,8 +572,8 @@
             
             let resultado = habitacionesOriginal.filter(hab => {
                 // FILTRO 1: Experiencia
-                if (filtros.experiencia !== 'todas' && hab.vista !== filtros.experiencia) {
-                    console.log(`❌ ${hab.nombre} - experiencia no coincide (${hab.vista} !== ${filtros.experiencia})`);
+                if (filtros.experiencia !== 'todas' && hab.experiencia !== filtros.experiencia) {
+                    console.log(`❌ ${hab.nombre} - experiencia no coincide (${hab.experiencia} !== ${filtros.experiencia})`);
                     return false;
                 }
                 
@@ -678,15 +682,15 @@
                 card.className = 'habitacion-card';
                 card.onclick = () => verDetalle(hab.id);
                 
-                // Usa la columna 'vista' en lugar de 'experiencia'
-                const vista = hab.vista || 'campo';
-                const icono = vista.toLowerCase() === 'bosque' ? '🌲' : 
-                             vista.toLowerCase() === 'mar' ? '🌊' : '🌾';
+                // Usa la columna 'experiencia'
+                const experiencia = hab.experiencia || 'campo';
+                const icono = experiencia.toLowerCase() === 'bosque' ? '🌲' : 
+                             experiencia.toLowerCase() === 'mar' ? '🌊' : '🌾';
                 
                 card.innerHTML = `
                     <img src="${hab.imagen_principal || 'recursos/placeholder.jpg'}" alt="${hab.nombre}">
                     <div class="habitacion-info">
-                        <span class="experiencia-badge ${vista.toLowerCase()}">${icono} ${vista.toUpperCase()}</span>
+                        <span class="experiencia-badge ${experiencia.toLowerCase()}">${icono} ${experiencia.toUpperCase()}</span>
                         <h3>${hab.nombre}</h3>
                         <p class="habitacion-descripcion">${hab.descripcion ? (hab.descripcion.substring(0, 80) + '...') : 'Experiencia única'}</p>
                         <div class="habitacion-detalles">

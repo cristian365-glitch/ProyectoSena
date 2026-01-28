@@ -88,14 +88,19 @@ public class PerfilServlet extends HttpServlet {
             rs = stmt.executeQuery();
             
             if (rs.next()) {
+                // Crear objeto usuario con los datos
+                Map<String, Object> usuario = new HashMap<>();
+                usuario.put("usuario", rs.getString("usuario"));
+                usuario.put("email", rs.getString("email"));
+                usuario.put("nombre", rs.getString("nombre"));
+                usuario.put("telefono", rs.getString("telefono"));
+                usuario.put("miembroDesde", rs.getDate("fecha_registro"));
+                usuario.put("esAdmin", rs.getBoolean("esAdmin"));
+                
+                // Crear respuesta con la estructura correcta
                 Map<String, Object> perfil = new HashMap<>();
-                perfil.put("usuario", rs.getString("usuario"));
-                perfil.put("email", rs.getString("email"));
-                perfil.put("nombre", rs.getString("nombre"));
-                perfil.put("telefono", rs.getString("telefono"));
-                perfil.put("miembroDesde", rs.getDate("fecha_registro"));
-                perfil.put("esAdmin", rs.getBoolean("esAdmin"));
                 perfil.put("success", true);
+                perfil.put("usuario", usuario);  // ⭐ El HTML espera data.usuario
                 
                 enviarJSON(response, perfil);
             } else {

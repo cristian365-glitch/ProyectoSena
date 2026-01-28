@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -41,8 +40,9 @@ public class ObtenerHabitacionesServlet extends HttpServlet {
         JsonArray habitaciones = new JsonArray();
         
         try (Connection conn = dbManager.getConnection()) {
+            // ⭐ AGREGADAS TODAS LAS COLUMNAS DE SERVICIOS
             String sql = "SELECT id, codigo, nombre, experiencia, descripcion, precio_noche, capacidad, " +
-                        "metros_cuadrados, wifi, imagen_principal " +
+                        "metros_cuadrados, wifi, aire_acondicionado, tv, minibar, balcon, imagen_principal " +
                         "FROM habitaciones WHERE activa = 1";
             
             // Si se pasa un filtro de experiencia
@@ -69,7 +69,14 @@ public class ObtenerHabitacionesServlet extends HttpServlet {
                         hab.addProperty("precio_noche", rs.getDouble("precio_noche"));
                         hab.addProperty("capacidad", rs.getInt("capacidad"));
                         hab.addProperty("metros_cuadrados", rs.getInt("metros_cuadrados"));
-                        hab.addProperty("wifi", rs.getBoolean("wifi"));
+                        
+                        // ⭐ SERVICIOS COMPLETOS
+                        hab.addProperty("wifi", rs.getInt("wifi"));
+                        hab.addProperty("aire_acondicionado", rs.getInt("aire_acondicionado"));
+                        hab.addProperty("tv", rs.getInt("tv"));
+                        hab.addProperty("minibar", rs.getInt("minibar"));
+                        hab.addProperty("balcon", rs.getInt("balcon"));
+                        
                         hab.addProperty("imagen_principal", rs.getString("imagen_principal"));
                         
                         habitaciones.add(hab);
