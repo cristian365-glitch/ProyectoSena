@@ -1,30 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Armonía</title>
+    <title>Armonía - Vuelve a lo Esencial</title>
+    
+    <!-- ⚡ PRECONNECT para fuentes más rápidas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- 🎨 Fuentes optimizadas con display=swap -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lato:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="indexCSS.css">
     <link rel="apple-touch-icon" sizes="180x180" href="recursos/imagen icon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="recursos/imagen icon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="recursos/imagen icon/favicon-16x16.png">
 
     <link rel="stylesheet" href="login/auth-ui.css">
-    <script src="login/auth-session.js"></script>
+    <script src="login/auth-session.js" defer></script>
+    
     <style>
-        /* ===== ESTILOS ADICIONALES PARA MEJORAR EL DISEÑO ===== */
-        /* Hero Section mejorado */
+        /* ========================================
+           🚀 OPTIMIZACIONES DE RENDIMIENTO
+        ======================================== */
+        
+        /* ⚡ Reducir repaints durante scroll */
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ⚡ Will-change solo donde es necesario */
+        .habitacion-card,
+        .contenedor-img,
+        .testimonio-card {
+            will-change: transform;
+        }
+
+        /* ========================================
+           HERO SECTION OPTIMIZADO
+        ======================================== */
         .hero-section {
             position: relative;
             height: 85vh;
+            min-height: 600px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
+            /* ⚡ Imagen de fondo optimizada */
             background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), 
-                        url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600') center/cover;
+                        url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80&fm=webp') center/cover no-repeat fixed;
             color: white;
             margin-bottom: 0;
+            overflow: hidden;
         }
 
         .hero-content {
@@ -34,8 +64,10 @@
             padding: 0 20px;
         }
 
+        /* ✅ TÍTULO HERO CON FUENTE PLAYFAIR (igual que experiencias) */
         .hero-section h1 {
-            color: white;       
+            color: white;
+            font-family: 'Playfair Display', serif;
             font-size: clamp(3rem, 8vw, 5.5rem);
             font-weight: 400;
             margin-bottom: 25px;
@@ -43,11 +75,16 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
+        .hero-section h1::after {
+            display: none; /* Sin línea decorativa en hero */
+        }
+
         .hero-subtitle {
             font-size: clamp(1.1rem, 3vw, 1.5rem);
             margin-bottom: 40px;
             font-weight: 300;
             opacity: 0.95;
+            font-family: 'Lato', sans-serif;
         }
 
         .btn-hero-primary {
@@ -64,14 +101,29 @@
             border: none;
             cursor: pointer;
             font-size: 1rem;
+            text-transform: uppercase;
         }
 
         .btn-hero-primary:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+            background: linear-gradient(135deg, #b8860b, #9a7209);
         }
 
-        /* Estadísticas */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========================================
+           ESTADÍSTICAS
+        ======================================== */
         .stats-section {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -85,14 +137,21 @@
         .stat-item {
             text-align: center;
             padding: 20px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
         }
+
+        .stat-item:nth-child(1) { animation-delay: 0.1s; }
+        .stat-item:nth-child(2) { animation-delay: 0.2s; }
+        .stat-item:nth-child(3) { animation-delay: 0.3s; }
+        .stat-item:nth-child(4) { animation-delay: 0.4s; }
 
         .stat-number {
             font-size: 3rem;
             color: #d4af37;
             font-weight: 700;
             margin-bottom: 10px;
-            font-family: 'Cormorant Garamond', serif;
+            font-family: 'Playfair Display', serif;
         }
 
         .stat-label {
@@ -100,23 +159,29 @@
             color: #666;
             text-transform: uppercase;
             letter-spacing: 1.5px;
+            font-family: 'Lato', sans-serif;
         }
 
-        /* Mejoras a la sección de ambientes/experiencias */
+        /* ========================================
+           SECCIÓN DE EXPERIENCIAS (AMBIENTES)
+           ✅ CON ANIMACIÓN MEJORADA
+        ======================================== */
         .Ambientes {
             padding: 80px 5% 60px;
             max-width: 1400px;
             margin: 0 auto;
+            background: #fafafa;
         }
 
         .Ambientes h2 {
+            font-family: 'Playfair Display', serif;
             font-size: clamp(2.5rem, 5vw, 3.5rem);
             text-align: center;
             margin-bottom: 20px;
             font-weight: 400;
             position: relative;
             padding-bottom: 20px;
-            font-family: 'Cormorant Garamond', serif;
+            color: #1a1a1a;
         }
 
         .Ambientes h2::after {
@@ -134,60 +199,56 @@
             text-align: center;
             font-size: 1.15rem;
             color: #666;
-
+            margin-bottom: 50px;
             max-width: 700px;
             margin-left: auto;
             margin-right: auto;
+            font-family: 'Lato', sans-serif;
         }
 
         .experiencias-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 30px;
-            margin-top: 35px;
+            margin-top: 50px;
         }
 
+        /* ✅ ANIMACIÓN IDÉNTICA A LAS HABITACIONES */
         .contenedor-img {
             position: relative;
-            height: 300px;
+            height: 350px;
             border-radius: 12px;
             overflow: hidden;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: all 0.4s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: block;
-            /* ANIMACIÓN AGREGADA */
+            background: #f0f0f0;
+            /* ⚡ ANIMACIÓN INICIAL */
             opacity: 0;
+            transform: translateY(30px);
             animation: fadeInUp 0.8s ease forwards;
         }
 
-        /* DELAYS ESCALONADOS PARA EXPERIENCIAS */
-        .contenedor-img:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .contenedor-img:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .contenedor-img:nth-child(3) {
-            animation-delay: 0.3s;
-        }
+        /* Delays escalonados */
+        .contenedor-img:nth-child(1) { animation-delay: 0.1s; }
+        .contenedor-img:nth-child(2) { animation-delay: 0.2s; }
+        .contenedor-img:nth-child(3) { animation-delay: 0.3s; }
 
         .contenedor-img:hover {
             transform: translateY(-10px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.2);
         }
 
         .contenedor-img .imagenesA {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.4s ease;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .contenedor-img:hover .imagenesA {
-            transform: scale(1.1);
+            transform: scale(1.15);
         }
 
         .texto-img {
@@ -196,14 +257,18 @@
             left: 0;
             right: 0;
             padding: 30px;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
             color: white;
             font-size: 1.8rem;
-            font-weight: 400;
-            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+            font-family: 'Playfair Display', serif;
+            text-align: left;
+            letter-spacing: 1px;
         }
 
-        /* Por qué elegirnos */
+        /* ========================================
+           POR QUÉ ELEGIRNOS
+        ======================================== */
         .features-section {
             background: white;
             padding: 80px 5%;
@@ -212,13 +277,14 @@
         }
 
         .features-title {
+            font-family: 'Playfair Display', serif;
             font-size: clamp(2.5rem, 5vw, 3.5rem);
             text-align: center;
             margin-bottom: 20px;
             font-weight: 400;
             position: relative;
             padding-bottom: 20px;
-            font-family: 'Cormorant Garamond', serif;
+            color: #1a1a1a;
         }
 
         .features-title::after {
@@ -244,58 +310,73 @@
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 40px;
             margin-top: 50px;
         }
 
-        .feature-item {
+        .feature-card {
             text-align: center;
-            padding: 30px 20px;
-            transition: transform 0.3s ease;
+            padding: 30px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: white;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
         }
 
-        .feature-item:hover {
-            transform: translateY(-5px);
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
 
         .feature-icon {
             font-size: 3.5rem;
             margin-bottom: 20px;
+            display: block;
         }
 
-        .feature-item h3 {
-            font-size: 1.4rem;
+        .feature-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
             margin-bottom: 15px;
-            color: #333;
-            font-family: 'Cormorant Garamond', serif;
+            color: #1a1a1a;
+            font-weight: 500;
         }
 
-        .feature-item p {
+        .feature-card p {
             color: #666;
-            line-height: 1.8;
+            line-height: 1.7;
             font-size: 1rem;
         }
 
-        /* Mejoras a habitaciones */
-        .habitaciones {
-            margin: 80px auto;
-            text-align: center;
-            padding: 0 5%;
+        /* ========================================
+           HABITACIONES SECTION
+        ======================================== */
+        .habitaciones-section {
+            background: #fafafa;
+            padding: 80px 5%;
             max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .habitaciones h2 {
-            font-family: 'Cormorant Garamond', serif;
+        .habitaciones-title {
+            font-family: 'Playfair Display', serif;
             font-size: clamp(2.5rem, 5vw, 3.5rem);
-            color: #000000;
+            text-align: center;
             margin-bottom: 20px;
+            font-weight: 400;
             position: relative;
             padding-bottom: 20px;
-            font-weight: 400;
+            color: #1a1a1a;
         }
 
-        .habitaciones h2::after {
+        .habitaciones-title::after {
             content: '';
             position: absolute;
             bottom: 0;
@@ -306,28 +387,197 @@
             transform: translateX(-50%);
         }
 
-        .hab-subtitle {
+        .habitaciones-subtitle {
+            text-align: center;
             font-size: 1.15rem;
             color: #666;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
+            font-family: 'Lato', sans-serif;
         }
 
-        /* Testimonios */
+        .filtros-habitaciones {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .filtro-btn {
+            padding: 10px 24px;
+            border: 2px solid #ddd;
+            background: white;
+            color: #666;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filtro-btn:hover {
+            border-color: #d4af37;
+            color: #d4af37;
+            transform: translateY(-2px);
+        }
+
+        .filtro-btn.active {
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: white;
+            border-color: #d4af37;
+        }
+
+        .habitaciones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        /* ⚡ HABITACIONES CON LAZY LOADING Y ANIMACIÓN */
+        .habitacion-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            /* ⚡ ANIMACIÓN INICIAL */
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .habitacion-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .habitacion-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #f0f0f0;
+        }
+
+        .habitacion-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .habitacion-info {
+            padding: 25px;
+        }
+
+        .experiencia-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .experiencia-badge.bosque {
+            background: linear-gradient(135deg, #2d5016, #1a3a0f);
+            color: white;
+        }
+
+        .experiencia-badge.mar {
+            background: linear-gradient(135deg, #1e5a8e, #0d3a5c);
+            color: white;
+        }
+
+        .experiencia-badge.campo {
+            background: linear-gradient(135deg, #8b7355, #6b5542);
+            color: white;
+        }
+
+        .habitacion-info h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin: 10px 0;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .habitacion-descripcion {
+            color: #666;
+            font-size: 0.95rem;
+            margin: 12px 0;
+            line-height: 1.6;
+        }
+
+        .habitacion-detalles {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 15px 0;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .detalle-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detalle-item strong {
+            color: #d4af37;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .detalle-item span {
+            color: #999;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-reservar {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .btn-reservar:hover {
+            background: linear-gradient(135deg, #b8860b, #9a7209);
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* ========================================
+           TESTIMONIOS
+        ======================================== */
         .testimonios-section {
-            background: #f8f8f8;
+            background: white;
             padding: 80px 5%;
             max-width: 1400px;
             margin: 0 auto;
         }
 
         .testimonios-title {
+            font-family: 'Playfair Display', serif;
             font-size: clamp(2.5rem, 5vw, 3.5rem);
             text-align: center;
             margin-bottom: 20px;
             font-weight: 400;
             position: relative;
             padding-bottom: 20px;
-            font-family: 'Cormorant Garamond', serif;
+            color: #1a1a1a;
         }
 
         .testimonios-title::after {
@@ -356,74 +606,84 @@
         }
 
         .testimonio-card {
-            background: white;
+            background: #fafafa;
             padding: 35px;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
         }
 
+        .testimonio-card:nth-child(1) { animation-delay: 0.1s; }
+        .testimonio-card:nth-child(2) { animation-delay: 0.2s; }
+        .testimonio-card:nth-child(3) { animation-delay: 0.3s; }
+
         .testimonio-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
 
         .estrellas {
             color: #d4af37;
-            font-size: 1.2rem;
-            margin-bottom: 15px;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
         }
 
         .testimonio-texto {
-            font-size: 1.05rem;
+            font-style: italic;
             color: #555;
             line-height: 1.8;
             margin-bottom: 20px;
-            font-style: italic;
+            font-size: 1rem;
         }
 
         .testimonio-autor {
+            color: #d4af37;
             font-weight: 600;
-            color: #333;
+            font-size: 0.95rem;
         }
 
-        /* Newsletter */
+        /* ========================================
+           NEWSLETTER
+        ======================================== */
         .newsletter-section {
             background: linear-gradient(135deg, #d4af37, #b8860b);
             color: white;
-            padding: 70px 5%;
+            padding: 80px 5%;
             text-align: center;
         }
 
         .newsletter-title {
-            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 3rem);
             margin-bottom: 15px;
             font-weight: 400;
-            font-family: 'Cormorant Garamond', serif;
         }
 
         .newsletter-text {
             font-size: 1.15rem;
-            margin-bottom: 35px;
+            margin-bottom: 40px;
             opacity: 0.95;
         }
 
         .newsletter-form {
             display: flex;
-            gap: 12px;
-            max-width: 550px;
+            justify-content: center;
+            gap: 15px;
+            max-width: 600px;
             margin: 0 auto;
             flex-wrap: wrap;
-            justify-content: center;
         }
 
         .newsletter-form input {
             flex: 1;
-            min-width: 280px;
+            min-width: 250px;
             padding: 16px 24px;
             border: none;
             border-radius: 50px;
             font-size: 1rem;
+            outline: none;
         }
 
         .newsletter-form button {
@@ -432,33 +692,41 @@
             color: #d4af37;
             border: none;
             border-radius: 50px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .newsletter-form button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background: #1a1a1a;
+            color: white;
+            transform: scale(1.05);
         }
 
-        /* Animaciones */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* ========================================
+           FOOTER
+        ======================================== */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: #1a1a1a;
+            color: #999;
+            font-size: 0.9rem;
         }
 
-        /* Responsive */
+        footer p {
+            margin-bottom: 10px;
+        }
+
+        /* ========================================
+           RESPONSIVE
+        ======================================== */
         @media (max-width: 768px) {
             .hero-section {
                 height: 70vh;
+                min-height: 500px;
             }
 
             .stats-section {
@@ -467,24 +735,47 @@
                 padding: 40px 5%;
             }
 
-            .stat-number {
-                font-size: 2.5rem;
+            .experiencias-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .contenedor-img {
+                height: 280px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .habitaciones-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .filtros-habitaciones {
+                gap: 10px;
+            }
+
+            .filtro-btn {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+
+            .testimonios-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
             }
 
             .newsletter-form {
                 flex-direction: column;
+                align-items: stretch;
             }
 
-            .newsletter-form input {
-                min-width: 100%;
-            }
-
-            .experiencias-container {
-                grid-template-columns: 1fr;
-            }
-
-            .contenedor-img {
-                height: 350px;
+            .newsletter-form input,
+            .newsletter-form button {
+                width: 100%;
             }
         }
 
@@ -496,535 +787,451 @@
             .stats-section {
                 grid-template-columns: 1fr;
             }
+
+            .stat-number {
+                font-size: 2.5rem;
+            }
+
+            .contenedor-img {
+                height: 250px;
+            }
+
+            .texto-img {
+                font-size: 1.4rem;
+                padding: 20px;
+            }
+
+            .habitacion-card img {
+                height: 200px;
+            }
+
+            .habitacion-info {
+                padding: 20px;
+            }
+        }
+
+        /* ========================================
+           ⚡ OPTIMIZACIÓN: Desactivar animaciones
+           si el usuario lo prefiere
+        ======================================== */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- HEADER -->
     <header>
-    <ul>
-        <li class="logo">
-            <a href="index.html">
-                <img src="recursos/logo armonia n1.png" width="89px" alt="logo">
-            </a>
-        </li>
-        
-        <li class="menu-toggle-li">
-            <button class="menu-toggle" id="menuToggle" aria-label="Menú">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </li>
-        
-        <li><a href="nav/disponibilidad.html">Habitaciones</a></li>
-        <li><a href="nav/experiencias.html">EXPERIENCIAS</a></li>
-        <li><a href="nav/servicios.html">SERVICIOS</a></li>         
-        <li class="registro" id="auth-container"></li>
-    </ul>
-</header>
+        <ul>
+            <li class="logo">
+                <a href="index.html">
+                    <img src="recursos/logo armonia n1.png" width="89px" alt="Armonía Logo" loading="eager">
+                </a>
+            </li>
+            <li><a href="nav/disponibilidad.html">Habitaciones</a></li>
+            <li><a href="nav/experiencias.html">Experiencias</a></li>
+            <li><a href="nav/servicios.html">Servicios</a></li>
+            <li class="registro" id="auth-container"></li>
+            <li class="menu-toggle-li">
+                <button class="menu-toggle" id="menuToggle" aria-label="Menú">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </li>
+        </ul>
+    </header>
 
+    <!-- MENÚ MÓVIL -->
+    <nav class="nav-mobile-menu" id="mobileMenu">
+        <ul>
+            <li><a href="nav/disponibilidad.html">Habitaciones</a></li>
+            <li><a href="nav/experiencias.html">Experiencias</a></li>
+            <li><a href="nav/servicios.html">Servicios</a></li>
+            <li id="auth-mobile"></li>
+        </ul>
+    </nav>
 
-<!-- Menú móvil desplegable (fuera del header) -->
-<div class="nav-mobile-menu" id="mobileMenu">
-    <ul>
-        <li><a href="nav/disponibilidad.html">Habitaciones</a></li>
-        <li><a href="nav/experiencias.html">Experiencias</a></li>
-        <li><a href="nav/servicios.html">Servicios</a></li>
-        <li class="registro" id="auth-container"></li>
-    </ul>
-</div>
-
-    <!-- Hero Section Mejorado -->
+    <!-- HERO SECTION -->
     <section class="hero-section">
         <div class="hero-content">
-            <h1 class="index">Vuelve a lo esencial</h1>
-            <p class="hero-subtitle">Reconecta con la naturaleza en nuestros refugios de paz</p>
-            <a href="nav/experiencias.html" class="btn-hero-primary">Explorar Experiencias</a>
+            <h1>Vuelve a lo Esencial</h1>
+            <p class="hero-subtitle">Reconecta con la naturaleza en nuestros refugios únicos</p>
+            <a href="#habitaciones" class="btn-hero-primary">Descubre Nuestros Espacios</a>
         </div>
     </section>
 
-    <!-- Estadísticas -->
-    <div class="stats-section">
+    <!-- ESTADÍSTICAS -->
+    <section class="stats-section">
         <div class="stat-item">
             <div class="stat-number">15+</div>
-            <div class="stat-label">Años de experiencia</div>
+            <div class="stat-label">Años de Experiencia</div>
         </div>
         <div class="stat-item">
-            <div class="stat-number">3</div>
-            <div class="stat-label">Experiencias únicas</div>
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Huéspedes Felices</div>
         </div>
         <div class="stat-item">
-            <div class="stat-number">2,500+</div>
-            <div class="stat-label">Huéspedes felices</div>
+            <div class="stat-number">12</div>
+            <div class="stat-label">Refugios Únicos</div>
         </div>
         <div class="stat-item">
-            <div class="stat-number">98%</div>
-            <div class="stat-label">Satisfacción</div>
+            <div class="stat-number">4.9★</div>
+            <div class="stat-label">Calificación Promedio</div>
         </div>
-    </div>
+    </section>
 
-    <!-- Experiencias (TU CÓDIGO ORIGINAL MEJORADO) -->
-    <div class="Ambientes">
+    <!-- EXPERIENCIAS / AMBIENTES -->
+    <section class="Ambientes">
         <h2>¿Qué experiencias deseas vivir?</h2>
-        <p class="subtitle-exp">Descubre tres ambientes únicos diseñados para reconectar tu espíritu con la naturaleza</p>
-
+        <p class="subtitle-exp">Elige tu refugio ideal y reconecta con la naturaleza</p>
+        
         <div class="experiencias-container">
             <a href="nav/experiencias.html#bosque" class="contenedor-img">
-                <img class="imagenesA" src="recursos/lago.jpg" width="150px" alt="lago en medio del bosque">
-                <div class="texto-img">Conoce el bosque.</div>
-            </a>           
-
+                <img loading="lazy" class="imagenesA" 
+                     src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=80&fm=webp" 
+                     alt="Experiencia Bosque">
+                <div class="texto-img">🌲 Bosque</div>
+            </a>
+            
             <a href="nav/experiencias.html#mar" class="contenedor-img">
-                <img class="imagenesA" src="recursos/mar.jpg" width="150px" alt="playa al mar extenso">
-                <div class="texto-img">Conoce el mar.</div>
-            </a>  
-
+                <img loading="lazy" class="imagenesA" 
+                     src="https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=600&q=80&fm=webp" 
+                     alt="Experiencia Mar">
+                <div class="texto-img">🌊 Mar</div>
+            </a>
+            
             <a href="nav/experiencias.html#campo" class="contenedor-img">
-                <img class="imagenesA" src="recursos/campo1.jpg" width="150px" alt="Campo verde al atardecer">
-                <div class="texto-img">Conoce el campo.</div>
-            </a>  
+                <img loading="lazy" class="imagenesA" 
+                     src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80&fm=webp" 
+                     alt="Experiencia Campo">
+                <div class="texto-img">🌾 Campo</div>
+            </a>
         </div>
-    </div>
+    </section>
 
-    <!-- Por qué elegirnos -->
+    <!-- POR QUÉ ELEGIRNOS -->
     <section class="features-section">
         <h2 class="features-title">Por qué elegirnos</h2>
-        <p class="features-subtitle">Experiencias que transforman, momentos que perduran</p>
+        <p class="features-subtitle">Experiencias diseñadas para tu bienestar</p>
         
         <div class="features-grid">
-            <div class="feature-item">
-                <div class="feature-icon">🌿</div>
-                <h3>Conexión Natural</h3>
-                <p>Espacios diseñados para fusionarte con el entorno natural</p>
+            <div class="feature-card">
+                <span class="feature-icon">🏡</span>
+                <h3>Espacios Únicos</h3>
+                <p>Cada refugio está cuidadosamente diseñado para ofrecerte confort y conexión con la naturaleza</p>
             </div>
-
-            <div class="feature-item">
-                <div class="feature-icon">✨</div>
-                <h3>Experiencias Únicas</h3>
-                <p>Cada estadía es una aventura personalizada e inolvidable</p>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🌿</span>
+                <h3>Naturaleza Pura</h3>
+                <p>Ubicaciones privilegiadas en entornos naturales vírgenes, lejos del ruido de la ciudad</p>
             </div>
-
-            <div class="feature-item">
-                <div class="feature-icon">🧘</div>
-                <h3>Paz Garantizada</h3>
-                <p>Refugios de tranquilidad lejos del ruido cotidiano</p>
+            
+            <div class="feature-card">
+                <span class="feature-icon">✨</span>
+                <h3>Atención Personalizada</h3>
+                <p>Nuestro equipo está dedicado a hacer de tu estadía una experiencia inolvidable</p>
             </div>
-
-            <div class="feature-item">
-                <div class="feature-icon">🏡</div>
-                <h3>Confort Sostenible</h3>
-                <p>Lujo consciente en armonía con el medio ambiente</p>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🌟</span>
+                <h3>Experiencias Auténticas</h3>
+                <p>Actividades diseñadas para que disfrutes y te reconectes con lo esencial</p>
             </div>
         </div>
     </section>
 
-<!-- Sección de Habitaciones (MODIFICADO PARA MOSTRAR SOLO IDs 1, 2, 7) -->
-<section id="habitaciones" class="habitaciones">
-    <h2>Alojamientos destacados</h2>
-    <p class="hab-subtitle">Encuentra tu refugio perfecto</p>
-
-    <!-- Filtros por experiencia -->
-    <div class="filtros-habitaciones">
-        <button class="filtro-btn active" onclick="filtrarHabitaciones('todas')">Todas</button>
-        <button class="filtro-btn" onclick="filtrarHabitaciones('bosque')">🌲 Bosque</button>
-        <button class="filtro-btn" onclick="filtrarHabitaciones('mar')">🌊 Mar</button>
-        <button class="filtro-btn" onclick="filtrarHabitaciones('campo')">🌾 Campo</button>
-    </div>
-
-    <!-- Contenedor de tarjetas -->
-    <div id="habitaciones-container" class="habitaciones-grid">
-        <!-- Se llenan dinámicamente con tu servlet -->
-    </div>
-</section>
-
-<!-- CSS para las tarjetas de habitaciones (TU CSS ORIGINAL) -->
-<style>
-    .filtros-habitaciones {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-bottom: 40px;
-        flex-wrap: wrap;
-    }
-
-    .filtro-btn {
-        padding: 12px 24px;
-        border: 2px solid #d4af37;
-        background: transparent;
-        color: #000000;
-        border-radius: 25px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        font-size: clamp(0.85rem, 2vw, 1rem);
-    }
-
-    .filtro-btn:hover,
-    .filtro-btn.active {
-        background: linear-gradient(135deg, #d4af37, #b8860b);
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3);
-    }
-
-    .habitaciones-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 30px;
-        margin-top: 30px;
-    }
-
-    .habitacion-card {
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        background: white;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        /* ANIMACIÓN AGREGADA */
-        opacity: 0;
-        animation: fadeInUp 0.6s ease forwards;
-    }
-
-    .habitacion-card:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-        transform: translateY(-4px);
-    }
-
-    .habitacion-card img {
-        width: 100%;
-        height: 220px;
-        object-fit: cover;
-    }
-
-    .habitacion-info {
-        padding: 16px;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-    }
-
-    .habitacion-info h3 {
-        font-size: 1.15rem;
-        color: #000000;
-        margin-bottom: 8px;
-        font-weight: 600;
-        line-height: 1.3;
-    }
-
-    .experiencia-badge {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: white;
-        width: fit-content;
-    }
-
-    .experiencia-badge.bosque {
-        background: #2d5016;
-    }
-
-    .experiencia-badge.mar {
-        background: #1e88e5;
-    }
-
-    .experiencia-badge.campo {
-        background: #558b2f;
-    }
-
-    .habitacion-descripcion {
-        color: #6b6b6b;
-        font-size: 0.9rem;
-        margin-bottom: 12px;
-        line-height: 1.4;
-        flex: 1;
-    }
-
-    .habitacion-detalles {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        padding: 12px 0;
-        border-top: 1px solid #e7e7e7;
-        margin-bottom: 12px;
-        font-size: 0.85rem;
-        color: #6b6b6b;
-    }
-
-    .detalle-item {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .precio-reserva-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .precio-noche {
-        font-size: 1.25rem;
-        color: #000000;
-        font-weight: 700;
-    }
-
-    .precio-noche small {
-        font-size: 0.75rem;
-        color: #6b6b6b;
-        font-weight: 400;
-    }
-
-    .btn-reservar {
-        padding: 10px 16px;
-        background: #d4af37;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        white-space: nowrap;
-    }
-
-    .btn-reservar:hover {
-        background: #b8860b;
-    }
-
-    @media (max-width: 768px) {
-        .habitaciones-grid {
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .filtros-habitaciones {
-            gap: 10px;
-        }
-
-        .filtro-btn {
-            padding: 8px 16px;
-            font-size: 0.8rem;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .habitaciones-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .habitacion-card img {
-            height: 200px;
-        }
-
-        .habitacion-info {
-            padding: 15px;
-        }
-
-        .filtro-btn {
-            padding: 8px 12px;
-            font-size: 0.7rem;
-        }
-    }
-</style>
-
-<!-- Testimonios -->
-<section class="testimonios-section">
-    <h2 class="testimonios-title">Lo que dicen nuestros huéspedes</h2>
-    <p class="testimonios-subtitle">Experiencias reales, momentos inolvidables</p>
-    
-    <div class="testimonios-grid">
-        <div class="testimonio-card">
-            <div class="estrellas">★★★★★</div>
-            <p class="testimonio-texto">"Una experiencia transformadora. El refugio del bosque nos permitió desconectar completamente y reconectar con nosotros mismos. Volveremos sin duda."</p>
-            <p class="testimonio-autor">— María González</p>
-        </div>
-
-        <div class="testimonio-card">
-            <div class="estrellas">★★★★★</div>
-            <p class="testimonio-texto">"La villa frente al mar superó todas nuestras expectativas. El sonido de las olas y el servicio impecable hicieron de nuestra luna de miel algo mágico."</p>
-            <p class="testimonio-autor">— Carlos & Ana Martínez</p>
-        </div>
-
-        <div class="testimonio-card">
-            <div class="estrellas">★★★★★</div>
-            <p class="testimonio-texto">"Perfecto para familias. Los niños disfrutaron el campo y nosotros la paz que tanto necesitábamos. Un lugar para volver cada año."</p>
-            <p class="testimonio-autor">— Familia Rodríguez</p>
-        </div>
-    </div>
-</section>
-
-<!-- Newsletter -->
-<section class="newsletter-section">
-    <h2 class="newsletter-title">Mantente conectado</h2>
-    <p class="newsletter-text">Recibe ofertas especiales y descubre nuevas experiencias</p>
-    <form class="newsletter-form" onsubmit="event.preventDefault(); notify.success('¡Suscripción exitosa!', 'Pronto recibirás nuestras ofertas especiales', 4000);">
-        <input type="email" placeholder="Tu correo electrónico" required>
-        <button type="submit">Suscribirme</button>
-    </form>
-</section>
-
-<!-- JavaScript para cargar y filtrar habitaciones (MODIFICADO) -->
-<script>
-    
-    let habitacionesOriginal = [];
-    
-    // IDs permitidos de habitaciones que se mostrarán
-    const IDS_PERMITIDOS = [1, 2, 7];
-
-    // Cargar habitaciones al iniciar
-    document.addEventListener('DOMContentLoaded', function() {
-        cargarHabitaciones();
-    });
-
-    async function cargarHabitaciones() {
-        try {
-            const response = await fetch('ObtenerHabitacionesServlet');
-            const todasLasHabitaciones = await response.json();
-            
-            // Filtrar solo las habitaciones con los IDs permitidos
-            habitacionesOriginal = todasLasHabitaciones.filter(hab => 
-                IDS_PERMITIDOS.includes(hab.id)
-            );
-            
-            mostrarHabitaciones(habitacionesOriginal);
-        } catch (error) {
-            console.error('Error al cargar habitaciones:', error);
-            document.getElementById('habitaciones-container').innerHTML = 
-                '<p style="grid-column: 1/-1; color: #c53030;">Error al cargar las habitaciones</p>';
-        }
-    }
-
-    function mostrarHabitaciones(habitaciones) {
-        const container = document.getElementById('habitaciones-container');
-        container.innerHTML = '';
-
-        if (habitaciones.length === 0) {
-            container.innerHTML = '<p style="grid-column: 1/-1; color: #666;">No hay habitaciones disponibles</p>';
-            return;
-        }
-
-        habitaciones.forEach((hab, index) => {
-            const card = document.createElement('div');
-            card.className = 'habitacion-card';
-            card.onclick = () => verDetalleHabitacion(hab.id);
-            
-            // DELAY ESCALONADO PARA ANIMACIÓN
-            card.style.animationDelay = `${index * 0.15}s`;
-
-            const icono = hab.experiencia === 'bosque' ? '🌲' : 
-                         hab.experiencia === 'mar' ? '🌊' : '🌾';
-
-            card.innerHTML = `
-                <img src="${hab.imagen_principal || 'recursos/placeholder.jpg'}" alt="${hab.nombre}">
-                <div class="habitacion-info">
-                    <span class="experiencia-badge ${hab.experiencia}">${icono} ${hab.experiencia.toUpperCase()}</span>
-                    <h3>${hab.nombre}</h3>
-                    <p class="habitacion-descripcion">${hab.descripcion ? (hab.descripcion.substring(0, 80) + '...') : 'Descubre esta experiencia única'}</p>
-                    
-                    <div class="habitacion-detalles">
-                        <div class="detalle-item">
-                            <strong>👥 ${hab.capacidad}</strong>
-                            <span>Personas</span>
-                        </div>
-                        <div class="detalle-item">
-                            <strong>${hab.precio_noche.toLocaleString('es-CO')}</strong>
-                            <span>por noche</span>
-                        </div>
-                    </div>
-                    
-                    <button class="btn-reservar" onclick="event.stopPropagation(); reservarHabitacion(${hab.id}, '${hab.nombre}')">
-                        Ver más detalles
-                    </button>
-                </div>
-            `;
-
-            container.appendChild(card);
-        });
-    }
-
-    function filtrarHabitaciones(experiencia) {
-        // Actualizar botón activo
-        document.querySelectorAll('.filtro-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        event.target.classList.add('active');
-
-        // Filtrar habitaciones
-        if (experiencia === 'todas') {
-            mostrarHabitaciones(habitacionesOriginal);
-        } else {
-            const filtradas = habitacionesOriginal.filter(hab => hab.experiencia === experiencia);
-            mostrarHabitaciones(filtradas);
-        }
-    }
-
-    function reservarHabitacion(habitacionId, nombreHabitacion) {
-        if (auth && auth.usuario && !auth.esAdmin) {
-            window.location.href = `login/detalle-habitacion.html?id=${habitacionId}`;
-        } else if (auth && auth.esAdmin) {
-            alert('Los administradores no pueden hacer reservas');
-        } else {
-            alert('Debes iniciar sesión para ver más detalles');
-            window.location.href = 'login/Login.html';
-        }
-    }
-
-    function verDetalleHabitacion(habitacionId) {
-        window.location.href = `login/detalle-habitacion.html?id=${habitacionId}`;
-    }
-
-
-const menuToggle = document.getElementById('menuToggle');
-const mobileMenu = document.getElementById('mobileMenu');
-const authMobile = document.getElementById('auth-mobile');
-
-if (menuToggle && mobileMenu) {
-    menuToggle.addEventListener('click', function() {
-        menuToggle.classList.toggle('active');
-        mobileMenu.classList.toggle('active');
-        document.body.classList.toggle('menu-open');
+    <!-- HABITACIONES -->
+    <section id="habitaciones" class="habitaciones-section">
+        <h2 class="habitaciones-title">Nuestros Refugios</h2>
+        <p class="habitaciones-subtitle">Descubre los espacios que hemos creado para ti</p>
         
-        // Copiar el contenido de auth al menú móvil
-        const authContainer = document.getElementById('auth-container');
-        if (authContainer && authMobile) {
-            authMobile.innerHTML = authContainer.innerHTML;
-        }
-    });
+        <div class="filtros-habitaciones">
+            <button class="filtro-btn active" onclick="filtrarHabitaciones('todas')">Todas</button>
+            <button class="filtro-btn" onclick="filtrarHabitaciones('bosque')">🌲 Bosque</button>
+            <button class="filtro-btn" onclick="filtrarHabitaciones('mar')">🌊 Mar</button>
+            <button class="filtro-btn" onclick="filtrarHabitaciones('campo')">🌾 Campo</button>
+        </div>
+        
+        <div id="habitaciones-container" class="habitaciones-grid">
+            <!-- Cargado dinámicamente -->
+        </div>
+    </section>
 
-    // Cerrar menú al hacer click en un enlace
-    mobileMenu.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', function() {
-            menuToggle.classList.remove('active');
-            mobileMenu.classList.remove('active');
-            document.body.classList.remove('menu-open');
+    <!-- TESTIMONIOS -->
+    <section class="testimonios-section">
+        <h2 class="testimonios-title">Lo que dicen nuestros huéspedes</h2>
+        <p class="testimonios-subtitle">Experiencias reales, momentos inolvidables</p>
+        
+        <div class="testimonios-grid">
+            <div class="testimonio-card">
+                <div class="estrellas">★★★★★</div>
+                <p class="testimonio-texto">"Una experiencia transformadora. El refugio del bosque nos permitió desconectar completamente y reconectar con nosotros mismos. Volveremos sin duda."</p>
+                <p class="testimonio-autor">— María González</p>
+            </div>
+
+            <div class="testimonio-card">
+                <div class="estrellas">★★★★★</div>
+                <p class="testimonio-texto">"La villa frente al mar superó todas nuestras expectativas. El sonido de las olas y el servicio impecable hicieron de nuestra luna de miel algo mágico."</p>
+                <p class="testimonio-autor">— Carlos & Ana Martínez</p>
+            </div>
+
+            <div class="testimonio-card">
+                <div class="estrellas">★★★★★</div>
+                <p class="testimonio-texto">"Perfecto para familias. Los niños disfrutaron el campo y nosotros la paz que tanto necesitábamos. Un lugar para volver cada año."</p>
+                <p class="testimonio-autor">— Familia Rodríguez</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEWSLETTER -->
+    <section class="newsletter-section">
+        <h2 class="newsletter-title">Mantente conectado</h2>
+        <p class="newsletter-text">Recibe ofertas especiales y descubre nuevas experiencias</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault(); alert('¡Gracias por suscribirte! Pronto recibirás nuestras ofertas.');">
+            <input type="email" placeholder="Tu correo electrónico" required>
+            <button type="submit">Suscribirme</button>
+        </form>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2025 Armonía - Vuelve a lo Esencial. Todos los derechos reservados.</p>
+        <p>Diseñado con 💚 para reconectar con la naturaleza</p>
+    </footer>
+
+    <!-- ⚡ JAVASCRIPT OPTIMIZADO -->
+    <script>
+        // 🚀 CONFIGURACIÓN
+        const CONFIG = {
+            DEBUG: false, // Desactivar logs en producción
+            LAZY_LOAD: true,
+            IDS_PERMITIDOS: [1, 2, 7] // IDs de habitaciones a mostrar
+        };
+
+        let habitacionesOriginal = [];
+
+        // ⚡ CARGA OPTIMIZADA
+        document.addEventListener('DOMContentLoaded', async function() {
+            const startTime = performance.now();
+            
+            try {
+                await cargarHabitaciones();
+                
+                if (CONFIG.DEBUG) {
+                    console.log(`✅ Carga completada en ${(performance.now() - startTime).toFixed(0)}ms`);
+                }
+            } catch (error) {
+                console.error('❌ Error en carga:', error);
+                mostrarErrorHabitaciones();
+            }
+            
+            inicializarMenuMovil();
         });
-    });
 
-    // Cerrar menú al hacer click fuera
-    document.addEventListener('click', function(event) {
-        if (!mobileMenu.contains(event.target) && !menuToggle.contains(event.target) && mobileMenu.classList.contains('active')) {
-            menuToggle.classList.remove('active');
-            mobileMenu.classList.remove('active');
-            document.body.classList.remove('menu-open');
+        async function cargarHabitaciones() {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
+                const response = await fetch('ObtenerHabitacionesServlet', {
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) throw new Error('Error en la respuesta del servidor');
+                
+                const todasLasHabitaciones = await response.json();
+                
+                // Filtrar solo las habitaciones permitidas
+                habitacionesOriginal = todasLasHabitaciones.filter(hab => 
+                    CONFIG.IDS_PERMITIDOS.includes(hab.id)
+                );
+                
+                mostrarHabitaciones(habitacionesOriginal);
+                
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    console.error('⏱️ Timeout al cargar habitaciones');
+                }
+                throw error;
+            }
         }
-    });
 
-    // Cerrar menú al redimensionar
-    window.addEventListener('resize', function() {
-        if (window.innerWidth > 768) {
-            menuToggle.classList.remove('active');
-            mobileMenu.classList.remove('active');
-            document.body.classList.remove('menu-open');
+        function mostrarHabitaciones(habitaciones) {
+            const container = document.getElementById('habitaciones-container');
+            
+            if (!container) return;
+            
+            container.innerHTML = '';
+
+            if (habitaciones.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #666; padding: 40px;">No hay habitaciones disponibles para mostrar</p>';
+                return;
+            }
+
+            // ✅ USAR FRAGMENT para mejor rendimiento
+            const fragment = document.createDocumentFragment();
+
+            habitaciones.forEach((hab, index) => {
+                const card = document.createElement('div');
+                card.className = 'habitacion-card';
+                card.onclick = () => verDetalleHabitacion(hab.id);
+                
+                // Delay escalonado para animación
+                card.style.animationDelay = `${index * 0.15}s`;
+
+                const icono = hab.experiencia === 'bosque' ? '🌲' : 
+                             hab.experiencia === 'mar' ? '🌊' : '🌾';
+
+                card.innerHTML = `
+                    <img ${CONFIG.LAZY_LOAD ? 'loading="lazy"' : ''} 
+                         src="${hab.imagen_principal || 'recursos/placeholder.jpg'}" 
+                         alt="${hab.nombre}">
+                    <div class="habitacion-info">
+                        <span class="experiencia-badge ${hab.experiencia}">${icono} ${hab.experiencia.toUpperCase()}</span>
+                        <h3>${hab.nombre}</h3>
+                        <p class="habitacion-descripcion">${hab.descripcion ? (hab.descripcion.substring(0, 80) + '...') : 'Descubre esta experiencia única'}</p>
+                        
+                        <div class="habitacion-detalles">
+                            <div class="detalle-item">
+                                <strong>👥 ${hab.capacidad}</strong>
+                                <span>Personas</span>
+                            </div>
+                            <div class="detalle-item">
+                                <strong>$${hab.precio_noche.toLocaleString('es-CO')}</strong>
+                                <span>por noche</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-reservar" onclick="event.stopPropagation(); reservarHabitacion(${hab.id}, '${hab.nombre}')">
+                            Ver más detalles
+                        </button>
+                    </div>
+                `;
+
+                fragment.appendChild(card);
+            });
+
+            container.appendChild(fragment);
         }
-    });
-}
 
-</script>
+        function filtrarHabitaciones(experiencia) {
+            // Actualizar botón activo
+            document.querySelectorAll('.filtro-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filtrar y mostrar
+            if (experiencia === 'todas') {
+                mostrarHabitaciones(habitacionesOriginal);
+            } else {
+                const filtradas = habitacionesOriginal.filter(hab => hab.experiencia === experiencia);
+                mostrarHabitaciones(filtradas);
+            }
+        }
+
+        function reservarHabitacion(habitacionId, nombreHabitacion) {
+            if (typeof auth !== 'undefined' && auth && auth.usuario && !auth.esAdmin) {
+                window.location.href = `login/detalle-habitacion.html?id=${habitacionId}`;
+            } else if (typeof auth !== 'undefined' && auth && auth.esAdmin) {
+                alert('Los administradores no pueden hacer reservas');
+            } else {
+                alert('Debes iniciar sesión para ver más detalles');
+                window.location.href = 'login/Login.html';
+            }
+        }
+
+        function verDetalleHabitacion(habitacionId) {
+            window.location.href = `login/detalle-habitacion.html?id=${habitacionId}`;
+        }
+
+        function mostrarErrorHabitaciones() {
+            const container = document.getElementById('habitaciones-container');
+            if (container) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                        <p style="color: #c53030; font-size: 1.2rem; margin-bottom: 20px;">⚠️ Error al cargar las habitaciones</p>
+                        <button onclick="location.reload()" style="padding: 12px 30px; background: #d4af37; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                            🔄 Reintentar
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // ⚡ MENÚ MÓVIL OPTIMIZADO
+        function inicializarMenuMovil() {
+            const menuToggle = document.getElementById('menuToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const authMobile = document.getElementById('auth-mobile');
+            
+            if (!menuToggle || !mobileMenu) return;
+
+            menuToggle.addEventListener('click', function() {
+                menuToggle.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                document.body.classList.toggle('menu-open');
+                
+                // Copiar contenido de auth
+                const authContainer = document.getElementById('auth-container');
+                if (authContainer && authMobile) {
+                    authMobile.innerHTML = authContainer.innerHTML;
+                }
+            });
+
+            // Cerrar al hacer click en enlaces
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function() {
+                    menuToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    document.body.classList.remove('menu-open');
+                });
+            });
+
+            // Cerrar al hacer click fuera
+            document.addEventListener('click', function(event) {
+                if (!mobileMenu.contains(event.target) && 
+                    !menuToggle.contains(event.target) && 
+                    mobileMenu.classList.contains('active')) {
+                    menuToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    document.body.classList.remove('menu-open');
+                }
+            });
+
+            // Cerrar al redimensionar
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    menuToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    document.body.classList.remove('menu-open');
+                }
+            });
+        }
+
+        // ⚡ SMOOTH SCROLL para enlaces internos
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
