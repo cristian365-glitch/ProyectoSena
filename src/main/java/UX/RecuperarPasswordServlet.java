@@ -1,30 +1,43 @@
 package UX;
 
+import com.conexiones.DatabaseManager;
 import java.io.IOException;
 import java.io.PrintWriter;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import com.google.gson.Gson;
-import com.conexiones.DatabaseManager;
-
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import org.mindrot.jbcrypt.BCrypt;
+import org.json.JSONObject;
 
 /**
  * Servlet para recuperación de contraseña
  * @author Calixto
  */
-@WebServlet(name = "RecuperarPasswordServlet", urlPatterns = {"/RecuperarPasswordServlet"})
+@WebServlet("/RecuperarPasswordServlet")
 public class RecuperarPasswordServlet extends HttpServlet {
-    
-    private Gson gson = new Gson();
-    private DatabaseManager dbManager = DatabaseManager.getInstance();
+    private static final long serialVersionUID = 1L;
+    private DatabaseManager dbManager;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        try {
+            dbManager = DatabaseManager.getInstance();
+            
+            if (!dbManager.testConnection()) {
+                throw new ServletException("No se puede conectar a la base de datos");
+            }
+            System.out.println("✅ RecuperarPasswordServlet inicializado correctamente");
+        } catch (Exception e) {
+            System.err.println("❌ Error al inicializar RecuperarPasswordServlet: " + e.getMessage());
+            e.printStackTrace();
+            throw new ServletException("Error al inicializar servlet", e);
+        }
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -43,7 +56,7 @@ public class RecuperarPasswordServlet extends HttpServlet {
                 resetearPassword(request, response);
                 break;
             default:
-                enviarErrorJSON(response, "Acción no válida");
+                enviarErrorJSON(response, "Acción no válida", 400);
         }
     }
     
@@ -53,10 +66,14 @@ public class RecuperarPasswordServlet extends HttpServlet {
     private void solicitarRecuperacion(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+        
         String email = request.getParameter("email");
         
         if (email == null || email.trim().isEmpty()) {
-            enviarErrorJSON(response, "El email es requerido");
+            enviarError(response, out, "El email es requerido", 400);
             return;
         }
         
@@ -68,14 +85,14 @@ public class RecuperarPasswordServlet extends HttpServlet {
             conn = dbManager.getConnection();
             
             // Verificar que el email existe
-            String sqlCheck = "SELECT usuario FROM usuarios WHERE email = ?";
+            String sqlCheck = "SELECT nombre FROM usuarios WHERE email = ?";
             stmt = conn.prepareStatement(sqlCheck);
             stmt.setString(1, email);
             rs = stmt.executeQuery();
             
             if (!rs.next()) {
                 // Por seguridad, no revelar si el email existe o no
-                enviarSuccessJSON(response, "Si el email existe, recibirás un código de verificación");
+                enviarSuccess(response, out, "Si el email existe, recibirás un código de verificación");
                 return;
             }
             
@@ -99,14 +116,14 @@ public class RecuperarPasswordServlet extends HttpServlet {
             boolean emailEnviado = EmailService.enviarCodigoRecuperacion(email, codigo);
             
             if (emailEnviado) {
-                enviarSuccessJSON(response, "Código de verificación enviado a tu email");
+                enviarSuccess(response, out, "Código de verificación enviado a tu email");
             } else {
-                enviarErrorJSON(response, "Error al enviar el email. Intenta de nuevo");
+                enviarError(response, out, "Error al enviar el email. Intenta de nuevo", 500);
             }
             
         } catch (SQLException e) {
             e.printStackTrace();
-            enviarErrorJSON(response, "Error al procesar la solicitud");
+            enviarError(response, out, "Error al procesar la solicitud", 500);
         } finally {
             DatabaseManager.closeResources(rs, stmt, conn);
         }
@@ -118,11 +135,15 @@ public class RecuperarPasswordServlet extends HttpServlet {
     private void verificarCodigo(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+        
         String email = request.getParameter("email");
         String codigo = request.getParameter("codigo");
         
         if (email == null || codigo == null) {
-            enviarErrorJSON(response, "Email y código son requeridos");
+            enviarError(response, out, "Email y código son requeridos", 400);
             return;
         }
         
@@ -146,7 +167,7 @@ public class RecuperarPasswordServlet extends HttpServlet {
                 
                 // Verificar si el código ha expirado
                 if (expiracion.before(new Timestamp(System.currentTimeMillis()))) {
-                    enviarErrorJSON(response, "El código ha expirado. Solicita uno nuevo");
+                    enviarError(response, out, "El código ha expirado. Solicita uno nuevo", 400);
                     return;
                 }
                 
@@ -164,21 +185,23 @@ public class RecuperarPasswordServlet extends HttpServlet {
                     stmt.setString(2, email);
                     stmt.executeUpdate();
                     
-                    Map<String, Object> resultado = new HashMap<>();
+                    JSONObject resultado = new JSONObject();
                     resultado.put("success", true);
                     resultado.put("token", token);
                     resultado.put("mensaje", "Código verificado correctamente");
-                    enviarJSON(response, resultado);
+                    
+                    out.print(resultado.toString());
+                    out.flush();
                 } else {
-                    enviarErrorJSON(response, "Código incorrecto");
+                    enviarError(response, out, "Código incorrecto", 400);
                 }
             } else {
-                enviarErrorJSON(response, "No se encontró un código válido");
+                enviarError(response, out, "No se encontró un código válido", 404);
             }
             
         } catch (SQLException e) {
             e.printStackTrace();
-            enviarErrorJSON(response, "Error al verificar el código");
+            enviarError(response, out, "Error al verificar el código", 500);
         } finally {
             DatabaseManager.closeResources(rs, stmt, conn);
         }
@@ -190,12 +213,16 @@ public class RecuperarPasswordServlet extends HttpServlet {
     private void resetearPassword(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+        
         String email = request.getParameter("email");
         String token = request.getParameter("token");
         String nuevaPassword = request.getParameter("password");
         
         if (email == null || token == null || nuevaPassword == null) {
-            enviarErrorJSON(response, "Datos incompletos");
+            enviarError(response, out, "Datos incompletos", 400);
             return;
         }
         
@@ -217,7 +244,7 @@ public class RecuperarPasswordServlet extends HttpServlet {
             rs = stmt.executeQuery();
             
             if (!rs.next()) {
-                enviarErrorJSON(response, "Token inválido o expirado");
+                enviarError(response, out, "Token inválido o expirado", 400);
                 return;
             }
             
@@ -225,7 +252,7 @@ public class RecuperarPasswordServlet extends HttpServlet {
             
             // Actualizar la contraseña
             String nuevoHash = BCrypt.hashpw(nuevaPassword, BCrypt.gensalt());
-            String sqlUpdate = "UPDATE usuarios SET password = ? WHERE email = ?";
+            String sqlUpdate = "UPDATE usuarios SET password_hash = ? WHERE email = ?";
             
             stmt = conn.prepareStatement(sqlUpdate);
             stmt.setString(1, nuevoHash);
@@ -241,51 +268,53 @@ public class RecuperarPasswordServlet extends HttpServlet {
                 stmt.setString(1, email);
                 stmt.executeUpdate();
                 
-                enviarSuccessJSON(response, "Contraseña actualizada correctamente");
+                enviarSuccess(response, out, "Contraseña actualizada correctamente");
             } else {
-                enviarErrorJSON(response, "No se pudo actualizar la contraseña");
+                enviarError(response, out, "No se pudo actualizar la contraseña", 500);
             }
             
         } catch (SQLException e) {
             e.printStackTrace();
-            enviarErrorJSON(response, "Error al resetear la contraseña");
+            enviarError(response, out, "Error al resetear la contraseña", 500);
         } finally {
             DatabaseManager.closeResources(rs, stmt, conn);
         }
     }
     
     /**
-     * Enviar respuesta JSON exitosa
+     * Método auxiliar para enviar errores en formato JSON
      */
-    private void enviarJSON(HttpServletResponse response, Map<String, Object> data) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
-        out.print(gson.toJson(data));
+    private void enviarError(HttpServletResponse response, PrintWriter out, String mensaje, int statusCode) 
+            throws IOException {
+        response.setStatus(statusCode);
+        JSONObject error = new JSONObject();
+        error.put("success", false);
+        error.put("error", mensaje);
+        
+        out.print(error.toString());
         out.flush();
     }
     
     /**
-     * Enviar respuesta JSON de éxito simple
+     * Enviar respuesta JSON de error (versión sin PrintWriter)
      */
-    private void enviarSuccessJSON(HttpServletResponse response, String mensaje) throws IOException {
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("success", true);
-        resultado.put("mensaje", mensaje);
-        enviarJSON(response, resultado);
-    }
-    
-    /**
-     * Enviar respuesta JSON de error
-     */
-    private void enviarErrorJSON(HttpServletResponse response, String mensaje) throws IOException {
+    private void enviarErrorJSON(HttpServletResponse response, String mensaje, int statusCode) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
-        Map<String, Object> error = new HashMap<>();
-        error.put("success", false);
-        error.put("error", mensaje);
-        out.print(gson.toJson(error));
+        enviarError(response, out, mensaje, statusCode);
+    }
+    
+    /**
+     * Enviar respuesta JSON de éxito
+     */
+    private void enviarSuccess(HttpServletResponse response, PrintWriter out, String mensaje) 
+            throws IOException {
+        JSONObject resultado = new JSONObject();
+        resultado.put("success", true);
+        resultado.put("mensaje", mensaje);
+        
+        out.print(resultado.toString());
         out.flush();
     }
 
