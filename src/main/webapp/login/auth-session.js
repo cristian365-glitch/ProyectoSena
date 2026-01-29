@@ -242,58 +242,58 @@ class AuthManager {
         return (wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d)).toLowerCase();
     }
     
-    actualizarUI() {
-        const authContainer = document.getElementById('auth-container');
-        
-        if (!authContainer) {
-            console.warn('No se encontró #auth-container en el HTML');
-            return;
-        }
-        
-        authContainer.innerHTML = '';
-        
-        // Generar HTML del avatar
-        const avatarHTML = this.avatarUrl 
-            ? `<img src="${this.avatarUrl}" alt="${this.usuario}" class="user-avatar" onerror="this.src='https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200'">`
-            : `<img src="/recursos/icons/usuario.svg" alt="${this.usuario}" class="icon" width="23px">`;
-        
-        if (this.esAdmin) {
-            // Admin logueado
-            authContainer.innerHTML = `
-                <div class="user-menu admin-menu">
-                    <span class="user-name">
-                        ${avatarHTML}
-                        ⭐ ${this.usuario}
-                    </span>
-                    <div class="dropdown-menu">
-                        <a href="/habitacionesCRUD/gestionar-habitaciones.html" class="menu-item">Gestionar Habitaciones</a>
-                        <a href="/usuario/reservas.html" class="menu-item">Ver Reservas</a>
-                        <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
-                        <hr>
-                        <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
-                    </div>
-                </div>
-            `;
-        } else {
-            // Usuario normal logueado
-            authContainer.innerHTML = `
-                <div class="user-menu client-menu">
-                    <span class="user-name">
-                        ${avatarHTML}
-                        ${this.usuario}
-                    </span>
-                    <div class="dropdown-menu">
-                        <a href="/usuario/reservas.html" class="menu-item">Ver Reservas</a>
-                        <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
-                        <hr>
-                        <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
-                    </div>
-                </div>
-            `;
-        }
-        
-        this.agregarEventosDropdown();
+actualizarUI() {
+    const authContainer = document.getElementById('auth-container');
+    
+    if (!authContainer) {
+        console.warn('No se encontró #auth-container en el HTML');
+        return;
     }
+    
+    authContainer.innerHTML = '';
+    
+    // Generar HTML del avatar
+    const avatarHTML = this.avatarUrl 
+        ? `<img src="${this.avatarUrl}" alt="${this.usuario}" class="user-avatar" onerror="this.src='https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200'">`
+        : `<img src="/recursos/icons/usuario.svg" alt="${this.usuario}" class="icon" width="23px">`;
+    
+    if (this.esAdmin) {
+        // Admin logueado
+        authContainer.innerHTML = `
+            <div class="user-menu admin-menu">
+                <span class="user-name">
+                    ${avatarHTML}
+                    <span class="user-text">⭐ ${this.usuario}</span>
+                </span>
+                <div class="dropdown-menu">
+                    <a href="/habitacionesCRUD/gestionar-habitaciones.html" class="menu-item">Gestionar Habitaciones</a>
+                    <a href="/usuario/reservas.html" class="menu-item">Ver Reservas</a>
+                    <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
+                    <hr>
+                    <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
+                </div>
+            </div>
+        `;
+    } else {
+        // Usuario normal logueado
+        authContainer.innerHTML = `
+            <div class="user-menu client-menu">
+                <span class="user-name">
+                    ${avatarHTML}
+                    <span class="user-text">${this.usuario}</span>
+                </span>
+                <div class="dropdown-menu">
+                    <a href="/usuario/reservas.html" class="menu-item">Ver Reservas</a>
+                    <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
+                    <hr>
+                    <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
+                </div>
+            </div>
+        `;
+    }
+    
+    this.agregarEventosDropdown();
+}
     
     mostrarBotonesLogin() {
         const authContainer = document.getElementById('auth-container');

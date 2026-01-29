@@ -1,4 +1,4 @@
-/* auth-ui.css - Integración con diseño existente */
+/* auth-ui.css - Integración con diseño existente - VERSIÓN MEJORADA */
 
 #auth-container {
     display: flex;
@@ -7,7 +7,9 @@
     padding: 0;
 }
 
-/* Botones de Login/Registro */
+/* ========================================
+   BOTONES DE LOGIN/REGISTRO
+======================================== */
 .auth-buttons {
     display: flex;
     gap: 12px;
@@ -68,7 +70,9 @@
     box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3);
 }
 
-/* Menú de usuario */
+/* ========================================
+   MENÚ DE USUARIO - DESKTOP
+======================================== */
 .user-menu {
     position: relative;
     display: inline-block;
@@ -78,7 +82,9 @@
 .user-name {
     color: #000000;
     cursor: pointer;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
     transition: all 0.3s ease;
     user-select: none;
     position: relative;
@@ -96,7 +102,6 @@
     left: 50%;
     width: 0;
     height: 2px;
-
     background: linear-gradient(90deg, #d4af37, #b8860b);
     transform: translateX(-50%);
     transition: width 0.3s;
@@ -112,7 +117,42 @@
     width: 60%;
 }
 
-/* Dropdown */
+/* ========================================
+   AVATAR
+======================================== */
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #d4af37;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+    transition: all 0.3s ease;
+    margin-right: 10px;
+    display: inline-block;
+}
+
+.user-menu:hover .user-avatar {
+    transform: scale(1.05);
+    border-color: #b8860b;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.5);
+}
+
+/* El ícono SVG cuando no hay avatar (fallback) */
+.user-name .icon {
+    margin-right: 8px;
+    filter: brightness(0);
+    transition: filter 0.3s ease;
+}
+
+.user-menu:hover .user-name .icon,
+.user-menu.active .user-name .icon {
+    filter: brightness(0) saturate(100%) invert(64%) sepia(48%) saturate(549%) hue-rotate(6deg);
+}
+
+/* ========================================
+   DROPDOWN MENU - DESKTOP
+======================================== */
 .dropdown-menu {
     display: none;
     position: absolute;
@@ -177,86 +217,275 @@
     border-top: 1px solid #e2e8f0;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* ========================================
+   RESPONSIVE - TABLETS (768px - 1024px)
+======================================== */
+@media (max-width: 1024px) {
     #auth-container {
-        padding-left: 10px;
+        gap: 10px;
     }
-    
+
+    .auth-buttons {
+        gap: 10px;
+    }
+
     .btn-auth.register {
-        padding: 10px 20px;
+        padding: 10px 24px;
+        font-size: 0.8rem;
+    }
+
+    .user-avatar {
+        width: 38px;
+        height: 38px;
+    }
+
+    .user-name {
         font-size: 0.75rem;
     }
 }
 
-@media (max-width: 480px) {
-    .user-name {
-        font-size: 0.65rem;
-        padding: 8px 12px;
+/* ========================================
+   RESPONSIVE - MÓVILES (MAX 768px)
+======================================== */
+@media (max-width: 768px) {
+    /* En móvil, el auth-container permanece visible en el header */
+    #auth-container {
+        padding-left: 0;
+        gap: 8px;
     }
-    
-    .menu-item {
-        padding: 10px 12px;
-        font-size: 13px;
+
+    .auth-buttons {
+        height: 70px;
+        gap: 8px;
+    }
+
+    /* IMPORTANTE: Ocultar SOLO el texto del nombre, mantener avatar visible */
+    .user-name .user-text {
+        display: none !important; /* Oculta el nombre del usuario */
+    }
+
+    /* Ajustar el contenedor del nombre para que solo muestre el avatar */
+    .user-menu .user-name {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Ocultar la línea decorativa del nombre */
+    .user-menu .user-name::before {
+        display: none !important;
+    }
+
+    /* El avatar se mantiene visible como único elemento */
+    .user-avatar {
+        width: 38px !important;
+        height: 38px !important;
+        margin: 0 !important;
+        border-width: 2px;
+        display: block !important;
+    }
+
+    /* Asegurar que el user-menu tenga el tamaño del avatar */
+    .user-menu {
+        width: auto;
+        height: auto;
+    }
+
+    /* Botones de login/registro más pequeños */
+    .btn-auth.login {
+        padding: 8px 12px;
+        font-size: 0.7rem;
+    }
+
+    .btn-auth.register {
+        padding: 10px 20px;
+        font-size: 0.75rem;
+    }
+
+    /* Dropdown en móvil se oculta - se usa el menú móvil en su lugar */
+    .dropdown-menu {
+        display: none !important;
     }
 }
-/* ============================================
-   ESTILOS PARA AVATARES - Agregar a auth-ui.css
-   ============================================ */
 
-/* Avatar redondo en el menú de usuario */
-.user-avatar {
-    width: 40px;
-    height: 40px;
+/* ========================================
+   RESPONSIVE - MÓVILES PEQUEÑOS (MAX 480px)
+======================================== */
+@media (max-width: 480px) {
+    #auth-container {
+        gap: 6px;
+    }
+
+    .auth-buttons {
+        height: 65px;
+        gap: 6px;
+    }
+
+    /* Ocultar texto del usuario */
+    .user-name .user-text {
+        display: none !important;
+    }
+
+    /* Avatar más pequeño en pantallas muy pequeñas */
+    .user-avatar {
+        width: 35px !important;
+        height: 35px !important;
+        border-width: 2px;
+    }
+
+    .user-menu .user-name {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .btn-auth.login {
+        padding: 7px 10px;
+        font-size: 0.65rem;
+    }
+
+    .btn-auth.register {
+        padding: 9px 16px;
+        font-size: 0.7rem;
+    }
+}
+
+/* ========================================
+   ESTILOS PARA MENÚ MÓVIL (desde mobile-menu.js)
+======================================== */
+
+/* Contenedor de autenticación en menú móvil */
+.auth-mobile-section {
+    padding: 20px;
+    background: rgba(212, 175, 55, 0.05);
+    border-top: 2px solid rgba(212, 175, 55, 0.2);
+}
+
+.auth-mobile-section .auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    height: auto;
+}
+
+.auth-mobile-section .btn-auth {
+    width: 100%;
+    text-align: center;
+    padding: 14px 20px !important;
+    font-size: 0.9rem !important;
+}
+
+.auth-mobile-section .btn-auth.login {
+    background: transparent;
+    border: 2px solid #d4af37;
+    color: #d4af37;
+    border-radius: 8px;
+}
+
+.auth-mobile-section .btn-auth.login::before {
+    display: none;
+}
+
+.auth-mobile-section .btn-auth.login:hover {
+    background: rgba(212, 175, 55, 0.1);
+}
+
+/* Menú de usuario en móvil */
+.user-menu-mobile {
+    padding: 20px;
+    text-align: center;
+    background: rgba(212, 175, 55, 0.05);
+    border-top: 2px solid rgba(212, 175, 55, 0.2);
+}
+
+.user-menu-mobile .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.user-menu-mobile .user-avatar {
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #d4af37;
-    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
-    transition: all 0.3s ease;
-    margin-right: 10px;
-    vertical-align: middle;
-    display: inline-block;
+    border: 3px solid #d4af37;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    margin: 0;
 }
 
-.user-menu:hover .user-avatar {
-    transform: scale(1.05);
-    border-color: #b8860b;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.5);
+.user-menu-mobile .user-name-display {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
 }
 
-/* Ajustar el contenedor del nombre con avatar */
-.user-name {
-    display: inline-flex;
-    align-items: center;
-    gap: 0; /* Sin gap, el margen está en el avatar */
+.user-menu-mobile .menu-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
 }
 
-/* El ícono SVG cuando no hay avatar (fallback) */
-.user-name .icon {
-    margin-right: 8px;
-    filter: brightness(0);
-    transition: filter 0.3s ease;
+.user-menu-mobile .menu-item {
+    display: block;
+    padding: 14px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    margin: 4px 0;
+    text-align: center;
+    font-weight: 500;
+    border-left: none;
 }
 
-.user-menu:hover .user-name .icon,
-.user-menu.active .user-name .icon {
-    filter: brightness(0) saturate(100%) invert(64%) sepia(48%) saturate(549%) hue-rotate(6deg);
+.user-menu-mobile .menu-item:hover {
+    background: rgba(212, 175, 55, 0.1);
+    color: #d4af37;
+    padding-left: 20px;
 }
 
-/* Responsive - Ajustar tamaño del avatar en móviles */
-@media (max-width: 768px) {
-    .user-avatar {
-        width: 35px;
-        height: 35px;
-        margin-right: 8px;
-        border-width: 1.5px;
-    }
+.user-menu-mobile .menu-item.logout {
+    color: #c53030;
+    background: rgba(197, 48, 48, 0.05);
+    margin-top: 10px;
 }
 
+.user-menu-mobile .menu-item.logout:hover {
+    background: #fed7d7;
+    color: #7a0a0a;
+}
+
+/* Responsive para menú móvil pequeño */
 @media (max-width: 480px) {
-    .user-avatar {
-        width: 30px;
-        height: 30px;
-        margin-right: 6px;
+    .auth-mobile-section {
+        padding: 15px;
+    }
+
+    .auth-mobile-section .btn-auth {
+        padding: 12px 18px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .user-menu-mobile {
+        padding: 15px;
+    }
+
+    .user-menu-mobile .user-avatar {
+        width: 60px;
+        height: 60px;
+        border-width: 2px;
+    }
+
+    .user-menu-mobile .user-name-display {
+        font-size: 1rem;
+    }
+
+    .user-menu-mobile .menu-item {
+        padding: 12px 16px;
+        font-size: 0.9rem;
     }
 }
