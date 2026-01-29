@@ -14,15 +14,91 @@
       padding: 0;
       box-sizing: border-box;
     }
-    h1{
-       margin: 30px 20px 40px; 
-    }
 
     body {
       font-family: 'Georgia', serif;
-      background-color: #f8f7f4;
-      color: #2c2c2c;
+      background-color: #0a0a0a;
+      color: #e8e8e8;
       overflow-x: hidden;
+    }
+
+    /* ANIMACIONES */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-60px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -1000px 0; }
+      100% { background-position: 1000px 0; }
+    }
+
+    /* Controles de navegación */
+    .controles-navegacion {
+      position: fixed;
+      top: 50%;
+      right: 40px;
+      transform: translateY(-50%);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .controles-navegacion.visible {
+      display: flex;
+      opacity: 1;
+      animation: slideInLeft 0.6s ease-out;
+    }
+
+    .btn-control {
+      padding: 14px 28px;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.08));
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 50px;
+      color: #d4af37;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: center;
+      backdrop-filter: blur(10px);
+      letter-spacing: 0.5px;
+    }
+
+    .btn-control:hover {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.15));
+      border-color: #d4af37;
+      transform: translateX(-8px);
+      box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
     }
 
     /* Selector de Experiencias */
@@ -32,36 +108,50 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      background: #f8f7f4;
-      padding: 60px 20px;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+      padding: 100px 40px 80px;
+      animation: fadeIn 0.8s ease-out;
     }
 
     .selector-experiencias h2 {
-      font-size: 2.8em;
-      margin-bottom: 80px;
+      font-family: 'Georgia', serif;
+      font-size: 3.5rem;
+      margin-bottom: 100px;
       text-align: center;
-      color: #2c2c2c;
+      background: linear-gradient(135deg, #ffd700 0%, #d4af37 50%, #b8941f 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       font-weight: 400;
-      letter-spacing: 1px;
+      letter-spacing: 2px;
+      animation: fadeInUp 0.8s ease-out 0.2s both, shimmer 3s infinite;
+      background-size: 2000px 100%;
     }
 
     .ambientes {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 50px;
-      max-width: 1200px;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 60px;
+      max-width: 1400px;
       width: 100%;
     }
 
     .contenedor-img {
       position: relative;
-      height: 420px;
+      height: 480px;
       overflow: hidden;
       cursor: pointer;
-      transition: all 0.6s ease;
       text-decoration: none;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: fadeInUp 0.8s ease-out both;
     }
+
+    .contenedor-img:nth-child(1) { animation-delay: 0.3s; }
+    .contenedor-img:nth-child(2) { animation-delay: 0.4s; }
+    .contenedor-img:nth-child(3) { animation-delay: 0.5s; }
 
     .contenedor-img::before {
       content: '';
@@ -70,45 +160,53 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.5));
+      background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.7));
       z-index: 1;
       transition: all 0.6s ease;
     }
 
+    .contenedor-img:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 30px 80px rgba(212, 175, 55, 0.3);
+      border-color: rgba(212, 175, 55, 0.5);
+    }
+
     .contenedor-img:hover::before {
-      background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.4));
+      background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.5));
     }
 
     .imagenesA {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.8s ease;
-      filter: brightness(0.95);
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      filter: brightness(0.85);
     }
 
     .contenedor-img:hover .imagenesA {
-      transform: scale(1.03);
+      transform: scale(1.12);
       filter: brightness(1);
     }
 
     .texto-img {
       position: absolute;
-      bottom: 35px;
+      bottom: 40px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 2;
-      font-size: 1.6em;
+      font-size: 1.8rem;
       font-weight: 400;
-      color: #fff;
-      text-shadow: 1px 1px 8px rgba(0,0,0,0.6);
+      color: #ffd700;
+      text-shadow: 2px 2px 12px rgba(0,0,0,0.8);
       transition: all 0.6s ease;
       white-space: nowrap;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
     }
 
     .contenedor-img:hover .texto-img {
-      bottom: 40px;
+      bottom: 48px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
     }
 
     /* Experiencia Inmersiva */
@@ -125,12 +223,6 @@
       animation: fadeIn 1.2s forwards;
     }
 
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-      }
-    }
-
     .fondo-parallax {
       position: fixed;
       top: 0;
@@ -141,247 +233,339 @@
       background-position: center;
       background-attachment: fixed;
       z-index: -1;
-      filter: brightness(0.85);
+      filter: brightness(0.65) contrast(1.1);
+    }
+
+    .fondo-parallax::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.7) 100%);
     }
 
     .contenido-experiencia {
       position: relative;
       z-index: 2;
-      padding: 120px 20px 80px;
-      background: linear-gradient(to bottom, rgba(248, 247, 244, 0.85), rgba(248, 247, 244, 0.92));
+      padding: 140px 40px 100px;
+      background: linear-gradient(to bottom, 
+        rgba(10, 10, 10, 0.75) 0%, 
+        rgba(10, 10, 10, 0.85) 50%,
+        rgba(10, 10, 10, 0.95) 100%);
     }
 
     .header-experiencia {
       text-align: center;
-      margin-bottom: 100px;
+      margin-bottom: 120px;
+      animation: fadeInUp 0.8s ease-out 0.3s both;
     }
 
     .header-experiencia h1 {
-      font-size: 3.5em;
-      margin-bottom: 25px;
-      color: #2c2c2c;
+      font-family: 'Georgia', serif;
+      font-size: 4rem;
+      margin-bottom: 30px;
+      background: linear-gradient(135deg, #ffd700 0%, #d4af37 50%, #b8941f 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       font-weight: 300;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
+      animation: shimmer 3s infinite;
+      background-size: 2000px 100%;
     }
 
     .header-experiencia p {
-      font-size: 1.3em;
+      font-size: 1.4rem;
       font-style: italic;
-      max-width: 700px;
+      max-width: 800px;
       margin: 0 auto;
-      color: #4a4a4a;
+      color: #c8c8c8;
       font-weight: 300;
-      line-height: 1.6;
+      line-height: 1.8;
     }
 
     .galeria-inmersiva {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 30px;
-      margin-bottom: 100px;
-      max-width: 1300px;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 40px;
+      margin-bottom: 120px;
+      max-width: 1500px;
       margin-left: auto;
       margin-right: auto;
+      animation: fadeInUp 0.8s ease-out 0.5s both;
     }
 
     .galeria-inmersiva img {
       width: 100%;
-      height: 280px;
+      height: 320px;
       object-fit: cover;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-      transition: all 0.5s ease;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
+      filter: brightness(0.9);
     }
 
     .galeria-inmersiva img:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+      transform: translateY(-10px);
+      box-shadow: 0 25px 60px rgba(212, 175, 55, 0.3);
+      border-color: rgba(212, 175, 55, 0.5);
+      filter: brightness(1);
     }
 
     .actividades-inmersivas {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 40px;
-      max-width: 1300px;
-      margin: 0 auto 100px;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 50px;
+      max-width: 1500px;
+      margin: 0 auto 120px;
+      animation: fadeInUp 0.8s ease-out 0.7s both;
     }
 
     .tarjeta-actividad {
-      background: #ffffff;
+      background: linear-gradient(135deg, rgba(26, 26, 26, 0.8), rgba(20, 20, 20, 0.9));
+      border-radius: 24px;
       overflow: hidden;
-      transition: all 0.5s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
     }
 
     .tarjeta-actividad:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      transform: translateY(-12px);
+      box-shadow: 0 30px 80px rgba(212, 175, 55, 0.3);
+      border-color: rgba(212, 175, 55, 0.4);
     }
 
     .tarjeta-actividad img {
       width: 100%;
-      height: 220px;
+      height: 240px;
       object-fit: cover;
       transition: transform 0.6s ease;
+      filter: brightness(0.85);
     }
 
     .tarjeta-actividad:hover img {
-      transform: scale(1.05);
+      transform: scale(1.1);
+      filter: brightness(1);
     }
 
     .info-actividad {
-      padding: 30px;
+      padding: 35px;
     }
 
     .info-actividad h3 {
-      font-size: 1.4em;
-      margin-bottom: 15px;
-      color: #2c2c2c;
+      font-size: 1.6rem;
+      color: #d4af37;
+      margin-bottom: 16px;
       font-weight: 400;
       letter-spacing: 0.5px;
     }
 
     .info-actividad p {
-      font-size: 0.95em;
-      line-height: 1.7;
-      color: #5a5a5a;
+      color: #c8c8c8;
+      line-height: 1.8;
+      font-size: 1.05rem;
       font-weight: 300;
     }
 
-    /* CONTROLES FIJOS - SOLUCIÓN */
-    .controles {
-      position: fixed;
-      top: 100px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: none; /* Oculto por defecto */
-      gap: 15px;
-      z-index: 1000;
-      background: rgba(255, 255, 255, 0.95);
-      padding: 12px 25px;
-      border-radius: 50px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      margin: 0;
-    }
-
-    .controles.visible {
-      display: flex; /* Se muestra solo cuando tiene la clase visible */
-    }
-
-    .btn-control {
-      background: transparent;
-      border: 1.5px solid #2c2c2c;
-      color: #2c2c2c;
-      padding: 10px 22px;
-      border-radius: 25px;
-      cursor: pointer;
-      font-size: 0.9em;
-      font-weight: 400;
-      transition: all 0.4s ease;
-      text-decoration: none;
-      display: inline-block;
-      letter-spacing: 0.3px;
-    }
-
-    .btn-control:hover {
-      background: #2c2c2c;
-      color: #fff;
-    }
-
+    /* Botón volver */
     .btn-volver {
       position: fixed;
       bottom: 40px;
-      right: 40px;
-      background: rgba(255, 255, 255, 0.95);
-      color: #2c2c2c;
-      padding: 12px 28px;
-      border-radius: 30px;
+      left: 40px;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.08));
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 50px;
+      color: #d4af37;
       text-decoration: none;
-      font-weight: 400;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
       z-index: 1000;
-      transition: all 0.4s ease;
-      border: 1.5px solid #2c2c2c;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.5px;
     }
 
     .btn-volver:hover {
-      background: #2c2c2c;
-      color: #fff;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.15));
+      border-color: #d4af37;
+      transform: translateX(-8px);
+      box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
     }
 
-    @media (max-width: 768px) {
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .controles-navegacion {
+        right: 20px;
+      }
+
+      .btn-control {
+        padding: 12px 20px;
+        font-size: 0.85rem;
+      }
+
       .selector-experiencias h2 {
-        font-size: 2em;
+        font-size: 2.8rem;
+        margin-bottom: 80px;
+      }
+
+      .ambientes {
+        gap: 40px;
+      }
+
+      .contenedor-img {
+        height: 400px;
       }
 
       .header-experiencia h1 {
-        font-size: 2.5em;
+        font-size: 3rem;
       }
 
       .header-experiencia p {
-        font-size: 1.2em;
+        font-size: 1.2rem;
       }
 
-      .controles {
-        flex-direction: column;
-        gap: 10px;
-        padding: 15px;
+      .actividades-inmersivas,
+      .galeria-inmersiva {
+        gap: 30px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        font-size: 14px;
+      }
+
+      .selector-experiencias {
+        padding: 80px 20px 60px;
+      }
+
+      .selector-experiencias h2 {
+        font-size: 2rem;
+        margin-bottom: 60px;
+      }
+
+      .ambientes {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .contenedor-img {
+        height: 320px;
+      }
+
+      .texto-img {
+        font-size: 1.4rem;
+        bottom: 30px;
+      }
+
+      .contenedor-img:hover .texto-img {
+        bottom: 35px;
+      }
+
+      .contenido-experiencia {
+        padding: 100px 20px 80px;
+      }
+
+      .header-experiencia {
+        margin-bottom: 80px;
+      }
+
+      .header-experiencia h1 {
+        font-size: 2.2rem;
+        letter-spacing: 1px;
+      }
+
+      .header-experiencia p {
+        font-size: 1.1rem;
+      }
+
+      .galeria-inmersiva {
+        grid-template-columns: 1fr;
+        gap: 25px;
+        margin-bottom: 80px;
+      }
+
+      .galeria-inmersiva img {
+        height: 260px;
+      }
+
+      .actividades-inmersivas {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        margin-bottom: 80px;
+      }
+
+      .tarjeta-actividad img {
+        height: 200px;
+      }
+
+      .info-actividad {
+        padding: 25px;
+      }
+
+      .info-actividad h3 {
+        font-size: 1.3rem;
+      }
+
+      .info-actividad p {
+        font-size: 0.95rem;
+      }
+
+      .controles-navegacion {
+        display: none !important;
       }
 
       .btn-volver {
         bottom: 20px;
-        right: 20px;
-        padding: 12px 20px;
+        left: 20px;
+        padding: 12px 24px;
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .selector-experiencias h2 {
+        font-size: 1.6rem;
+      }
+
+      .contenedor-img {
+        height: 280px;
+      }
+
+      .header-experiencia h1 {
+        font-size: 1.8rem;
       }
     }
   </style>
-  <script>
-    window.APP_BASE_URL = '/ProyectoSena';
-  </script>
 </head>
 <body>
-    
-  <header>
-    <ul>
-      <li class="logo">
-        <a href="../index.html">
-          <img src="../recursos/logo armonia n1.png" width="89px" alt="logo">
-        </a>
-      </li>
-      <li><a href="../nav/disponibilidad.html">Habitaciones</a></li>
-      <li><a href="../nav/experiencias.html">Experiencias</a></li>
-      <li><a href="../nav/servicios.html">Servicios</a></li>
-      <li class="registro" id="auth-container"></li>
-    </ul>
-  </header>
-  <br><br><br>
 
-  <!-- UN SOLO DIV DE CONTROLES FUERA DE TODO -->
-  <div class="controles" id="controlesNav">
-    <a href="../index.html">
-      <img src="../recursos/logo armonia n1.png" width="79px" alt="logo">
-    </a>               
-    <a href="#selector" class="btn-control">Volver al Menú</a>
-    <a href="#bosque" class="btn-control" id="btnBosque">Ir al Bosque</a>
-    <a href="#mar" class="btn-control" id="btnMar">Ir al Mar</a>
-    <a href="#campo" class="btn-control" id="btnCampo">Ir al Campo</a>
+  <!-- Controles de navegación flotantes -->
+  <div class="controles-navegacion" id="controlesNav">
+    <a href="#selector" class="btn-control">⊕ Ver todas</a>
+    <a href="#bosque" class="btn-control" id="btnBosque">🌲 Bosque</a>
+    <a href="#mar" class="btn-control" id="btnMar">🌊 Mar</a>
+    <a href="#campo" class="btn-control" id="btnCampo">🌾 Campo</a>
   </div>
 
   <!-- Selector de Experiencias -->
   <div class="selector-experiencias" id="selector">
-    <br><br><br>
     <h2>¿Qué experiencias deseas vivir?</h2>
     <div class="ambientes">
       <a href="#bosque" class="contenedor-img" data-experiencia="bosque">
-        <img class="imagenesA" src="https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80" alt="bosque entre la niebla">
+        <img class="imagenesA" src="https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80" alt="bosque entre la niebla" loading="lazy">
         <div class="texto-img">Conoce el bosque</div>
       </a>
       <a href="#mar" class="contenedor-img" data-experiencia="mar">
-        <img class="imagenesA" src="https://images.unsplash.com/photo-1505142468610-359e7d316be0?auto=format&fit=crop&w=800&q=80" alt="orilla del mar con olas suaves">
+        <img class="imagenesA" src="https://images.unsplash.com/photo-1505142468610-359e7d316be0?auto=format&fit=crop&w=800&q=80" alt="orilla del mar con olas suaves" loading="lazy">
         <div class="texto-img">Conoce el mar</div>
       </a>
       <a href="#campo" class="contenedor-img" data-experiencia="campo">
-        <img class="imagenesA" src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80" alt="campo con sembradíos verdes">
+        <img class="imagenesA" src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=80" alt="campo con sembradíos verdes" loading="lazy">
         <div class="texto-img">Conoce el campo</div>
       </a>
     </div>
@@ -398,28 +582,28 @@
       </div>
 
       <div class="galeria-inmersiva">
-        <img src="https://images.unsplash.com/photo-1473448912268-2022ce9509d8?q=80&w=841&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Bosque con lago">
-        <img src="https://images.unsplash.com/photo-1440342359743-84fcb8c21f21?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Vista arboles">
-        <img src="https://images.unsplash.com/photo-1507041957456-9c397ce39c97?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sendero del bosque">
+        <img src="https://images.unsplash.com/photo-1473448912268-2022ce9509d8?q=80&w=841&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Bosque con lago" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1440342359743-84fcb8c21f21?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Vista arboles" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1507041957456-9c397ce39c97?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Sendero del bosque" loading="lazy">
       </div>
 
       <div class="actividades-inmersivas">
         <div class="tarjeta-actividad">
-          <img src="https://images.unsplash.com/photo-1522850067562-a4c60453058d?q=80&w=465&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Senderismo">
+          <img src="https://images.unsplash.com/photo-1522850067562-a4c60453058d?q=80&w=465&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Senderismo" loading="lazy">
           <div class="info-actividad">
             <h3>🥾 Senderismo</h3>
             <p>Camina entre árboles milenarios y escucha el murmullo del viento entre las hojas.</p>
           </div>
         </div>
         <div class="tarjeta-actividad">
-          <img src="https://images.unsplash.com/photo-1581062712438-f759223286a2?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Avistamiento de aves">
+          <img src="https://images.unsplash.com/photo-1581062712438-f759223286a2?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Avistamiento de aves" loading="lazy">
           <div class="info-actividad">
-            <h3> 🕊️Avistamiento de aves y fauna 🦌️</h3>
+            <h3>🕊️ Avistamiento de aves y fauna 🦌️</h3>
             <p>Descubre especies únicas en su hábitat natural y aprende sobre su importancia ecológica.</p>
           </div>
         </div>
         <div class="tarjeta-actividad">
-          <img src="https://images.unsplash.com/photo-1590166774851-bc49b23a18fe?q=80&w=389&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Picnic">
+          <img src="https://images.unsplash.com/photo-1590166774851-bc49b23a18fe?q=80&w=389&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Picnic" loading="lazy">
           <div class="info-actividad">
             <h3>🧺 Picnic en el bosque</h3>
             <p>Disfruta una comida rodeado de naturaleza, en el corazón del bosque.</p>
@@ -440,28 +624,28 @@
       </div>
 
       <div class="galeria-inmersiva">
-        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="Playa al atardecer">
-        <img src="https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=800&q=80" alt="Olas del mar">
-        <img src="https://images.unsplash.com/photo-1601562219653-0f16522227b3?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Atardecer">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" alt="Playa al atardecer" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1493558103817-58b2924bce98?auto=format&fit=crop&w=800&q=80" alt="Olas del mar" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1601562219653-0f16522227b3?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Atardecer" loading="lazy">
       </div>
 
       <div class="actividades-inmersivas">
         <div class="tarjeta-actividad">
-          <img src="https://plus.unsplash.com/premium_photo-1661894232140-73d96a67731b?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Buceo">
+          <img src="https://plus.unsplash.com/premium_photo-1661894232140-73d96a67731b?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Buceo" loading="lazy">
           <div class="info-actividad">
             <h3>🤿 Buceo</h3>
             <p>Sumérgete en las profundidades y explora un mundo lleno de vida marina.</p>
           </div>
         </div>
         <div class="tarjeta-actividad">
-          <img src="https://images.unsplash.com/photo-1520255870062-bd79d3865de7?q=80&w=873&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Lancha">
+          <img src="https://images.unsplash.com/photo-1520255870062-bd79d3865de7?q=80&w=873&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Lancha" loading="lazy">
           <div class="info-actividad">
             <h3>🚤 Paseo en lancha</h3>
             <p>Recorre la costa, siente la brisa marina y contempla el horizonte sin fin.</p>
           </div>
         </div>
         <div class="tarjeta-actividad">
-          <img src="https://plus.unsplash.com/premium_photo-1683121124238-941bc64962f1?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Pesca">
+          <img src="https://plus.unsplash.com/premium_photo-1683121124238-941bc64962f1?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Pesca" loading="lazy">
           <div class="info-actividad">
             <h3>🎣 Pesca artesanal</h3>
             <p>Vive la tradición costera y aprende el arte de la pesca sostenible.</p>
@@ -482,28 +666,28 @@
       </div>
 
       <div class="galeria-inmersiva">
-        <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1032&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Campo verde">
-        <img src="https://images.unsplash.com/photo-1543051932-6ef9fecfbc80?q=80&w=424&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Camino">
-        <img src="https://images.unsplash.com/photo-1665171567333-f3d6bc0951ab?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Granja rural">
+        <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1032&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Campo verde" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1543051932-6ef9fecfbc80?q=80&w=424&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Camino" loading="lazy">
+        <img src="https://images.unsplash.com/photo-1665171567333-f3d6bc0951ab?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Granja rural" loading="lazy">
       </div>
 
       <div class="actividades-inmersivas">
         <div class="tarjeta-actividad">
-          <img src="https://images.unsplash.com/photo-1600757490188-1eb2bab4cf4a?q=80&w=559&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Caballo">
+          <img src="https://images.unsplash.com/photo-1600757490188-1eb2bab4cf4a?q=80&w=559&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Caballo" loading="lazy">
           <div class="info-actividad">
             <h3>🐴 Paseo a caballo</h3>
             <p>Recorre senderos rurales y siente la libertad del aire puro.</p>
           </div>
         </div>
         <div class="tarjeta-actividad">
-          <img src="https://plus.unsplash.com/premium_photo-1669122400250-55c1506a1c0e?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Cosecha">
+          <img src="https://plus.unsplash.com/premium_photo-1669122400250-55c1506a1c0e?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Cosecha" loading="lazy">
           <div class="info-actividad">
             <h3>🌾 Cosecha</h3>
             <p>Participa en la recolección de frutas y verduras directamente del campo.</p>
           </div>
         </div>
         <div class="tarjeta-actividad">
-          <img src="https://plus.unsplash.com/premium_photo-1661917187440-b8359626c5d1?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Vida rural">
+          <img src="https://plus.unsplash.com/premium_photo-1661917187440-b8359626c5d1?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Vida rural" loading="lazy">
           <div class="info-actividad">
             <h3>🏡 Vida rural</h3>
             <p>Aprende sobre las costumbres campesinas y la calidez de la vida sencilla.</p>
