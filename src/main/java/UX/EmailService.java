@@ -1,57 +1,85 @@
 package UX;
 
-import javax.mail.*;
-import javax.mail.internet.*;
-import java.util.Properties;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import org.json.JSONObject;
 
 /**
- * Servicio para envío de emails
+ * Servicio de email usando SendGrid API
  * @author Calixto
  */
 public class EmailService {
     
-    // Configuración del servidor SMTP (Gmail)
-    private static final String SMTP_HOST = "smtp.gmail.com";
-    private static final String SMTP_PORT = "587";
-    private static final String EMAIL_FROM = "tu-email@gmail.com"; // ⚠️ CAMBIAR ESTO
-    private static final String EMAIL_PASSWORD = "tu-app-password"; // ⚠️ CAMBIAR ESTO (App Password de Google)
+    // ⚠️ CONFIGURAR ESTO CON TU API KEY DE SENDGRID
+    private static final String SENDGRID_API_KEY = "TU_SENDGRID_API_KEY_AQUI";
+    private static final String EMAIL_FROM = "noreply@tuhotel.com"; // El email verificado en SendGrid
+    private static final String EMAIL_FROM_NAME = "Hotel Armonía";
     
     /**
-     * Enviar código de recuperación por email
+     * Enviar código de recuperación por email usando SendGrid
      */
     public static boolean enviarCodigoRecuperacion(String emailDestino, String codigo) {
         try {
-            // Configurar propiedades del servidor SMTP
-            Properties props = new Properties();
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.smtp.host", SMTP_HOST);
-            props.put("mail.smtp.port", SMTP_PORT);
-            props.put("mail.smtp.ssl.trust", SMTP_HOST);
+            // Crear JSON para SendGrid API v3
+            JSONObject email = new JSONObject();
             
-            // Crear sesión con autenticación
-            Session session = Session.getInstance(props, new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(EMAIL_FROM, EMAIL_PASSWORD);
-                }
-            });
+            // Personalización (from)
+            JSONObject from = new JSONObject();
+            from.put("email", EMAIL_FROM);
+            from.put("name", EMAIL_FROM_NAME);
+            email.put("from", from);
             
-            // Crear mensaje
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(EMAIL_FROM, "Hotel Armonía"));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailDestino));
-            message.setSubject("Código de Recuperación de Contraseña - Hotel Armonía");
+            // Destinatario (to)
+            JSONObject to = new JSONObject();
+            to.put("email", emailDestino);
+            email.put("personalizations", new org.json.JSONArray().put(
+                new JSONObject().put("to", new org.json.JSONArray().put(to))
+            ));
             
-            // Contenido HTML del email
-            String htmlContent = crearHTMLEmail(codigo);
-            message.setContent(htmlContent, "text/html; charset=utf-8");
+            // Asunto
+            email.put("subject", "Código de Recuperación - Hotel Armonía");
+            
+            // Contenido HTML
+            JSONObject content = new JSONObject();
+            content.put("type", "text/html");
+            content.put("value", crearHTMLEmail(codigo));
+            email.put("content", new org.json.JSONArray().put(content));
+            
+            // Hacer petición a SendGrid
+            URL url = new URL("https://api.sendgrid.com/v3/mail/send");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", "Bearer " + SENDGRID_API_KEY);
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
             
             // Enviar
-            Transport.send(message);
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = email.toString().getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
             
-            System.out.println("✅ Email enviado exitosamente a: " + emailDestino);
-            return true;
+            // Verificar respuesta
+            int responseCode = conn.getResponseCode();
+            
+            if (responseCode == 202) { // SendGrid retorna 202 Accepted
+                System.out.println("✅ Email enviado exitosamente a: " + emailDestino);
+                return true;
+            } else {
+                // Leer error
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "utf-8"));
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+                System.err.println("❌ Error al enviar email. Código: " + responseCode);
+                System.err.println("❌ Respuesta: " + response.toString());
+                return false;
+            }
             
         } catch (Exception e) {
             System.err.println("❌ Error al enviar email: " + e.getMessage());
@@ -68,6 +96,7 @@ public class EmailService {
                 "<html>" +
                 "<head>" +
                 "    <meta charset='UTF-8'>" +
+                "    <meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
                 "    <style>" +
                 "        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }" +
                 "        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }" +
