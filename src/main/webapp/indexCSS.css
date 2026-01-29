@@ -310,6 +310,13 @@ footer {
   header ul {
     min-height: 70px;
     padding: 0 15px;
+    /* Asegurar que el layout sea: Logo | ... espacio ... | Hamburguesa | Avatar */
+    justify-content: space-between;
+  }
+
+  .logo {
+    order: 1;
+    margin-right: 0;
   }
 
   .logo img {
@@ -321,10 +328,19 @@ footer {
     display: none;
   }
 
-  /* Mantener visible el auth-container en desktop dentro de .registro */
+  /* Menú hamburguesa en segundo lugar (visualmente a la derecha del logo) */
+  .menu-toggle-li {
+    order: 2;
+    margin-left: auto;
+    margin-right: 12px;
+  }
+
+  /* Avatar pegado al borde derecho */
   .registro {
+    order: 3;
     display: flex;
     align-items: center;
+    margin-left: 0;
   }
 
   /* Mostrar menú desplegable móvil */
