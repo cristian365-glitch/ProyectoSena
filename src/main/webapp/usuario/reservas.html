@@ -432,7 +432,7 @@
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
                 
-                const response = await fetch('../ObtenerMisReservasServlet', {
+                const response = await fetch('../ObtenerReservasServlet', {
                     credentials: 'include',
                     signal: controller.signal
                 });
