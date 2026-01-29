@@ -382,15 +382,30 @@
     <script>
         // ⚡ CONFIGURACIÓN DE RENDIMIENTO
         const CONFIG = {
-            DEBUG: false, // Desactivar logs en producción
+            DEBUG: true, // Activar logs para debugging
             LAZY_LOAD: true
         };
 
-        // ✅ CARGA OPTIMIZADA AL INICIAR - Usar 'load' en lugar de 'DOMContentLoaded'
+        // ✅ CARGA OPTIMIZADA AL INICIAR
         window.addEventListener('load', async () => {
             try {
-                // Verificar autenticación con reintentos
-                await verificarAutenticacion();
+                console.log('🚀 Iniciando carga de página...');
+                
+                // Esperar a que auth esté completamente inicializado
+                await esperarAuthCompleto();
+                
+                // Verificar sesión
+                if (!auth || !auth.estaLogueado()) {
+                    console.warn('⚠️ Usuario no logueado, redirigiendo...');
+                    window.location.href = '../login/Login.html';
+                    return;
+                }
+                
+                console.log('✅ Usuario autenticado:', {
+                    usuario: auth.usuario,
+                    email: auth.email,
+                    esAdmin: auth.esAdmin
+                });
                 
                 const startTime = performance.now();
                 await cargarReservas();
@@ -400,62 +415,119 @@
                     console.log(`✅ Reservas cargadas en ${loadTime.toFixed(0)}ms`);
                 }
             } catch (error) {
-                console.error('Error en inicialización:', error);
+                console.error('❌ Error en inicialización:', error);
             }
         });
 
-        // ✅ Función para verificar autenticación con reintentos
-        async function verificarAutenticacion() {
-            const maxIntentos = 30; // 3 segundos máximo
-            let intentos = 0;
-            
-            while (intentos < maxIntentos) {
-                if (typeof auth !== 'undefined' && auth && auth.usuario) {
-                    console.log('✅ Usuario autenticado:', auth.usuario.nombre);
-                    return true; // Autenticado correctamente
+        // ✅ Esperar a que el objeto auth esté disponible Y completamente inicializado
+        function esperarAuthCompleto() {
+            return new Promise((resolve) => {
+                // Función para verificar si auth está listo
+                function checkAuth() {
+                    // Verificar que auth existe Y que ya terminó de inicializarse
+                    if (typeof auth !== 'undefined' && auth.usuario !== null) {
+                        console.log('✅ Auth completamente inicializado');
+                        resolve();
+                        return true;
+                    }
+                    return false;
                 }
                 
-                // Esperar 100ms antes de reintentar
-                await new Promise(resolve => setTimeout(resolve, 100));
-                intentos++;
+                // Si ya está listo, resolver inmediatamente
+                if (checkAuth()) return;
+                
+                // Si no, esperar a que se inicialice
+                console.log('⏳ Esperando inicialización de auth...');
+                let intentos = 0;
+                const maxIntentos = 50; // 5 segundos máximo
+                
+                const interval = setInterval(() => {
+                    intentos++;
+                    
+                    if (checkAuth()) {
+                        clearInterval(interval);
+                    } else if (intentos >= maxIntentos) {
+                        // Timeout: verificar sesión directamente con el servidor
+                        console.warn('⚠️ Timeout esperando auth, verificando con servidor...');
+                        clearInterval(interval);
+                        verificarSesionDirecta().then(resolve);
+                    }
+                }, 100);
+            });
+        }
+
+        // ✅ Verificación directa con el servidor (fallback)
+        async function verificarSesionDirecta() {
+            try {
+                console.log('🔍 Verificando sesión directamente con el servidor...');
+                const response = await fetch('../RegistroServlet?action=verificarSesion', {
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                console.log('📡 Respuesta del servidor:', data);
+                
+                if (!data.logueado) {
+                    console.warn('⚠️ Servidor confirma: no hay sesión activa');
+                    window.location.href = '../login/Login.html';
+                } else {
+                    console.log('✅ Servidor confirma sesión activa:', data);
+                    // Crear objeto auth temporal si no existe
+                    if (typeof auth === 'undefined' || !auth.usuario) {
+                        window.auth = {
+                            usuario: data.nombre,
+                            email: data.email,
+                            esAdmin: data.esAdmin,
+                            estaLogueado: () => true
+                        };
+                        console.log('✅ Objeto auth creado manualmente:', window.auth);
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error verificando sesión:', error);
+                window.location.href = '../login/Login.html';
             }
-            
-            // Si después de 3 segundos no hay autenticación, redirigir
-            console.warn('⚠️ No se detectó autenticación, redirigiendo al login...');
-            window.location.href = '../login/Login.html';
-            throw new Error('No autenticado');
         }
 
         async function cargarReservas() {
             try {
+                console.log('📥 Cargando reservas...');
+                
                 // ⚡ FETCH OPTIMIZADO con timeout
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
                 
-                const response = await fetch('../ObtenerReservasServlet', {
+                const response = await fetch('../ReservasServlet', {
                     credentials: 'include',
                     signal: controller.signal
                 });
                 
                 clearTimeout(timeoutId);
 
+                console.log('📡 Respuesta del servidor:', response.status);
+
+                // Manejar error 401 (no autenticado)
+                if (response.status === 401) {
+                    console.warn('⚠️ Error 401: No autenticado, redirigiendo al login...');
+                    window.location.href = '../login/Login.html';
+                    return;
+                }
+
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}`);
                 }
 
                 const data = await response.json();
+                console.log('📦 Datos recibidos:', data);
 
-                if (data.error) {
-                    if (data.mensaje === 'No autenticado') {
-                        window.location.href = '../login/Login.html';
-                    } else {
-                        document.getElementById('lista-reservas').innerHTML = 
-                            `<div class="sin-reservas">
-                                <div class="sin-reservas-icon">⚠️</div>
-                                <h3>Error al cargar reservas</h3>
-                                <p>${data.mensaje || 'Error desconocido'}</p>
-                            </div>`;
-                    }
+                if (!data.success) {
+                    // Error del servidor
+                    document.getElementById('lista-reservas').innerHTML = 
+                        `<div class="sin-reservas">
+                            <div class="sin-reservas-icon">⚠️</div>
+                            <h3>Error al cargar reservas</h3>
+                            <p>${data.error || 'Error desconocido'}</p>
+                        </div>`;
                 } else {
                     mostrarReservas(data.reservas || []);
                 }
@@ -484,6 +556,7 @@
 
         // ⚡ RENDERIZADO OPTIMIZADO
         function mostrarReservas(reservas) {
+            console.log(`📊 Mostrando ${reservas.length} reservas`);
             const contenedor = document.getElementById('lista-reservas');
 
             if (reservas.length === 0) {
