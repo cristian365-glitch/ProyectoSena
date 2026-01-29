@@ -386,22 +386,45 @@
             LAZY_LOAD: true
         };
 
-        // ✅ CARGA OPTIMIZADA AL INICIAR
-        window.addEventListener('DOMContentLoaded', async () => {
-            // Verificar autenticación
-            if (typeof auth === 'undefined' || !auth || !auth.usuario) {
-                window.location.href = '../login/Login.html';
-                return;
-            }
-
-            const startTime = performance.now();
-            await cargarReservas();
-            
-            if (CONFIG.DEBUG) {
-                const loadTime = performance.now() - startTime;
-                console.log(`✅ Reservas cargadas en ${loadTime.toFixed(0)}ms`);
+        // ✅ CARGA OPTIMIZADA AL INICIAR - Usar 'load' en lugar de 'DOMContentLoaded'
+        window.addEventListener('load', async () => {
+            try {
+                // Verificar autenticación con reintentos
+                await verificarAutenticacion();
+                
+                const startTime = performance.now();
+                await cargarReservas();
+                
+                if (CONFIG.DEBUG) {
+                    const loadTime = performance.now() - startTime;
+                    console.log(`✅ Reservas cargadas en ${loadTime.toFixed(0)}ms`);
+                }
+            } catch (error) {
+                console.error('Error en inicialización:', error);
             }
         });
+
+        // ✅ Función para verificar autenticación con reintentos
+        async function verificarAutenticacion() {
+            const maxIntentos = 30; // 3 segundos máximo
+            let intentos = 0;
+            
+            while (intentos < maxIntentos) {
+                if (typeof auth !== 'undefined' && auth && auth.usuario) {
+                    console.log('✅ Usuario autenticado:', auth.usuario.nombre);
+                    return true; // Autenticado correctamente
+                }
+                
+                // Esperar 100ms antes de reintentar
+                await new Promise(resolve => setTimeout(resolve, 100));
+                intentos++;
+            }
+            
+            // Si después de 3 segundos no hay autenticación, redirigir
+            console.warn('⚠️ No se detectó autenticación, redirigiendo al login...');
+            window.location.href = '../login/Login.html';
+            throw new Error('No autenticado');
+        }
 
         async function cargarReservas() {
             try {
