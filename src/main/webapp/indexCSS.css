@@ -316,9 +316,15 @@ footer {
     height: 50px;
   }
 
-  /* Ocultar items del menú EXCEPTO logo y hamburguesa */
-  header ul li:not(.logo):not(.menu-toggle-li) {
+  /* IMPORTANTE: Ocultar elementos del menú EXCEPTO logo, hamburguesa y auth */
+  header ul li:not(.logo):not(.menu-toggle-li):not(.registro) {
     display: none;
+  }
+
+  /* Mantener visible el auth-container en desktop dentro de .registro */
+  .registro {
+    display: flex;
+    align-items: center;
   }
 
   /* Mostrar menú desplegable móvil */
@@ -384,6 +390,97 @@ footer {
     color: #d4af37;
   }
 
+  /* Sección de autenticación en el menú móvil */
+  .nav-mobile-menu .auth-mobile-section {
+    padding: 20px;
+    background: rgba(212, 175, 55, 0.05);
+    border-top: 2px solid rgba(212, 175, 55, 0.2);
+  }
+
+  .nav-mobile-menu .auth-mobile-section .auth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .nav-mobile-menu .auth-mobile-section .btn-auth {
+    width: 100%;
+    text-align: center;
+    padding: 14px 20px !important;
+  }
+
+  .nav-mobile-menu .auth-mobile-section .btn-auth.login::before {
+    display: none;
+  }
+
+  /* Menú de usuario en móvil */
+  .nav-mobile-menu .user-menu-mobile {
+    padding: 20px;
+    text-align: center;
+    background: rgba(212, 175, 55, 0.05);
+    border-top: 2px solid rgba(212, 175, 55, 0.2);
+  }
+
+  .nav-mobile-menu .user-menu-mobile .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  }
+
+  .nav-mobile-menu .user-menu-mobile .user-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #d4af37;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+  }
+
+  .nav-mobile-menu .user-menu-mobile .user-name-display {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .nav-mobile-menu .user-menu-mobile .menu-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .nav-mobile-menu .user-menu-mobile .menu-item {
+    display: block;
+    padding: 14px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    margin: 4px 0;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  .nav-mobile-menu .user-menu-mobile .menu-item:hover {
+    background: rgba(212, 175, 55, 0.1);
+    color: #d4af37;
+  }
+
+  .nav-mobile-menu .user-menu-mobile .menu-item.logout {
+    color: #c53030;
+    background: rgba(197, 48, 48, 0.05);
+    margin-top: 10px;
+  }
+
+  .nav-mobile-menu .user-menu-mobile .menu-item.logout:hover {
+    background: #fed7d7;
+    color: #7a0a0a;
+  }
+
   /* Overlay cuando el menú está abierto */
   body.menu-open::before {
     content: '';
@@ -428,5 +525,24 @@ footer {
 
   body.menu-open::before {
     top: 65px;
+  }
+
+  .nav-mobile-menu a {
+    padding: 15px 18px;
+    font-size: 0.95rem;
+  }
+
+  .nav-mobile-menu .user-menu-mobile .user-avatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  .nav-mobile-menu .user-menu-mobile .user-name-display {
+    font-size: 1rem;
+  }
+
+  .nav-mobile-menu .user-menu-mobile .menu-item {
+    padding: 12px 16px;
+    font-size: 0.9rem;
   }
 }
