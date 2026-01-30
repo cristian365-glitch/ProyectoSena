@@ -7,7 +7,8 @@
   <link rel="stylesheet" href="../indexCSS.css">
   <link rel="stylesheet" href="../login/auth-ui.css">
   <script src="../login/auth-session.js"></script>
-  <title>Experiencias Inmersivas - Vuelve a lo esencial</title>
+  <script src="../login/mobile-menu.js"></script>
+  <title>Experiencias Inmersivas - Armonía</title>
   <style>
     * {
       margin: 0;
@@ -16,26 +17,17 @@
     }
 
     body {
-      font-family: 'Georgia', serif;
-      background-color: #0a0a0a;
-      color: #e8e8e8;
+      font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #ffffff;
+      color: #1a1a1a;
       overflow-x: hidden;
     }
 
     /* ANIMACIONES */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
     @keyframes fadeInUp {
       from {
         opacity: 0;
-        transform: translateY(40px);
+        transform: translateY(30px);
       }
       to {
         opacity: 1;
@@ -43,115 +35,69 @@
       }
     }
 
-    @keyframes slideInLeft {
-      from {
-        opacity: 0;
-        transform: translateX(-60px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    @keyframes shimmer {
-      0% { background-position: -1000px 0; }
-      100% { background-position: 1000px 0; }
-    }
-
-    /* Controles de navegación */
-    .controles-navegacion {
-      position: fixed;
-      top: 50%;
-      right: 40px;
-      transform: translateY(-50%);
-      z-index: 1000;
-      display: none;
-      flex-direction: column;
-      gap: 16px;
-      opacity: 0;
-      transition: opacity 0.5s ease;
-    }
-
-    .controles-navegacion.visible {
-      display: flex;
-      opacity: 1;
-      animation: slideInLeft 0.6s ease-out;
-    }
-
-    .btn-control {
-      padding: 14px 28px;
-      background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.08));
-      border: 1px solid rgba(212, 175, 55, 0.3);
-      border-radius: 50px;
-      color: #d4af37;
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 600;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      text-align: center;
-      backdrop-filter: blur(10px);
-      letter-spacing: 0.5px;
-    }
-
-    .btn-control:hover {
-      background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.15));
-      border-color: #d4af37;
-      transform: translateX(-8px);
-      box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     /* Selector de Experiencias */
     .selector-experiencias {
-      min-height: 100vh;
+      min-height: calc(100vh - 80px);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
-      padding: 100px 40px 80px;
-      animation: fadeIn 0.8s ease-out;
+      background: #ffffff;
+      padding: 120px 40px 60px;
+      animation: fadeIn 0.6s ease-out;
     }
 
     .selector-experiencias h2 {
-      font-family: 'Georgia', serif;
-      font-size: 3.5rem;
-      margin-bottom: 100px;
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      margin-bottom: 60px;
       text-align: center;
-      background: linear-gradient(135deg, #ffd700 0%, #d4af37 50%, #b8941f 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #1a1a1a;
       font-weight: 400;
-      letter-spacing: 2px;
-      animation: fadeInUp 0.8s ease-out 0.2s both, shimmer 3s infinite;
-      background-size: 2000px 100%;
+      letter-spacing: 1px;
+      position: relative;
+      padding-bottom: 20px;
+    }
+
+    .selector-experiencias h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 80px;
+      height: 2px;
+      background: linear-gradient(90deg, #d4af37, #b8860b);
+      transform: translateX(-50%);
     }
 
     .ambientes {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-      gap: 60px;
-      max-width: 1400px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      max-width: 1200px;
       width: 100%;
     }
 
     .contenedor-img {
       position: relative;
-      height: 480px;
+      height: 280px;
       overflow: hidden;
       cursor: pointer;
       text-decoration: none;
-      border-radius: 24px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-      animation: fadeInUp 0.8s ease-out both;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: fadeInUp 0.6s ease-out both;
     }
 
-    .contenedor-img:nth-child(1) { animation-delay: 0.3s; }
-    .contenedor-img:nth-child(2) { animation-delay: 0.4s; }
-    .contenedor-img:nth-child(3) { animation-delay: 0.5s; }
+    .contenedor-img:nth-child(1) { animation-delay: 0.1s; }
+    .contenedor-img:nth-child(2) { animation-delay: 0.2s; }
+    .contenedor-img:nth-child(3) { animation-delay: 0.3s; }
 
     .contenedor-img::before {
       content: '';
@@ -160,15 +106,14 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.7));
+      background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.6));
       z-index: 1;
-      transition: all 0.6s ease;
+      transition: all 0.4s ease;
     }
 
     .contenedor-img:hover {
-      transform: translateY(-12px);
-      box-shadow: 0 30px 80px rgba(212, 175, 55, 0.3);
-      border-color: rgba(212, 175, 55, 0.5);
+      transform: translateY(-8px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
 
     .contenedor-img:hover::before {
@@ -179,34 +124,32 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-      filter: brightness(0.85);
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .contenedor-img:hover .imagenesA {
-      transform: scale(1.12);
-      filter: brightness(1);
+      transform: scale(1.08);
     }
 
     .texto-img {
       position: absolute;
-      bottom: 40px;
+      bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 2;
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       font-weight: 400;
-      color: #ffd700;
-      text-shadow: 2px 2px 12px rgba(0,0,0,0.8);
-      transition: all 0.6s ease;
+      color: white;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+      transition: all 0.4s ease;
       white-space: nowrap;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
+      font-family: 'Playfair Display', serif;
     }
 
     .contenedor-img:hover .texto-img {
-      bottom: 48px;
-      letter-spacing: 2px;
-      text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+      bottom: 35px;
+      letter-spacing: 1px;
     }
 
     /* Experiencia Inmersiva */
@@ -215,12 +158,12 @@
       position: relative;
       display: none;
       opacity: 0;
-      transition: opacity 1.2s ease;
+      transition: opacity 0.8s ease;
     }
 
     .experiencia-inmersiva.activa {
       display: block;
-      animation: fadeIn 1.2s forwards;
+      animation: fadeIn 0.8s forwards;
     }
 
     .fondo-parallax {
@@ -233,250 +176,252 @@
       background-position: center;
       background-attachment: fixed;
       z-index: -1;
-      filter: brightness(0.65) contrast(1.1);
-    }
-
-    .fondo-parallax::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.7) 100%);
+      filter: brightness(0.7);
     }
 
     .contenido-experiencia {
       position: relative;
       z-index: 2;
-      padding: 140px 40px 100px;
+      padding: 100px 40px 60px;
       background: linear-gradient(to bottom, 
-        rgba(10, 10, 10, 0.75) 0%, 
-        rgba(10, 10, 10, 0.85) 50%,
-        rgba(10, 10, 10, 0.95) 100%);
+        rgba(255, 255, 255, 0.92) 0%, 
+        rgba(255, 255, 255, 0.94) 50%,
+        rgba(255, 255, 255, 0.96) 100%);
     }
 
     .header-experiencia {
       text-align: center;
-      margin-bottom: 120px;
-      animation: fadeInUp 0.8s ease-out 0.3s both;
+      margin-bottom: 60px;
+      animation: fadeInUp 0.6s ease-out 0.2s both;
     }
 
     .header-experiencia h1 {
-      font-family: 'Georgia', serif;
-      font-size: 4rem;
-      margin-bottom: 30px;
-      background: linear-gradient(135deg, #ffd700 0%, #d4af37 50%, #b8941f 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      font-weight: 300;
-      letter-spacing: 3px;
-      animation: shimmer 3s infinite;
-      background-size: 2000px 100%;
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      margin-bottom: 20px;
+      color: #1a1a1a;
+      font-weight: 400;
+      letter-spacing: 2px;
     }
 
     .header-experiencia p {
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       font-style: italic;
-      max-width: 800px;
+      max-width: 700px;
       margin: 0 auto;
-      color: #c8c8c8;
+      color: #666;
       font-weight: 300;
-      line-height: 1.8;
+      line-height: 1.6;
     }
 
     .galeria-inmersiva {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-      gap: 40px;
-      margin-bottom: 120px;
-      max-width: 1500px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      margin-bottom: 60px;
+      max-width: 1200px;
       margin-left: auto;
       margin-right: auto;
-      animation: fadeInUp 0.8s ease-out 0.5s both;
+      animation: fadeInUp 0.6s ease-out 0.3s both;
     }
 
     .galeria-inmersiva img {
       width: 100%;
-      height: 320px;
+      height: 220px;
       object-fit: cover;
-      border-radius: 20px;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
-      filter: brightness(0.9);
     }
 
     .galeria-inmersiva img:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 25px 60px rgba(212, 175, 55, 0.3);
-      border-color: rgba(212, 175, 55, 0.5);
-      filter: brightness(1);
+      transform: translateY(-6px);
+      box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
     }
 
     .actividades-inmersivas {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-      gap: 50px;
-      max-width: 1500px;
-      margin: 0 auto 120px;
-      animation: fadeInUp 0.8s ease-out 0.7s both;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      max-width: 1200px;
+      margin: 0 auto 60px;
+      animation: fadeInUp 0.6s ease-out 0.4s both;
     }
 
     .tarjeta-actividad {
-      background: linear-gradient(135deg, rgba(26, 26, 26, 0.8), rgba(20, 20, 20, 0.9));
-      border-radius: 24px;
+      background: white;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(212, 175, 55, 0.15);
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
     }
 
     .tarjeta-actividad:hover {
-      transform: translateY(-12px);
-      box-shadow: 0 30px 80px rgba(212, 175, 55, 0.3);
-      border-color: rgba(212, 175, 55, 0.4);
+      transform: translateY(-8px);
+      box-shadow: 0 8px 20px rgba(212, 175, 55, 0.25);
     }
 
     .tarjeta-actividad img {
       width: 100%;
-      height: 240px;
+      height: 180px;
       object-fit: cover;
-      transition: transform 0.6s ease;
-      filter: brightness(0.85);
+      transition: transform 0.5s ease;
     }
 
     .tarjeta-actividad:hover img {
-      transform: scale(1.1);
-      filter: brightness(1);
+      transform: scale(1.08);
     }
 
     .info-actividad {
-      padding: 35px;
+      padding: 25px;
     }
 
     .info-actividad h3 {
-      font-size: 1.6rem;
+      font-size: 1.3rem;
       color: #d4af37;
-      margin-bottom: 16px;
-      font-weight: 400;
-      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      font-weight: 500;
+      font-family: 'Playfair Display', serif;
     }
 
     .info-actividad p {
-      color: #c8c8c8;
-      line-height: 1.8;
-      font-size: 1.05rem;
-      font-weight: 300;
+      color: #666;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* Controles de navegación flotantes */
+    .controles-navegacion {
+      position: fixed;
+      top: 50%;
+      right: 30px;
+      transform: translateY(-50%);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .controles-navegacion.visible {
+      display: flex;
+      opacity: 1;
+    }
+
+    .btn-control {
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 50px;
+      color: #d4af37;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.3s;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-control:hover {
+      background: #d4af37;
+      color: white;
+      transform: translateX(-5px);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
     }
 
     /* Botón volver */
     .btn-volver {
       position: fixed;
-      bottom: 40px;
-      left: 40px;
-      padding: 16px 32px;
-      background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.08));
+      bottom: 30px;
+      left: 30px;
+      padding: 12px 28px;
+      background: rgba(255, 255, 255, 0.95);
       border: 1px solid rgba(212, 175, 55, 0.3);
       border-radius: 50px;
       color: #d4af37;
       text-decoration: none;
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 600;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s;
       backdrop-filter: blur(10px);
       z-index: 1000;
       letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .btn-volver:hover {
-      background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.15));
-      border-color: #d4af37;
-      transform: translateX(-8px);
-      box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
+      background: #d4af37;
+      color: white;
+      transform: translateX(-5px);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
     }
 
     /* RESPONSIVE */
     @media (max-width: 1024px) {
-      .controles-navegacion {
-        right: 20px;
-      }
-
-      .btn-control {
-        padding: 12px 20px;
-        font-size: 0.85rem;
-      }
-
       .selector-experiencias h2 {
-        font-size: 2.8rem;
-        margin-bottom: 80px;
+        font-size: 2.3rem;
+        margin-bottom: 50px;
       }
 
       .ambientes {
-        gap: 40px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
       }
 
       .contenedor-img {
-        height: 400px;
+        height: 250px;
       }
 
       .header-experiencia h1 {
-        font-size: 3rem;
+        font-size: 2.5rem;
       }
 
-      .header-experiencia p {
-        font-size: 1.2rem;
-      }
-
-      .actividades-inmersivas,
-      .galeria-inmersiva {
-        gap: 30px;
+      .galeria-inmersiva,
+      .actividades-inmersivas {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
       }
     }
 
     @media (max-width: 768px) {
-      body {
-        font-size: 14px;
-      }
-
       .selector-experiencias {
-        padding: 80px 20px 60px;
+        padding: 100px 20px 50px;
       }
 
       .selector-experiencias h2 {
         font-size: 2rem;
-        margin-bottom: 60px;
+        margin-bottom: 40px;
       }
 
       .ambientes {
         grid-template-columns: 1fr;
-        gap: 30px;
+        gap: 20px;
       }
 
       .contenedor-img {
-        height: 320px;
+        height: 220px;
       }
 
       .texto-img {
-        font-size: 1.4rem;
-        bottom: 30px;
-      }
-
-      .contenedor-img:hover .texto-img {
-        bottom: 35px;
+        font-size: 1.3rem;
+        bottom: 25px;
       }
 
       .contenido-experiencia {
-        padding: 100px 20px 80px;
+        padding: 90px 20px 50px;
       }
 
       .header-experiencia {
-        margin-bottom: 80px;
+        margin-bottom: 50px;
       }
 
       .header-experiencia h1 {
-        font-size: 2.2rem;
-        letter-spacing: 1px;
+        font-size: 2rem;
       }
 
       .header-experiencia p {
@@ -485,34 +430,30 @@
 
       .galeria-inmersiva {
         grid-template-columns: 1fr;
-        gap: 25px;
-        margin-bottom: 80px;
+        gap: 18px;
+        margin-bottom: 50px;
       }
 
       .galeria-inmersiva img {
-        height: 260px;
+        height: 200px;
       }
 
       .actividades-inmersivas {
         grid-template-columns: 1fr;
-        gap: 30px;
-        margin-bottom: 80px;
+        gap: 18px;
+        margin-bottom: 50px;
       }
 
       .tarjeta-actividad img {
-        height: 200px;
+        height: 160px;
       }
 
       .info-actividad {
-        padding: 25px;
+        padding: 20px;
       }
 
       .info-actividad h3 {
-        font-size: 1.3rem;
-      }
-
-      .info-actividad p {
-        font-size: 0.95rem;
+        font-size: 1.2rem;
       }
 
       .controles-navegacion {
@@ -522,27 +463,50 @@
       .btn-volver {
         bottom: 20px;
         left: 20px;
-        padding: 12px 24px;
-        font-size: 0.9rem;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .selector-experiencias h2 {
-        font-size: 1.6rem;
-      }
-
-      .contenedor-img {
-        height: 280px;
-      }
-
-      .header-experiencia h1 {
-        font-size: 1.8rem;
+        padding: 10px 22px;
+        font-size: 0.85rem;
       }
     }
   </style>
 </head>
 <body>
+  <!-- HEADER DE NAVEGACIÓN -->
+  <header>
+    <ul>
+      <li class="logo">
+        <a href="../index.html">
+          <img src="../recursos/logo.png" alt="Logo Armonía">
+        </a>
+      </li>
+      <li><a href="../index.html">Inicio</a></li>
+      <li><a href="disponibilidad.html">Habitaciones</a></li>
+      <li><a href="experiencias.html" class="active">Experiencias</a></li>
+      <li><a href="servicios.html">Servicios</a></li>
+      <li><a href="contacto.html">Contacto</a></li>
+      
+      <li class="menu-toggle-li">
+        <button class="menu-toggle" id="menuToggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </li>
+      
+      <li class="registro" id="auth-container"></li>
+    </ul>
+  </header>
+
+  <!-- MENÚ MÓVIL -->
+  <div class="nav-mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="../index.html">Inicio</a></li>
+      <li><a href="disponibilidad.html">Habitaciones</a></li>
+      <li><a href="experiencias.html">Experiencias</a></li>
+      <li><a href="servicios.html">Servicios</a></li>
+      <li><a href="contacto.html">Contacto</a></li>
+    </ul>
+    <div id="auth-mobile"></div>
+  </div>
 
   <!-- Controles de navegación flotantes -->
   <div class="controles-navegacion" id="controlesNav">
@@ -598,7 +562,7 @@
         <div class="tarjeta-actividad">
           <img src="https://images.unsplash.com/photo-1581062712438-f759223286a2?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Avistamiento de aves" loading="lazy">
           <div class="info-actividad">
-            <h3>🕊️ Avistamiento de aves y fauna 🦌️</h3>
+            <h3>🕊️ Avistamiento de fauna</h3>
             <p>Descubre especies únicas en su hábitat natural y aprende sobre su importancia ecológica.</p>
           </div>
         </div>
