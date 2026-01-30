@@ -38,17 +38,15 @@
 
         <div class="barra-busqueda">
             <div class="input-group">
-                <label>📅 Entrada</label>
+                <label>Entrada</label>
                 <input type="date" id="fechaEntrada">
             </div>
-            <div class="separador-vertical"></div>
             <div class="input-group">
-                <label>📅 Salida</label>
+                <label>Salida</label>
                 <input type="date" id="fechaSalida">
             </div>
-            <div class="separador-vertical"></div>
             <div class="input-group">
-                <label>👥 Huéspedes</label>
+                <label>Huéspedes</label>
                 <select id="numHuespedes">
                     <option value="0">Cualquiera</option>
                     <option value="2">2 personas</option>
@@ -57,9 +55,8 @@
                     <option value="8">8+ personas</option>
                 </select>
             </div>
-            <div class="separador-vertical"></div>
             <div class="input-group">
-                <label>💰 Precio</label>
+                <label>Precio máximo</label>
                 <select id="precioMax">
                     <option value="">Sin límite</option>
                     <option value="200000">$200,000</option>
@@ -67,26 +64,26 @@
                     <option value="500000">$500,000</option>
                 </select>
             </div>
-            <button class="btn-buscar" onclick="aplicarFiltros()">🔍 Buscar</button>
+            <button class="btn-buscar" onclick="aplicarFiltros()"><span>Buscar</span></button>
         </div>
 
         <div class="barra-filtros-rapidos">
             <button class="chip active" data-tipo="experiencia" data-valor="todas" onclick="toggleChip(this, 'experiencia', 'todas')">Todas</button>
-            <button class="chip" data-tipo="experiencia" data-valor="bosque" onclick="toggleChip(this, 'experiencia', 'bosque')">🌲 Bosque</button>
-            <button class="chip" data-tipo="experiencia" data-valor="mar" onclick="toggleChip(this, 'experiencia', 'mar')">🌊 Mar</button>
-            <button class="chip" data-tipo="experiencia" data-valor="campo" onclick="toggleChip(this, 'experiencia', 'campo')">🌾 Campo</button>
+            <button class="chip" data-tipo="experiencia" data-valor="bosque" onclick="toggleChip(this, 'experiencia', 'bosque')">Bosque</button>
+            <button class="chip" data-tipo="experiencia" data-valor="mar" onclick="toggleChip(this, 'experiencia', 'mar')">Mar</button>
+            <button class="chip" data-tipo="experiencia" data-valor="campo" onclick="toggleChip(this, 'experiencia', 'campo')">Campo</button>
             
             <span class="divisor">|</span>
             
-            <button class="chip" data-tipo="servicio" data-valor="wifi" onclick="toggleChip(this, 'servicio', 'wifi')">📶 WiFi</button>
-            <button class="chip" data-tipo="servicio" data-valor="aire_acondicionado" onclick="toggleChip(this, 'servicio', 'aire_acondicionado')">❄️ Aire acondicionado</button>
-            <button class="chip" data-tipo="servicio" data-valor="tv" onclick="toggleChip(this, 'servicio', 'tv')">📺 TV</button>
-            <button class="chip" data-tipo="servicio" data-valor="minibar" onclick="toggleChip(this, 'servicio', 'minibar')">🍷 Minibar</button>
-            <button class="chip" data-tipo="servicio" data-valor="balcon" onclick="toggleChip(this, 'servicio', 'balcon')">🏡 Balcón</button>
+            <button class="chip" data-tipo="servicio" data-valor="wifi" onclick="toggleChip(this, 'servicio', 'wifi')">WiFi</button>
+            <button class="chip" data-tipo="servicio" data-valor="aire_acondicionado" onclick="toggleChip(this, 'servicio', 'aire_acondicionado')">Aire acondicionado</button>
+            <button class="chip" data-tipo="servicio" data-valor="tv" onclick="toggleChip(this, 'servicio', 'tv')">Televisión</button>
+            <button class="chip" data-tipo="servicio" data-valor="minibar" onclick="toggleChip(this, 'servicio', 'minibar')">Minibar</button>
+            <button class="chip" data-tipo="servicio" data-valor="balcon" onclick="toggleChip(this, 'servicio', 'balcon')">Balcón</button>
             
             <span class="divisor">|</span>
             
-            <button class="chip chip-reset" onclick="limpiarTodo()">🔄 Limpiar filtros</button>
+            <button class="chip chip-reset" onclick="limpiarTodo()">Limpiar filtros</button>
         </div>
 
         <div class="contador-resultados">
@@ -587,21 +584,31 @@
                              alt="${hab.nombre}">
                     </div>
                     <div class="habitacion-info">
-                        <span class="experiencia-badge ${experiencia.toLowerCase()}">${icono} ${experiencia.toUpperCase()}</span>
+                        <span class="experiencia-badge ${experiencia.toLowerCase()}">${experiencia}</span>
                         <h3>${hab.nombre}</h3>
-                        <p class="habitacion-descripcion">${hab.descripcion ? (hab.descripcion.substring(0, 100) + '...') : 'Descubre esta experiencia única en armonía con la naturaleza'}</p>
+                        <p class="habitacion-descripcion">${hab.descripcion ? (hab.descripcion.substring(0, 120) + '...') : 'Descubre una experiencia única donde la naturaleza y el confort se encuentran en perfecta armonía.'}</p>
                         <div class="habitacion-detalles">
                             <div class="detalle-item">
-                                <strong>👥 ${hab.capacidad}</strong>
-                                <span>Personas</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                                <div>
+                                    <strong>${hab.capacidad}</strong>
+                                    <span>Huéspedes</span>
+                                </div>
                             </div>
                             <div class="detalle-item">
-                                <strong>$${hab.precio_noche.toLocaleString('es-CO')}</strong>
-                                <span>por noche</span>
+                                <div style="text-align: right;">
+                                    <strong>$${hab.precio_noche.toLocaleString('es-CO')}</strong>
+                                    <span>Por noche</span>
+                                </div>
                             </div>
                         </div>
                         <button class="btn-reservar" onclick="event.stopPropagation(); reservar(${hab.id})">
-                            Ver detalles
+                            <span>Explorar detalles</span>
                         </button>
                     </div>
                 `;

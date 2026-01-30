@@ -1,10 +1,44 @@
 /* ========================================
-   ESTILOS PARA DISPONIBILIDAD.HTML
-   Versión Premium - Cards Mejoradas
+   ESTILOS ELEGANTES PARA DISPONIBILIDAD
+   Diseño Refinado - Minimalismo de Lujo
 ======================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap');
+
 /* ========================================
-   RESET Y CONFIGURACIÓN BASE
+   VARIABLES DE DISEÑO
+======================================== */
+:root {
+    /* Colores Premium */
+    --color-primary: #1a1a1a;
+    --color-secondary: #4a4a4a;
+    --color-accent: #c9a961;
+    --color-accent-dark: #a68a4f;
+    --color-bg: #fafafa;
+    --color-white: #ffffff;
+    --color-border: #e8e8e8;
+    --color-text-muted: #8a8a8a;
+    
+    /* Tipografía */
+    --font-display: 'Cormorant Garamond', serif;
+    --font-body: 'Montserrat', sans-serif;
+    
+    /* Espaciado */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    
+    /* Sombras Elegantes */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
+}
+
+/* ========================================
+   RESET Y BASE
 ======================================== */
 * {
     box-sizing: border-box;
@@ -13,258 +47,285 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f8f9fa;
+    font-family: var(--font-body);
+    background: var(--color-bg);
+    color: var(--color-primary);
     padding-top: 80px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* ========================================
-   SECCIÓN DE HABITACIONES
+   SECCIÓN PRINCIPAL
 ======================================== */
 .habitaciones {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: var(--spacing-xl) var(--spacing-md);
 }
 
 h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-weight: 300;
     text-align: center;
-    font-size: clamp(32px, 5vw, 48px);
-    color: #1a1a1a;
-    margin-bottom: 12px;
-    font-weight: 400;
-    font-family: 'Playfair Display', 'Georgia', serif;
-    letter-spacing: 1px;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-xs);
+    letter-spacing: 0.02em;
 }
 
 .hab-subtitle {
-    text-align: center;
-    font-size: clamp(16px, 3vw, 20px);
-    color: #666;
-    margin-bottom: 40px;
+    font-family: var(--font-body);
+    font-size: clamp(0.95rem, 2vw, 1.1rem);
     font-weight: 300;
-    letter-spacing: 0.5px;
+    text-align: center;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-xl);
+    letter-spacing: 0.05em;
 }
 
 /* ========================================
-   LOADER
+   LOADER ELEGANTE
 ======================================== */
 .loader-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 80px 20px;
-    gap: 20px;
+    padding: var(--spacing-xl) var(--spacing-md);
+    gap: var(--spacing-md);
 }
 
 .loader {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #d4af37;
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--color-accent);
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    animation: spin 1s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    to { transform: rotate(360deg); }
 }
 
 .loader-container p {
-    color: #666;
-    font-size: 1rem;
-    animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: var(--color-text-muted);
+    letter-spacing: 0.05em;
 }
 
 /* ========================================
-   BARRA DE BÚSQUEDA
+   BARRA DE BÚSQUEDA REFINADA
 ======================================== */
 .barra-busqueda {
     display: flex;
     align-items: stretch;
-    background: white;
-    border-radius: 50px;
-    padding: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    margin-bottom: 20px;
-    gap: 0;
-    flex-wrap: wrap;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    padding: 0;
+    margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.3s ease;
+}
+
+.barra-busqueda:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .input-group {
     display: flex;
     flex-direction: column;
-    padding: 12px 16px;
-    min-width: 140px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    min-width: 160px;
     flex: 1;
     justify-content: center;
+    border-right: 1px solid var(--color-border);
+}
+
+.input-group:last-of-type {
+    border-right: none;
 }
 
 .input-group label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #666;
-    margin-bottom: 4px;
-    white-space: nowrap;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--spacing-xs);
 }
 
 .input-group input,
 .input-group select {
     border: none;
     background: transparent;
+    font-family: var(--font-body);
     font-size: 0.95rem;
-    color: #333;
-    font-weight: 500;
+    color: var(--color-primary);
+    font-weight: 400;
     cursor: pointer;
     outline: none;
     width: 100%;
 }
 
 .separador-vertical {
-    width: 1px;
-    background: #e0e0e0;
-    margin: 8px 0;
+    display: none;
 }
 
 .btn-buscar {
-    background: linear-gradient(135deg, #d4af37, #b8860b);
-    color: white;
+    background: var(--color-primary);
+    color: var(--color-white);
     border: none;
-    padding: 14px 28px;
-    border-radius: 40px;
+    padding: 0 var(--spacing-xl);
     cursor: pointer;
-    transition: all 0.3s;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    align-self: center;
-    margin-left: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-buscar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--color-accent);
+    transition: left 0.4s ease;
+    z-index: 0;
+}
+
+.btn-buscar:hover::before {
+    left: 0;
+}
+
+.btn-buscar span {
+    position: relative;
+    z-index: 1;
 }
 
 .btn-buscar:hover {
-    background: linear-gradient(135deg, #b8860b, #9a7209);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3);
+    color: var(--color-white);
 }
 
 /* ========================================
-   BARRA DE FILTROS RÁPIDOS
+   FILTROS REFINADOS
 ======================================== */
 .barra-filtros-rapidos {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: var(--spacing-sm);
     align-items: center;
-    margin-bottom: 20px;
-    padding: 15px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    box-shadow: var(--shadow-sm);
 }
 
 .chip {
-    background: white;
-    border: 2px solid #e0e0e0;
-    color: #666;
-    padding: 8px 16px;
-    border-radius: 20px;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-secondary);
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
     cursor: pointer;
-    transition: all 0.3s;
-    font-size: 0.85rem;
-    font-weight: 500;
+    transition: all 0.3s ease;
     white-space: nowrap;
 }
 
 .chip:hover {
-    border-color: #d4af37;
-    color: #d4af37;
-    transform: translateY(-2px);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
 }
 
 .chip.active {
-    background: linear-gradient(135deg, #d4af37, #b8860b);
-    color: white;
-    border-color: #d4af37;
+    background: var(--color-primary);
+    color: var(--color-white);
+    border-color: var(--color-primary);
 }
 
 .chip-reset {
-    background: #f5f5f5;
-    color: #999;
+    background: transparent;
+    border-color: var(--color-border);
+    color: var(--color-text-muted);
 }
 
 .chip-reset:hover {
-    background: #e0e0e0;
-    color: #666;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .divisor {
-    color: #e0e0e0;
-    margin: 0 5px;
-    font-size: 1.2rem;
+    color: var(--color-border);
+    margin: 0 var(--spacing-xs);
 }
 
 /* ========================================
-   CONTADOR DE RESULTADOS
+   CONTADOR
 ======================================== */
 .contador-resultados {
     text-align: center;
-    padding: 15px;
-    font-size: 1.1rem;
-    color: #666;
-    font-weight: 500;
+    padding: var(--spacing-md);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: var(--color-text-muted);
+    letter-spacing: 0.05em;
 }
 
 /* ========================================
-   GRID DE HABITACIONES - MEJORADO
+   GRID ELEGANTE
 ======================================== */
 .habitaciones-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 30px;
-    margin-top: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
 }
 
 /* ========================================
-   CARDS DE HABITACIONES - DISEÑO PREMIUM
+   CARD DESIGN - ELEGANCIA REFINADA
 ======================================== */
 .habitacion-card {
-    background: white;
-    border-radius: 16px;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     display: flex;
     flex-direction: column;
     position: relative;
-    /* Animación de aparición suave */
-    animation: fadeInCard 0.5s ease-out forwards;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeIn 0.6s ease-out forwards;
     opacity: 0;
 }
 
-/* Animación escalonada para cada tarjeta */
-.habitacion-card:nth-child(1) { animation-delay: 0.05s; }
-.habitacion-card:nth-child(2) { animation-delay: 0.1s; }
-.habitacion-card:nth-child(3) { animation-delay: 0.15s; }
-.habitacion-card:nth-child(4) { animation-delay: 0.2s; }
-.habitacion-card:nth-child(5) { animation-delay: 0.25s; }
-.habitacion-card:nth-child(6) { animation-delay: 0.3s; }
-.habitacion-card:nth-child(n+7) { animation-delay: 0.35s; }
+.habitacion-card:nth-child(1) { animation-delay: 0.1s; }
+.habitacion-card:nth-child(2) { animation-delay: 0.2s; }
+.habitacion-card:nth-child(3) { animation-delay: 0.3s; }
+.habitacion-card:nth-child(4) { animation-delay: 0.4s; }
+.habitacion-card:nth-child(5) { animation-delay: 0.5s; }
+.habitacion-card:nth-child(6) { animation-delay: 0.6s; }
 
-@keyframes fadeInCard {
+@keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(20px);
     }
     to {
         opacity: 1;
@@ -273,213 +334,227 @@ h2 {
 }
 
 .habitacion-card:hover {
-    transform: translateY(-12px);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
 }
 
 /* ========================================
-   CONTENEDOR DE IMAGEN - MEJORADO
+   IMAGEN ELEGANTE
 ======================================== */
-.habitacion-card .card-image-wrapper {
+.card-image-wrapper {
     position: relative;
-    height: 250px;
+    height: 320px;
     overflow: hidden;
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
+    background: #f5f5f5;
 }
 
 .habitacion-card img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: grayscale(0.1) contrast(1.05);
 }
 
 .habitacion-card:hover img {
-    transform: scale(1.12);
+    transform: scale(1.05);
 }
 
-/* Overlay gradiente sobre la imagen */
-.habitacion-card .card-image-wrapper::before {
+/* Overlay sutil */
+.card-image-wrapper::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.1) 100%);
-    z-index: 1;
+    background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.3) 100%);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s ease;
 }
 
-.habitacion-card:hover .card-image-wrapper::before {
+.habitacion-card:hover .card-image-wrapper::after {
     opacity: 1;
 }
 
 /* ========================================
-   INFORMACIÓN DE LA HABITACIÓN - MEJORADA
+   CONTENIDO REFINADO
 ======================================== */
 .habitacion-info {
-    padding: 24px;
+    padding: var(--spacing-lg);
     display: flex;
     flex-direction: column;
+    gap: var(--spacing-md);
     flex: 1;
-    gap: 12px;
 }
 
 /* ========================================
-   BADGE DE EXPERIENCIA - REDISEÑADO
+   BADGE MINIMALISTA
 ======================================== */
 .experiencia-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
-    border-radius: 25px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
+    gap: var(--spacing-xs);
     width: fit-content;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding: var(--spacing-xs) 0;
+    border-bottom: 1px solid;
 }
 
 .experiencia-badge.bosque {
-    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-    color: #2e7d32;
+    color: #2d5016;
+    border-color: #2d5016;
 }
 
 .experiencia-badge.mar {
-    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-    color: #1565c0;
+    color: #1a4d7a;
+    border-color: #1a4d7a;
 }
 
 .experiencia-badge.campo {
-    background: linear-gradient(135deg, #fff8e1, #fff59d);
-    color: #f57f17;
+    color: #8b6914;
+    border-color: #8b6914;
+}
+
+/* Iconos SVG inline */
+.experiencia-badge::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+}
+
+.experiencia-badge.bosque::before {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232d5016' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2L4 7v10c0 2.2 1.8 4 4 4h8c2.2 0 4-1.8 4-4V7l-8-5z'/%3E%3Cline x1='12' y1='12' x2='12' y2='21'/%3E%3C/svg%3E") no-repeat center;
+    background-size: contain;
+}
+
+.experiencia-badge.mar::before {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a4d7a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 20c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 16c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M10 5.7L6 3 2 6'/%3E%3C/svg%3E") no-repeat center;
+    background-size: contain;
+}
+
+.experiencia-badge.campo::before {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b6914' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2L2 22h20L12 2z'/%3E%3Cpath d='M12 8v8'/%3E%3C/svg%3E") no-repeat center;
+    background-size: contain;
 }
 
 /* ========================================
-   TÍTULO Y DESCRIPCIÓN - MEJORADOS
+   TIPOGRAFÍA ELEGANTE
 ======================================== */
 .habitacion-card h3 {
-    font-size: 1.4rem;
-    color: #1a1a1a;
-    margin-bottom: 8px;
-    line-height: 1.4;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    font-family: 'Georgia', serif;
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 400;
+    color: var(--color-primary);
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    margin: 0;
 }
 
 .habitacion-descripcion {
-    color: #666;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: 16px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: var(--color-secondary);
+    line-height: 1.7;
+    letter-spacing: 0.01em;
     flex: 1;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
 }
 
 /* ========================================
-   DETALLES DE LA HABITACIÓN - REDISEÑADOS
+   DETALLES REFINADOS
 ======================================== */
 .habitacion-detalles {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    padding: 16px 0;
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) 0;
+    border-top: 1px solid var(--color-border);
+    margin-top: auto;
 }
 
 .detalle-item {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 6px;
-    padding: 8px;
-    border-radius: 8px;
-    background: #f8f9fa;
-    transition: all 0.3s ease;
+    gap: var(--spacing-xs);
 }
 
-.habitacion-card:hover .detalle-item {
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+.detalle-item svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--color-text-muted);
+    stroke-width: 1.5;
 }
 
 .detalle-item strong {
-    font-size: 1.2rem;
-    color: #1a1a1a;
-    font-weight: 700;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-primary);
+    letter-spacing: 0.01em;
 }
 
 .detalle-item span {
+    font-family: var(--font-body);
     font-size: 0.75rem;
-    color: #999;
+    font-weight: 300;
+    color: var(--color-text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.1em;
 }
 
 /* ========================================
-   BOTÓN VER DETALLES - PREMIUM
+   BOTÓN MINIMALISTA
 ======================================== */
 .btn-reservar {
-    background: linear-gradient(135deg, #d4af37, #b8860b);
-    color: white;
-    border: none;
-    padding: 14px 24px;
-    border-radius: 10px;
+    background: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-    width: 100%;
-    text-align: center;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    margin-top: var(--spacing-md);
 }
 
 .btn-reservar::before {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--color-primary);
+    transition: left 0.4s ease;
+    z-index: 0;
 }
 
 .btn-reservar:hover::before {
-    width: 300px;
-    height: 300px;
+    left: 0;
 }
 
 .btn-reservar:hover {
-    background: linear-gradient(135deg, #b8860b, #9a7209);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.35);
+    color: var(--color-white);
 }
 
-.btn-reservar:active {
-    transform: translateY(0);
+.btn-reservar span {
+    position: relative;
+    z-index: 1;
 }
 
 /* ========================================
-   RESPONSIVE - TABLETS (768px - 1024px)
+   RESPONSIVE - TABLETS
 ======================================== */
 @media (max-width: 1024px) {
     body {
@@ -487,31 +562,21 @@ h2 {
     }
 
     .habitaciones {
-        padding: 30px 15px;
+        padding: var(--spacing-lg) var(--spacing-md);
     }
 
     .habitaciones-grid {
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 24px;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: var(--spacing-lg);
     }
 
-    .barra-busqueda {
-        padding: 10px;
-    }
-
-    .input-group {
-        min-width: 120px;
-        padding: 10px 12px;
-    }
-
-    .btn-buscar {
-        padding: 12px 20px;
-        font-size: 0.85rem;
+    .card-image-wrapper {
+        height: 280px;
     }
 }
 
 /* ========================================
-   RESPONSIVE - MÓVILES (MAX 768px)
+   RESPONSIVE - MÓVIL
 ======================================== */
 @media (max-width: 768px) {
     body {
@@ -519,191 +584,96 @@ h2 {
     }
 
     .habitaciones {
-        padding: 20px 12px;
+        padding: var(--spacing-md);
     }
 
-    /* Barra de búsqueda en móvil */
+    h2 {
+        font-size: 2rem;
+    }
+
+    .hab-subtitle {
+        font-size: 0.9rem;
+    }
+
     .barra-busqueda {
         flex-direction: column;
-        border-radius: 16px;
-        padding: 15px;
-        gap: 12px;
+        border-radius: 0;
     }
 
     .input-group {
         width: 100%;
-        padding: 12px 0;
-        min-width: unset;
-        border-bottom: 1px solid #f0f0f0;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
+        padding: var(--spacing-md);
     }
 
-    .input-group:last-of-type {
+    .input-group:last-child {
         border-bottom: none;
     }
 
-    .separador-vertical {
-        display: none;
-    }
-
     .btn-buscar {
-        width: 100%;
-        margin-left: 0;
-        padding: 14px 24px;
-        border-radius: 12px;
+        padding: var(--spacing-md);
     }
 
-    /* Filtros rápidos en móvil */
     .barra-filtros-rapidos {
-        padding: 12px;
-        gap: 8px;
+        padding: var(--spacing-md);
+        gap: var(--spacing-xs);
         justify-content: center;
-    }
-
-    .chip {
-        font-size: 0.8rem;
-        padding: 7px 12px;
     }
 
     .divisor {
         display: none;
     }
 
-    /* Grid de habitaciones en móvil */
     .habitaciones-grid {
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: var(--spacing-lg);
     }
 
-    .habitacion-card .card-image-wrapper {
-        height: 220px;
+    .card-image-wrapper {
+        height: 260px;
     }
 
     .habitacion-info {
-        padding: 20px;
+        padding: var(--spacing-md);
     }
 
     .habitacion-card h3 {
-        font-size: 1.3rem;
+        font-size: 1.5rem;
     }
 
     .habitacion-descripcion {
-        font-size: 0.9rem;
-    }
-
-    .habitacion-detalles {
-        padding: 14px 0;
-        margin-bottom: 14px;
-        gap: 12px;
-    }
-
-    .detalle-item strong {
-        font-size: 1.1rem;
-    }
-
-    .btn-reservar {
-        padding: 14px 20px;
         font-size: 0.85rem;
     }
 }
 
 /* ========================================
-   RESPONSIVE - MÓVILES PEQUEÑOS (MAX 480px)
+   RESPONSIVE - MÓVIL PEQUEÑO
 ======================================== */
 @media (max-width: 480px) {
     body {
         padding-top: 65px;
     }
 
-    h2 {
-        font-size: 26px;
-        margin-bottom: 8px;
-    }
-
-    .hab-subtitle {
-        font-size: 14px;
-        margin-bottom: 20px;
-    }
-
     .habitaciones {
-        padding: 15px 10px;
+        padding: var(--spacing-md) var(--spacing-sm);
     }
 
-    .barra-busqueda {
-        padding: 12px;
+    h2 {
+        font-size: 1.75rem;
     }
 
-    .input-group {
-        padding: 10px 0;
+    .card-image-wrapper {
+        height: 240px;
     }
 
-    .input-group label {
-        font-size: 0.7rem;
-    }
-
-    .input-group input,
-    .input-group select {
-        font-size: 0.85rem;
-    }
-
-    .btn-buscar {
-        padding: 12px 20px;
-        font-size: 0.8rem;
-    }
-
-    .barra-filtros-rapidos {
-        padding: 10px;
-        gap: 6px;
+    .habitacion-card h3 {
+        font-size: 1.35rem;
     }
 
     .chip {
         font-size: 0.75rem;
-        padding: 6px 10px;
-    }
-
-    .contador-resultados {
-        font-size: 0.95rem;
-        padding: 12px;
-    }
-
-    .habitacion-card .card-image-wrapper {
-        height: 200px;
-    }
-
-    .habitacion-info {
-        padding: 16px;
-    }
-
-    .experiencia-badge {
-        font-size: 0.7rem;
         padding: 6px 12px;
-    }
-
-    .habitacion-card h3 {
-        font-size: 1.2rem;
-    }
-
-    .habitacion-descripcion {
-        font-size: 0.85rem;
-        margin-bottom: 12px;
-    }
-
-    .habitacion-detalles {
-        padding: 12px 0;
-        margin-bottom: 12px;
-        gap: 10px;
-    }
-
-    .detalle-item strong {
-        font-size: 1rem;
-    }
-
-    .detalle-item span {
-        font-size: 0.7rem;
-    }
-
-    .btn-reservar {
-        padding: 13px 18px;
-        font-size: 0.8rem;
     }
 }
 
@@ -714,22 +684,21 @@ h2 {
     text-align: center;
 }
 
-.mt-20 {
-    margin-top: 20px;
+/* Accesibilidad */
+.btn-buscar:focus,
+.btn-reservar:focus,
+.chip:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
 }
 
-.mb-20 {
-    margin-bottom: 20px;
-}
-
-/* Ocultar elementos en móvil si es necesario */
+/* Ocultar elementos */
 @media (max-width: 768px) {
     .hide-mobile {
         display: none !important;
     }
 }
 
-/* Mostrar solo en móvil */
 .show-mobile {
     display: none !important;
 }
@@ -738,29 +707,4 @@ h2 {
     .show-mobile {
         display: block !important;
     }
-}
-
-/* ========================================
-   EFECTOS ADICIONALES
-======================================== */
-
-/* Efecto de shimmer para imágenes cargando */
-@keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-/* Añadir indicador de "hover" para touch devices */
-@media (hover: none) {
-    .habitacion-card:active {
-        transform: scale(0.98);
-    }
-}
-
-/* Mejora de accesibilidad - focus states */
-.btn-buscar:focus,
-.btn-reservar:focus,
-.chip:focus {
-    outline: 3px solid rgba(212, 175, 55, 0.5);
-    outline-offset: 2px;
 }
