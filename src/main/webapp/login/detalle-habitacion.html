@@ -9,6 +9,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="../recursos/imagen icon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../recursos/imagen icon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../recursos/imagen icon/favicon-16x16.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="auth-ui.css">
     <script src="auth-session.js"></script>
     <script src="mobile-menu.js"></script>
@@ -239,6 +240,10 @@
             display: block;
         }
 
+        .detalle-quick .icono i {
+            color: #d4af37;
+        }
+
         .detalle-quick .valor {
             font-size: 1.6rem;
             font-weight: 700;
@@ -269,6 +274,10 @@
 
         .camas-info .icono {
             font-size: 1.5rem;
+        }
+
+        .camas-info .icono i {
+            color: #d4af37;
         }
 
         .camas-info .texto {
@@ -309,6 +318,10 @@
 
         .comodidad-item span:first-child {
             font-size: 1.3rem;
+        }
+
+        .comodidad-item span:first-child i {
+            color: #d4af37;
         }
 
         .comodidad-item span:last-child {
@@ -624,26 +637,26 @@
 
                 <div class="detalles-rapidos">
                     <div class="detalle-quick">
-                        <span class="icono">👥</span>
+                        <span class="icono"><i class="fas fa-users"></i></span>
                         <span class="valor" id="capacidad">-</span>
                         <span class="label">Personas</span>
                     </div>
                     
                     <div class="detalle-quick" id="metros-container" style="display: none;">
-                        <span class="icono">📐</span>
+                        <span class="icono"><i class="fas fa-ruler-combined"></i></span>
                         <span class="valor" id="metros">-</span>
                         <span class="label">m²</span>
                     </div>
                     
                     <div class="detalle-quick" id="vista-container" style="display: none;">
-                        <span class="icono">🪟</span>
+                        <span class="icono"><i class="fas fa-mountain"></i></span>
                         <span class="valor" id="vista">-</span>
                         <span class="label">Vista</span>
                     </div>
                 </div>
 
                 <div class="camas-info" id="camas-info" style="display: none;">
-                    <span class="icono">🛏️</span>
+                    <span class="icono"><i class="fas fa-bed"></i></span>
                     <span class="texto">Camas: <strong id="camas-texto"></strong></span>
                 </div>
 
@@ -772,27 +785,30 @@
                 document.getElementById('camas-info').style.display = 'flex';
             }
 
-            const icono = habitacion.experiencia === 'bosque' ? '🌲' : 
-                         habitacion.experiencia === 'mar' ? '🌊' : '🌾';
+            const iconoMap = {
+                'bosque': '<i class="fas fa-tree"></i>',
+                'mar': '<i class="fas fa-water"></i>',
+                'campo': '<i class="fas fa-seedling"></i>'
+            };
             
             const badge = document.getElementById('experiencia-badge');
-            badge.textContent = icono + ' ' + habitacion.experiencia.toUpperCase();
+            badge.innerHTML = iconoMap[habitacion.experiencia] + ' ' + habitacion.experiencia.toUpperCase();
             badge.className = 'experiencia-tag ' + habitacion.experiencia;
 
             const comodidades = [];
-            if (habitacion.wifi) comodidades.push({ icono: '📶', texto: 'WiFi gratuito' });
-            if (habitacion.aire_acondicionado) comodidades.push({ icono: '❄️', texto: 'Aire acondicionado' });
-            if (habitacion.tv) comodidades.push({ icono: '📺', texto: 'TV' });
-            if (habitacion.minibar) comodidades.push({ icono: '🍷', texto: 'Minibar' });
-            if (habitacion.balcon) comodidades.push({ icono: '🪟', texto: 'Balcón' });
-            if (habitacion.desayuno_incluido) comodidades.push({ icono: '🍳', texto: 'Desayuno incluido' });
+            if (habitacion.wifi) comodidades.push({ icono: 'fa-wifi', texto: 'WiFi gratuito' });
+            if (habitacion.aire_acondicionado) comodidades.push({ icono: 'fa-snowflake', texto: 'Aire acondicionado' });
+            if (habitacion.tv) comodidades.push({ icono: 'fa-tv', texto: 'TV' });
+            if (habitacion.minibar) comodidades.push({ icono: 'fa-wine-glass', texto: 'Minibar' });
+            if (habitacion.balcon) comodidades.push({ icono: 'fa-door-open', texto: 'Balcón' });
+            if (habitacion.desayuno_incluido) comodidades.push({ icono: 'fa-utensils', texto: 'Desayuno incluido' });
 
             const listaComodidades = document.getElementById('comodidades-lista');
             listaComodidades.innerHTML = '';
             comodidades.forEach(com => {
                 const div = document.createElement('div');
                 div.className = 'comodidad-item';
-                div.innerHTML = `<span>${com.icono}</span> <span>${com.texto}</span>`;
+                div.innerHTML = `<span><i class="fas ${com.icono}"></i></span> <span>${com.texto}</span>`;
                 listaComodidades.appendChild(div);
             });
 

@@ -581,13 +581,15 @@
                              experiencia.toLowerCase() === 'mar' ? '🌊' : '🌾';
                 
                 card.innerHTML = `
-                    <img ${CONFIG.LAZY_LOAD ? 'loading="lazy"' : ''} 
-                         src="${hab.imagen_principal || 'recursos/placeholder.jpg'}" 
-                         alt="${hab.nombre}">
+                    <div class="card-image-wrapper">
+                        <img ${CONFIG.LAZY_LOAD ? 'loading="lazy"' : ''} 
+                             src="${hab.imagen_principal || 'recursos/placeholder.jpg'}" 
+                             alt="${hab.nombre}">
+                    </div>
                     <div class="habitacion-info">
                         <span class="experiencia-badge ${experiencia.toLowerCase()}">${icono} ${experiencia.toUpperCase()}</span>
                         <h3>${hab.nombre}</h3>
-                        <p class="habitacion-descripcion">${hab.descripcion ? (hab.descripcion.substring(0, 80) + '...') : 'Experiencia única'}</p>
+                        <p class="habitacion-descripcion">${hab.descripcion ? (hab.descripcion.substring(0, 100) + '...') : 'Descubre esta experiencia única en armonía con la naturaleza'}</p>
                         <div class="habitacion-detalles">
                             <div class="detalle-item">
                                 <strong>👥 ${hab.capacidad}</strong>

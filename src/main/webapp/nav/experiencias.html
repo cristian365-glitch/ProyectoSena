@@ -6,6 +6,7 @@
   <link rel="icon" type="image/png" sizes="16x16" href="../recursos/imagen icon/favicon-16x16.png">
   <link rel="stylesheet" href="../indexCSS.css">
   <link rel="stylesheet" href="../login/auth-ui.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="../login/auth-session.js"></script>
   <script src="../login/mobile-menu.js"></script>
   <title>Experiencias Inmersivas - Armonía</title>
@@ -286,6 +287,11 @@
       font-family: 'Playfair Display', serif;
     }
 
+    .info-actividad h3 i {
+      color: #d4af37;
+      margin-right: 8px;
+    }
+
     .info-actividad p {
       color: #666;
       line-height: 1.6;
@@ -327,11 +333,20 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    .btn-control i {
+      color: #d4af37;
+      margin-right: 6px;
+    }
+
     .btn-control:hover {
       background: #d4af37;
       color: white;
       transform: translateX(-5px);
       box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+    }
+
+    .btn-control:hover i {
+      color: white;
     }
 
     /* Botón volver */
@@ -510,10 +525,10 @@
 
   <!-- Controles de navegación flotantes -->
   <div class="controles-navegacion" id="controlesNav">
-    <a href="#selector" class="btn-control">⊕ Ver todas</a>
-    <a href="#bosque" class="btn-control" id="btnBosque">🌲 Bosque</a>
-    <a href="#mar" class="btn-control" id="btnMar">🌊 Mar</a>
-    <a href="#campo" class="btn-control" id="btnCampo">🌾 Campo</a>
+    <a href="#selector" class="btn-control"><i class="fas fa-th"></i> Ver todas</a>
+    <a href="#bosque" class="btn-control" id="btnBosque"><i class="fas fa-tree"></i> Bosque</a>
+    <a href="#mar" class="btn-control" id="btnMar"><i class="fas fa-water"></i> Mar</a>
+    <a href="#campo" class="btn-control" id="btnCampo"><i class="fas fa-seedling"></i> Campo</a>
   </div>
 
   <!-- Selector de Experiencias -->
@@ -555,21 +570,21 @@
         <div class="tarjeta-actividad">
           <img src="https://images.unsplash.com/photo-1522850067562-a4c60453058d?q=80&w=465&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Senderismo" loading="lazy">
           <div class="info-actividad">
-            <h3>🥾 Senderismo</h3>
+            <h3><i class="fas fa-hiking"></i> Senderismo</h3>
             <p>Camina entre árboles milenarios y escucha el murmullo del viento entre las hojas.</p>
           </div>
         </div>
         <div class="tarjeta-actividad">
           <img src="https://images.unsplash.com/photo-1581062712438-f759223286a2?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Avistamiento de aves" loading="lazy">
           <div class="info-actividad">
-            <h3>🕊️ Avistamiento de fauna</h3>
+            <h3><i class="fas fa-dove"></i> Avistamiento de fauna</h3>
             <p>Descubre especies únicas en su hábitat natural y aprende sobre su importancia ecológica.</p>
           </div>
         </div>
         <div class="tarjeta-actividad">
           <img src="https://images.unsplash.com/photo-1590166774851-bc49b23a18fe?q=80&w=389&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Picnic" loading="lazy">
           <div class="info-actividad">
-            <h3>🧺 Picnic en el bosque</h3>
+            <h3><i class="fas fa-utensils"></i> Picnic en el bosque</h3>
             <p>Disfruta una comida rodeado de naturaleza, en el corazón del bosque.</p>
           </div>
         </div>
@@ -597,21 +612,21 @@
         <div class="tarjeta-actividad">
           <img src="https://plus.unsplash.com/premium_photo-1661894232140-73d96a67731b?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Buceo" loading="lazy">
           <div class="info-actividad">
-            <h3>🤿 Buceo</h3>
+            <h3><i class="fas fa-swimmer"></i> Buceo</h3>
             <p>Sumérgete en las profundidades y explora un mundo lleno de vida marina.</p>
           </div>
         </div>
         <div class="tarjeta-actividad">
           <img src="https://images.unsplash.com/photo-1520255870062-bd79d3865de7?q=80&w=873&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Lancha" loading="lazy">
           <div class="info-actividad">
-            <h3>🚤 Paseo en lancha</h3>
+            <h3><i class="fas fa-ship"></i> Paseo en lancha</h3>
             <p>Recorre la costa, siente la brisa marina y contempla el horizonte sin fin.</p>
           </div>
         </div>
         <div class="tarjeta-actividad">
           <img src="https://plus.unsplash.com/premium_photo-1683121124238-941bc64962f1?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Pesca" loading="lazy">
           <div class="info-actividad">
-            <h3>🎣 Pesca artesanal</h3>
+            <h3><i class="fas fa-fish"></i> Pesca artesanal</h3>
             <p>Vive la tradición costera y aprende el arte de la pesca sostenible.</p>
           </div>
         </div>
@@ -639,21 +654,21 @@
         <div class="tarjeta-actividad">
           <img src="https://images.unsplash.com/photo-1600757490188-1eb2bab4cf4a?q=80&w=559&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Caballo" loading="lazy">
           <div class="info-actividad">
-            <h3>🐴 Paseo a caballo</h3>
+            <h3><i class="fas fa-horse"></i> Paseo a caballo</h3>
             <p>Recorre senderos rurales y siente la libertad del aire puro.</p>
           </div>
         </div>
         <div class="tarjeta-actividad">
           <img src="https://plus.unsplash.com/premium_photo-1669122400250-55c1506a1c0e?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Cosecha" loading="lazy">
           <div class="info-actividad">
-            <h3>🌾 Cosecha</h3>
+            <h3><i class="fas fa-wheat-awn"></i> Cosecha</h3>
             <p>Participa en la recolección de frutas y verduras directamente del campo.</p>
           </div>
         </div>
         <div class="tarjeta-actividad">
           <img src="https://plus.unsplash.com/premium_photo-1661917187440-b8359626c5d1?q=80&w=387&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Vida rural" loading="lazy">
           <div class="info-actividad">
-            <h3>🏡 Vida rural</h3>
+            <h3><i class="fas fa-house-user"></i> Vida rural</h3>
             <p>Aprende sobre las costumbres campesinas y la calidez de la vida sencilla.</p>
           </div>
         </div>
