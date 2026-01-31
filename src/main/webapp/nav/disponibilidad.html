@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Alojamientos</title>
+    <title>Alojamientos - Armonía</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="../recursos/imagen icon/favicon-16x16.png">
     <link rel="stylesheet" href="../indexCSS.css">
     <link rel="stylesheet" href="disponibilidadCSS.css">
-    <link rel="stylesheet" href="../login/auth-ui.css">
     <link rel="stylesheet" href="../login/auth-ui.css">
     <script src="../login/auth-session.js"></script>
     <script src="login/mobile-menu.js"></script>
@@ -27,15 +26,32 @@
             <li><a href="../nav/disponibilidad.html">Habitaciones</a></li>
             <li><a href="../nav/experiencias.html">Experiencias</a></li>
             <li><a href="../nav/servicios.html">Servicios</a></li>
+            <li class="menu-toggle-li">
+                <button class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </li>
             <li class="registro" id="auth-container"></li>
         </ul>
     </header>
-    <br><br><br><br>
+
+    <!-- Menú móvil -->
+    <nav class="nav-mobile-menu" id="mobileMenu">
+        <ul>
+            <li><a href="../nav/disponibilidad.html">Habitaciones</a></li>
+            <li><a href="../nav/experiencias.html">Experiencias</a></li>
+            <li><a href="../nav/servicios.html">Servicios</a></li>
+        </ul>
+        <div id="auth-mobile"></div>
+    </nav>
     
     <section id="habitaciones" class="habitaciones">
         <h2>Nuestros Alojamientos</h2>
-        <p class="hab-subtitle">Descubre la paz</p>
+        <p class="hab-subtitle">Descubre la paz en armonía con la naturaleza</p>
 
+        <!-- Barra de búsqueda -->
         <div class="barra-busqueda">
             <div class="input-group">
                 <label>Entrada</label>
@@ -67,6 +83,7 @@
             <button class="btn-buscar" onclick="aplicarFiltros()">Buscar</button>
         </div>
 
+        <!-- Filtros rápidos -->
         <div class="barra-filtros-rapidos">
             <button class="chip active" data-tipo="experiencia" data-valor="todas" onclick="toggleChip(this, 'experiencia', 'todas')">Todas</button>
             <button class="chip" data-tipo="experiencia" data-valor="bosque" onclick="toggleChip(this, 'experiencia', 'bosque')">Bosque</button>
@@ -86,281 +103,41 @@
             <button class="chip chip-reset" onclick="limpiarTodo()">Limpiar</button>
         </div>
 
+        <!-- Contador de resultados -->
         <div class="contador-resultados">
             <span id="contador">Cargando...</span>
         </div>
 
-        <!-- LOADER -->
+        <!-- Loader -->
         <div id="loader" class="loader-container">
             <div class="loader"></div>
             <p>Cargando habitaciones...</p>
         </div>
 
+        <!-- Grid de habitaciones -->
         <div id="habitaciones-container" class="habitaciones-grid" style="display: none;"></div>
     </section>
 
-    <style>
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;           
-        }
+    <!-- Footer mejorado -->
+    <footer class="footer-modern">
+        <div class="footer-content">
+            <p class="footer-copyright">© 2025 Armonía - Vuelve a lo Esencial. Todos los derechos reservados.</p>
+            <p class="footer-tagline">Diseñado con <span class="heart">💚</span> para reconectar con la naturaleza</p>
+        </div>
+    </footer>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
-            padding: 20px;
-        }
-
-        h2 {
-            text-align: center;
-            font-size: 40px;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .hab-subtitle {
-            text-align: center;
-            font-size: 20px;
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .loader-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 80px 20px;
-            gap: 20px;
-        }
-
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #d4af37;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loader-container p {
-            color: #666;
-            font-size: 1rem;
-        }
-
-        .barra-busqueda {
-            display: flex;
-            align-items: stretch;
-            background: white;
-            border-radius: 50px;
-            padding: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-            margin-bottom: 20px;
-            gap: 0;
-            overflow-x: auto;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            padding: 8px 16px;
-            min-width: 140px;
-            justify-content: center;
-        }
-
-        .input-group label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #666;
-            margin-bottom: 4px;
-        }
-
-        .input-group input, .input-group select {
-            border: none;
-            background: transparent;
-            font-size: 0.95rem;
-            color: #333;
-            font-weight: 500;
-            cursor: pointer;
-            outline: none;
-        }
-
-        .separador-vertical {
-            width: 1px;
-            background: #e0e0e0;
-            margin: 8px 0;
-        }
-
-        .btn-buscar {
-            background: linear-gradient(135deg, #d4af37, #b8860b);
-            color: white;
-            border: none;
-            border-radius: 40px;
-            padding: 12px 24px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-buscar:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-        }
-
-        .barra-filtros-rapidos {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 20px 0;
-            align-items: center;
-        }
-
-        .chip {
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: 2px solid #ddd;
-            background: white;
-            color: #666;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .chip:hover {
-            border-color: #d4af37;
-            transform: translateY(-2px);
-        }
-
-        .chip.active {
-            background: linear-gradient(135deg, #d4af37, #b8860b);
-            color: white;
-            border-color: #d4af37;
-        }
-
-        .divisor {
-            color: #ddd;
-            font-size: 1.5rem;
-        }
-
-        .contador-resultados {
-            text-align: center;
-            margin: 20px 0;
-            font-size: 1.1rem;
-            color: #666;
-            font-weight: 500;
-        }
-
-        .habitaciones-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 30px;
-            padding: 20px 0;
-        }
-
-        .habitacion-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .habitacion-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .habitacion-card img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            /* ✅ LAZY LOADING OPTIMIZADO */
-            background: #f0f0f0;
-        }
-
-        .habitacion-info {
-            padding: 20px;
-        }
-
-        .experiencia-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .experiencia-badge.bosque { background: #2d5016; color: white; }
-        .experiencia-badge.mar { background: #1e5a8e; color: white; }
-        .experiencia-badge.campo { background: #8b7355; color: white; }
-
-        .habitacion-info h3 {
-            font-size: 1.3rem;
-            margin: 10px 0;
-            color: #333;
-        }
-
-        .habitacion-descripcion {
-            color: #666;
-            font-size: 0.9rem;
-            margin: 10px 0;
-            line-height: 1.4;
-        }
-
-        .habitacion-detalles {
-            display: flex;
-            justify-content: space-between;
-            margin: 15px 0;
-        }
-
-        .detalle-item {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .detalle-item strong {
-            color: #d4af37;
-            font-size: 1.1rem;
-        }
-
-        .detalle-item span {
-            color: #999;
-            font-size: 0.85rem;
-        }
-
-        .btn-reservar {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #d4af37, #b8860b);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-reservar:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-        }
-    </style>
-
+    <!-- JavaScript optimizado -->
     <script>
-        // ✅ VARIABLES GLOBALES OPTIMIZADAS
+        // ⚡ CONFIGURACIÓN
+        const CONFIG = {
+            DEBUG: false,
+            LAZY_LOAD: true
+        };
+        
         let habitacionesOriginal = [];
         let reservasExistentes = [];
+        let comentariosData = {}; // Almacenará comentarios por habitación
+        
         let filtros = {
             experiencia: 'todas',
             servicios: [],
@@ -370,72 +147,110 @@
             precioMax: Infinity
         };
 
-        // 🚀 CONFIGURACIÓN DE RENDIMIENTO
-        const CONFIG = {
-            DEBUG: false, // ⚡ DESACTIVAR LOGS EN PRODUCCIÓN
-            LAZY_LOAD: true, // ✅ Activar lazy loading de imágenes
-            BATCH_SIZE: 12 // Mostrar habitaciones en lotes
-        };
-
-        // ⚡ INICIO OPTIMIZADO
-        window.addEventListener('DOMContentLoaded', async () => {
-            const startTime = performance.now();
+        // ⚡ CARGA INICIAL
+        document.addEventListener('DOMContentLoaded', async function() {
+            configurarFechas();
             
             try {
-                // Cargar habitaciones y reservas en paralelo
                 await Promise.all([
                     cargarHabitaciones(),
-                    cargarReservas()
+                    cargarReservas(),
+                    cargarComentarios()
                 ]);
                 
-                const loadTime = performance.now() - startTime;
-                if (CONFIG.DEBUG) console.log(`✅ Carga completada en ${loadTime.toFixed(0)}ms`);
-                
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('habitaciones-container').style.display = 'grid';
             } catch (error) {
-                console.error('❌ Error en carga inicial:', error);
+                console.error('Error:', error);
                 mostrarError();
             }
         });
 
+        // ⚡ CARGAR DATOS
         async function cargarHabitaciones() {
-            try {
-                const response = await fetch('../ObtenerHabitacionesServlet');
-                const data = await response.json();
-                
-                habitacionesOriginal = Array.isArray(data) ? data : [];
-                
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('habitaciones-container').style.display = 'grid';
-                
-                mostrarHabitaciones(habitacionesOriginal);
-                actualizarContador(habitacionesOriginal.length);
-                
-            } catch (error) {
-                console.error('Error al cargar habitaciones:', error);
-                throw error;
-            }
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            
+            const response = await fetch('ObtenerHabitacionesServlet', {
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            habitacionesOriginal = await response.json();
+            mostrarHabitaciones(habitacionesOriginal);
+            actualizarContador(habitacionesOriginal.length);
         }
 
         async function cargarReservas() {
             try {
-                const response = await fetch('../ObtenerReservaServlet');
-                const data = await response.json();
-                
-                reservasExistentes = Array.isArray(data) ? data : [];
-                
-                if (CONFIG.DEBUG) console.log(`📊 ${reservasExistentes.length} reservas cargadas`);
-                
+                const response = await fetch('ObtenerReservasServlet');
+                reservasExistentes = await response.json();
             } catch (error) {
-                console.error('Error al cargar reservas:', error);
+                console.warn('No se pudieron cargar las reservas:', error);
                 reservasExistentes = [];
             }
         }
 
+        // 🆕 SISTEMA DE COMENTARIOS REALES
+        async function cargarComentarios() {
+            try {
+                const response = await fetch('ObtenerComentariosServlet');
+                const comentarios = await response.json();
+                
+                // Organizar comentarios por habitación
+                comentariosData = {};
+                comentarios.forEach(c => {
+                    if (!comentariosData[c.habitacion_id]) {
+                        comentariosData[c.habitacion_id] = [];
+                    }
+                    comentariosData[c.habitacion_id].push(c);
+                });
+            } catch (error) {
+                console.warn('No se pudieron cargar comentarios:', error);
+                comentariosData = {};
+            }
+        }
+
+        // 🆕 CALCULAR PUNTUACIÓN PROMEDIO
+        function calcularPuntuacion(habitacionId) {
+            const comentarios = comentariosData[habitacionId] || [];
+            if (comentarios.length === 0) return null;
+            
+            const suma = comentarios.reduce((acc, c) => acc + c.puntuacion, 0);
+            return (suma / comentarios.length).toFixed(1);
+        }
+
+        // 🆕 OBTENER COMENTARIOS DESTACADOS
+        function obtenerComentarioDestacado(habitacionId) {
+            const comentarios = comentariosData[habitacionId] || [];
+            if (comentarios.length === 0) return null;
+            
+            // Ordenar por puntuación y tomar el mejor
+            const mejores = comentarios.sort((a, b) => b.puntuacion - a.puntuacion);
+            return mejores[0];
+        }
+
+        function configurarFechas() {
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fechaEntrada').setAttribute('min', hoy);
+            document.getElementById('fechaSalida').setAttribute('min', hoy);
+            
+            document.getElementById('fechaEntrada').addEventListener('change', function() {
+                document.getElementById('fechaSalida').setAttribute('min', this.value);
+            });
+        }
+
         function aplicarFiltros() {
-            filtros.fechaEntrada = document.getElementById('fechaEntrada').value || null;
-            filtros.fechaSalida = document.getElementById('fechaSalida').value || null;
-            filtros.numHuespedes = parseInt(document.getElementById('numHuespedes').value) || 0;
-            filtros.precioMax = parseInt(document.getElementById('precioMax').value) || Infinity;
+            const entrada = document.getElementById('fechaEntrada').value;
+            const salida = document.getElementById('fechaSalida').value;
+            const huespedes = parseInt(document.getElementById('numHuespedes').value);
+            const precioMaximo = document.getElementById('precioMax').value;
+            
+            filtros.fechaEntrada = entrada || null;
+            filtros.fechaSalida = salida || null;
+            filtros.numHuespedes = huespedes || 0;
+            filtros.precioMax = precioMaximo ? parseInt(precioMaximo) : Infinity;
+            
             ejecutarFiltrado();
         }
 
@@ -446,7 +261,6 @@
                 });
                 elemento.classList.add('active');
                 filtros.experiencia = valor;
-                
             } else if (tipo === 'servicio') {
                 elemento.classList.toggle('active');
                 
@@ -462,34 +276,26 @@
             ejecutarFiltrado();
         }
 
-        // ⚡ FILTRADO OPTIMIZADO
         function ejecutarFiltrado() {
-            const startTime = performance.now();
-            
             const resultado = habitacionesOriginal.filter(hab => {
-                // Experiencia
                 if (filtros.experiencia !== 'todas' && hab.experiencia !== filtros.experiencia) {
                     return false;
                 }
                 
-                // Precio
                 if (hab.precio_noche > filtros.precioMax) {
                     return false;
                 }
                 
-                // Capacidad
                 if (filtros.numHuespedes > 0 && hab.capacidad < filtros.numHuespedes) {
                     return false;
                 }
                 
-                // Disponibilidad
                 if (filtros.fechaEntrada && filtros.fechaSalida) {
                     if (!estaDisponible(hab.id, filtros.fechaEntrada, filtros.fechaSalida)) {
                         return false;
                     }
                 }
                 
-                // Servicios
                 for (let servicio of filtros.servicios) {
                     if (Number(hab[servicio]) !== 1) {
                         return false;
@@ -498,11 +304,6 @@
                 
                 return true;
             });
-            
-            if (CONFIG.DEBUG) {
-                const filterTime = performance.now() - startTime;
-                console.log(`🔍 Filtrado en ${filterTime.toFixed(0)}ms: ${resultado.length}/${habitacionesOriginal.length}`);
-            }
             
             mostrarHabitaciones(resultado);
             actualizarContador(resultado.length);
@@ -550,7 +351,7 @@
             actualizarContador(habitacionesOriginal.length);
         }
 
-        // ⚡ RENDERIZADO OPTIMIZADO CON LAZY LOADING
+        // ⚡ RENDERIZADO OPTIMIZADO CON PUNTUACIONES
         function mostrarHabitaciones(habitaciones) {
             const container = document.getElementById('habitaciones-container');
             container.innerHTML = '';
@@ -565,17 +366,36 @@
                 return;
             }
             
-            // ✅ FRAGMENT para mejor rendimiento
             const fragment = document.createDocumentFragment();
             
-            habitaciones.forEach(hab => {
+            habitaciones.forEach((hab, index) => {
                 const card = document.createElement('div');
                 card.className = 'habitacion-card';
                 card.onclick = () => verDetalle(hab.id);
+                card.style.animationDelay = `${index * 0.05}s`;
                 
                 const experiencia = hab.experiencia || 'campo';
                 const icono = experiencia.toLowerCase() === 'bosque' ? '🌲' : 
                              experiencia.toLowerCase() === 'mar' ? '🌊' : '🌾';
+                
+                // 🆕 Obtener puntuación y comentario
+                const puntuacion = calcularPuntuacion(hab.id);
+                const comentarioDestacado = obtenerComentarioDestacado(hab.id);
+                const totalComentarios = (comentariosData[hab.id] || []).length;
+                
+                // Renderizar estrellas
+                let estrellasHTML = '';
+                if (puntuacion) {
+                    const estrellas = Math.round(parseFloat(puntuacion));
+                    estrellasHTML = `
+                        <div class="rating-section">
+                            <div class="stars">
+                                ${'★'.repeat(estrellas)}${'☆'.repeat(5 - estrellas)}
+                            </div>
+                            <span class="rating-text">${puntuacion} (${totalComentarios} ${totalComentarios === 1 ? 'reseña' : 'reseñas'})</span>
+                        </div>
+                    `;
+                }
                 
                 card.innerHTML = `
                     <div class="card-image-wrapper">
@@ -584,18 +404,20 @@
                              alt="${hab.nombre}">
                     </div>
                     <div class="habitacion-info">
-                        <span class="experiencia-badge ${experiencia.toLowerCase()}">${experiencia}</span>
+                        <span class="experiencia-badge ${experiencia.toLowerCase()}">${icono} ${experiencia.toUpperCase()}</span>
                         <h3>${hab.nombre}</h3>
-                        <p class="habitacion-descripcion">${hab.descripcion || 'Descubre esta experiencia única en armonía con la naturaleza.'}</p>
+                        ${estrellasHTML}
+                        <p class="habitacion-descripcion">${hab.descripcion ? (hab.descripcion.substring(0, 100) + '...') : 'Descubre esta experiencia única en armonía con la naturaleza.'}</p>
                         <div class="habitacion-detalles">
                             <div class="detalle-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="9" cy="7" r="4"></circle>
                                     <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
                                     <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                                 </svg>
                                 <strong>${hab.capacidad}</strong>
+                                <span>Personas</span>
                             </div>
                             <div class="detalle-item detalle-precio">
                                 <strong>$${hab.precio_noche.toLocaleString('es-CO')}</strong>
@@ -603,7 +425,7 @@
                             </div>
                         </div>
                         <button class="btn-reservar" onclick="event.stopPropagation(); reservar(${hab.id})">
-                            Explorar detalles
+                            Ver más detalles
                         </button>
                     </div>
                 `;
@@ -627,7 +449,7 @@
             } else if (auth && auth.esAdmin) {
                 alert('Los administradores no pueden hacer reservas');
             } else {
-                alert('Debes iniciar sesión');
+                alert('Debes iniciar sesión para ver más detalles');
                 window.location.href = '../login/Login.html';
             }
         }
