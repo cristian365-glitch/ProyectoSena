@@ -14,8 +14,20 @@
     <script src="login/mobile-menu.js"></script>
     
     <style>
-        /* ===== FUENTES DE DISPONIBILIDAD APLICADAS A TODO ===== */
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600&family=Lato:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap');
+        /* ===== FUENTES - CORMORANT GARAMOND + LATO ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Lato:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
+        }
         
         /* ===== HERO SECTION ===== */
         .hero-section {
@@ -39,18 +51,18 @@
         }
 
         .hero-section h1 {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Cormorant Garamond', serif;
             color: white;       
             font-size: clamp(3rem, 8vw, 5.5rem);
             font-weight: 400;
             margin-bottom: 25px;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .hero-subtitle {
-            font-family: 'Lato', sans-serif;
-            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
             margin-bottom: 40px;
             font-weight: 300;
             opacity: 0.95;
@@ -118,7 +130,7 @@
         }
 
         .Ambientes h2 {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(2.5rem, 5vw, 3.5rem);
             text-align: center;
             margin-bottom: 20px;
@@ -144,7 +156,7 @@
             color: #666;
             max-width: 700px;
             margin: 0 auto 35px;
-            font-family: 'Lato', sans-serif;
+            font-family: 'Cormorant Garamond', serif;
         }
 
         .experiencias-container {
@@ -209,7 +221,7 @@
         }
 
         .features-title {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(2.5rem, 5vw, 3.5rem);
             text-align: center;
             margin-bottom: 20px;
@@ -235,7 +247,7 @@
             color: #666;
             max-width: 700px;
             margin: 0 auto 50px;
-            font-family: 'Lato', sans-serif;
+            font-family: 'Cormorant Garamond', serif;
         }
 
         .features-grid {
@@ -256,21 +268,8 @@
         }
 
         .feature-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(212, 175, 55, 0.1);
-            border-radius: 50%;
-            color: #d4af37;
-        }
-
-        .feature-icon svg {
-            width: 40px;
-            height: 40px;
-            stroke: #d4af37;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
         }
 
         .feature-item h3 {
@@ -296,7 +295,7 @@
         }
 
         .habitaciones h2 {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(2.5rem, 5vw, 3.5rem);
             text-align: center;
             margin-bottom: 15px;
@@ -321,7 +320,7 @@
             font-size: 1.15rem;
             color: #666;
             margin-bottom: 40px;
-            font-family: 'Lato', sans-serif;
+            font-family: 'Cormorant Garamond', serif;
         }
 
         .filtros-habitaciones {
@@ -341,16 +340,8 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
-            font-size: clamp(0.85rem, 2vw, 1rem);
+            font-size: 1rem;
             font-family: 'Lato', sans-serif;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .filtro-btn svg {
-            width: 18px;
-            height: 18px;
         }
 
         .filtro-btn:hover,
@@ -359,11 +350,6 @@
             color: white;
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3);
-        }
-
-        .filtro-btn:hover svg,
-        .filtro-btn.active svg {
-            stroke: white;
         }
 
         .habitaciones-grid {
@@ -376,7 +362,7 @@
         .habitacion-card {
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             background: white;
             cursor: pointer;
@@ -387,23 +373,18 @@
         }
 
         .habitacion-card:hover {
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            transform: translateY(-8px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px);
         }
 
         .habitacion-card img {
             width: 100%;
             height: 220px;
             object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .habitacion-card:hover img {
-            transform: scale(1.08);
         }
 
         .habitacion-info {
-            padding: 20px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             flex: 1;
@@ -411,32 +392,22 @@
 
         .habitacion-info h3 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.4rem;
+            font-size: 1.15rem;
             color: #000000;
-            margin-bottom: 10px;
-            font-weight: 500;
+            margin-bottom: 8px;
+            font-weight: 600;
             line-height: 1.3;
         }
 
         .experiencia-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            width: fit-content;
-            padding: 6px 12px;
-            border-radius: 20px;
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
             font-size: 0.75rem;
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: white;
-            font-family: 'Lato', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .experiencia-badge svg {
-            width: 14px;
-            height: 14px;
+            width: fit-content;
         }
 
         .experiencia-badge.bosque {
@@ -455,64 +426,61 @@
             font-family: 'Lato', sans-serif;
             color: #6b6b6b;
             font-size: 0.9rem;
-            margin-bottom: 15px;
-            line-height: 1.5;
+            margin-bottom: 12px;
+            line-height: 1.4;
             flex: 1;
         }
 
         .habitacion-detalles {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 15px 0;
+            gap: 15px;
+            padding: 12px 0;
             border-top: 1px solid #e7e7e7;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
             color: #6b6b6b;
-            font-family: 'Lato', sans-serif;
         }
 
         .detalle-item {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
-        .detalle-item svg {
-            width: 18px;
-            height: 18px;
-            stroke: #666;
+        .precio-reserva-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .detalle-item strong {
-            color: #1a1a1a;
-            font-weight: 600;
+        .precio-noche {
+            font-size: 1.25rem;
+            color: #000000;
+            font-weight: 700;
         }
 
-        .detalle-item span {
-            font-size: 0.8rem;
-            color: #999;
+        .precio-noche small {
+            font-size: 0.75rem;
+            color: #6b6b6b;
+            font-weight: 400;
         }
 
         .btn-reservar {
-            padding: 12px 20px;
-            background: linear-gradient(135deg, #d4af37, #b8860b);
+            padding: 10px 16px;
+            background: #d4af37;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: 600;
             font-size: 0.9rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Lato', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
         .btn-reservar:hover {
-            background: linear-gradient(135deg, #b8860b, #9a7209);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3);
+            background: #b8860b;
         }
 
         /* ===== TESTIMONIOS ===== */
@@ -522,7 +490,7 @@
         }
 
         .testimonios-title {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(2.5rem, 5vw, 3.5rem);
             text-align: center;
             margin-bottom: 15px;
@@ -547,7 +515,7 @@
             font-size: 1.15rem;
             color: #666;
             margin-bottom: 50px;
-            font-family: 'Lato', sans-serif;
+            font-family: 'Cormorant Garamond', serif;
         }
 
         .testimonios-grid {
@@ -648,6 +616,11 @@
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
+            .habitaciones-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+
             .filtros-habitaciones {
                 gap: 10px;
             }
@@ -657,13 +630,27 @@
                 font-size: 0.8rem;
             }
 
-            .habitaciones-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
             .footer-modern {
                 padding: 30px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .habitaciones-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .habitacion-card img {
+                height: 200px;
+            }
+
+            .habitacion-info {
+                padding: 15px;
+            }
+
+            .filtro-btn {
+                padding: 8px 12px;
+                font-size: 0.7rem;
             }
         }
     </style>
@@ -759,44 +746,25 @@
         
         <div class="features-grid">
             <div class="feature-item">
-                <div class="feature-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                        <path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                    </svg>
-                </div>
+                <div class="feature-icon">🌿</div>
                 <h3>Naturaleza Pura</h3>
                 <p>Espacios cuidadosamente seleccionados en entornos naturales prístinos</p>
             </div>
 
             <div class="feature-item">
-                <div class="feature-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M12 6v6l4 2"></path>
-                    </svg>
-                </div>
+                <div class="feature-icon">✨</div>
                 <h3>Experiencias Únicas</h3>
                 <p>Cada estadía es una aventura personalizada e inolvidable</p>
             </div>
 
             <div class="feature-item">
-                <div class="feature-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                    </svg>
-                </div>
+                <div class="feature-icon">🧘</div>
                 <h3>Paz Garantizada</h3>
                 <p>Refugios de tranquilidad lejos del ruido cotidiano</p>
             </div>
 
             <div class="feature-item">
-                <div class="feature-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                </div>
+                <div class="feature-icon">🏡</div>
                 <h3>Confort Sostenible</h3>
                 <p>Lujo consciente en armonía con el medio ambiente</p>
             </div>
@@ -809,30 +777,10 @@
         <p class="hab-subtitle">Encuentra tu refugio perfecto</p>
 
         <div class="filtros-habitaciones">
-            <button class="filtro-btn active" onclick="filtrarHabitaciones('todas')">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                </svg>
-                Todas
-            </button>
-            <button class="filtro-btn" onclick="filtrarHabitaciones('bosque')">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2L4 7v10c0 2.2 1.8 4 4 4h8c2.2 0 4-1.8 4-4V7l-8-5z"></path>
-                </svg>
-                Bosque
-            </button>
-            <button class="filtro-btn" onclick="filtrarHabitaciones('mar')">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M2 20c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path>
-                </svg>
-                Mar
-            </button>
-            <button class="filtro-btn" onclick="filtrarHabitaciones('campo')">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2L2 22h20L12 2z"></path>
-                </svg>
-                Campo
-            </button>
+            <button class="filtro-btn active" onclick="filtrarHabitaciones('todas')">Todas</button>
+            <button class="filtro-btn" onclick="filtrarHabitaciones('bosque')">🌲 Bosque</button>
+            <button class="filtro-btn" onclick="filtrarHabitaciones('mar')">🌊 Mar</button>
+            <button class="filtro-btn" onclick="filtrarHabitaciones('campo')">🌾 Campo</button>
         </div>
 
         <div id="habitaciones-container" class="habitaciones-grid">
@@ -931,40 +879,23 @@
                 card.onclick = () => verDetalleHabitacion(hab.id);
                 card.style.animationDelay = `${index * 0.15}s`;
 
-                const experiencia = hab.experiencia || 'campo';
-                let iconoSvg = '';
-                
-                if (experiencia === 'bosque') {
-                    iconoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L4 7v10c0 2.2 1.8 4 4 4h8c2.2 0 4-1.8 4-4V7l-8-5z"></path></svg>';
-                } else if (experiencia === 'mar') {
-                    iconoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path></svg>';
-                } else {
-                    iconoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 22h20L12 2z"></path></svg>';
-                }
+                const icono = hab.experiencia === 'bosque' ? '🌲' : 
+                             hab.experiencia === 'mar' ? '🌊' : '🌾';
 
                 card.innerHTML = `
                     <img loading="lazy" src="${hab.imagen_principal || 'recursos/placeholder.jpg'}" alt="${hab.nombre}">
                     <div class="habitacion-info">
-                        <span class="experiencia-badge ${experiencia}">
-                            ${iconoSvg}
-                            ${experiencia.toUpperCase()}
-                        </span>
+                        <span class="experiencia-badge ${hab.experiencia}">${icono} ${hab.experiencia.toUpperCase()}</span>
                         <h3>${hab.nombre}</h3>
-                        <p class="habitacion-descripcion">${hab.descripcion ? (hab.descripcion.substring(0, 100) + '...') : 'Descubre esta experiencia única'}</p>
+                        <p class="habitacion-descripcion">${hab.descripcion ? (hab.descripcion.substring(0, 80) + '...') : 'Descubre esta experiencia única'}</p>
                         
                         <div class="habitacion-detalles">
                             <div class="detalle-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="9" cy="7" r="4"></circle>
-                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                </svg>
-                                <strong>${hab.capacidad}</strong>
+                                <strong>👥 ${hab.capacidad}</strong>
                                 <span>Personas</span>
                             </div>
                             <div class="detalle-item">
-                                <strong>$${hab.precio_noche.toLocaleString('es-CO')}</strong>
+                                <strong>${hab.precio_noche.toLocaleString('es-CO')}</strong>
                                 <span>por noche</span>
                             </div>
                         </div>
@@ -985,7 +916,7 @@
             document.querySelectorAll('.filtro-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.closest('.filtro-btn').classList.add('active');
+            event.target.classList.add('active');
 
             if (experiencia === 'todas') {
                 mostrarHabitaciones(habitacionesOriginal);

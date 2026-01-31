@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="disponibilidadCSS.css">
     <link rel="stylesheet" href="../login/auth-ui.css">
     <script src="../login/auth-session.js"></script>
-    <script src="login/mobile-menu.js"></script>
+    <script src="../login/mobile-menu.js"></script>
 
     <script>
         window.APP_CONTEXT = '/Armonia';
@@ -86,14 +86,14 @@
         <!-- Filtros rápidos -->
         <div class="barra-filtros-rapidos">
             <button class="chip active" data-tipo="experiencia" data-valor="todas" onclick="toggleChip(this, 'experiencia', 'todas')">Todas</button>
-            <button class="chip" data-tipo="experiencia" data-valor="bosque" onclick="toggleChip(this, 'experiencia', 'bosque')">Bosque</button>
-            <button class="chip" data-tipo="experiencia" data-valor="mar" onclick="toggleChip(this, 'experiencia', 'mar')">Mar</button>
-            <button class="chip" data-tipo="experiencia" data-valor="campo" onclick="toggleChip(this, 'experiencia', 'campo')">Campo</button>
+            <button class="chip" data-tipo="experiencia" data-valor="bosque" onclick="toggleChip(this, 'experiencia', 'bosque')">🌲 Bosque</button>
+            <button class="chip" data-tipo="experiencia" data-valor="mar" onclick="toggleChip(this, 'experiencia', 'mar')">🌊 Mar</button>
+            <button class="chip" data-tipo="experiencia" data-valor="campo" onclick="toggleChip(this, 'experiencia', 'campo')">🌾 Campo</button>
             
             <span class="divisor">|</span>
             
             <button class="chip" data-tipo="servicio" data-valor="wifi" onclick="toggleChip(this, 'servicio', 'wifi')">WiFi</button>
-            <button class="chip" data-tipo="servicio" data-valor="aire_acondicionado" onclick="toggleChip(this, 'servicio', 'aire_acondicionado')">Aire acondicionado</button>
+            <button class="chip" data-tipo="servicio" data-valor="aire_acondicionado" onclick="toggleChip(this, 'servicio', 'aire_acondicionado')">Aire</button>
             <button class="chip" data-tipo="servicio" data-valor="tv" onclick="toggleChip(this, 'servicio', 'tv')">TV</button>
             <button class="chip" data-tipo="servicio" data-valor="minibar" onclick="toggleChip(this, 'servicio', 'minibar')">Minibar</button>
             <button class="chip" data-tipo="servicio" data-valor="balcon" onclick="toggleChip(this, 'servicio', 'balcon')">Balcón</button>
@@ -128,7 +128,6 @@
 
     <!-- JavaScript optimizado -->
     <script>
-        // ⚡ CONFIGURACIÓN
         const CONFIG = {
             DEBUG: false,
             LAZY_LOAD: true
@@ -136,7 +135,7 @@
         
         let habitacionesOriginal = [];
         let reservasExistentes = [];
-        let comentariosData = {}; // Almacenará comentarios por habitación
+        let comentariosData = {};
         
         let filtros = {
             experiencia: 'todas',
@@ -147,7 +146,6 @@
             precioMax: Infinity
         };
 
-        // ⚡ CARGA INICIAL
         document.addEventListener('DOMContentLoaded', async function() {
             configurarFechas();
             
@@ -166,7 +164,6 @@
             }
         });
 
-        // ⚡ CARGAR DATOS
         async function cargarHabitaciones() {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -191,13 +188,11 @@
             }
         }
 
-        // 🆕 SISTEMA DE COMENTARIOS REALES
         async function cargarComentarios() {
             try {
                 const response = await fetch('ObtenerComentariosServlet');
                 const comentarios = await response.json();
                 
-                // Organizar comentarios por habitación
                 comentariosData = {};
                 comentarios.forEach(c => {
                     if (!comentariosData[c.habitacion_id]) {
@@ -211,23 +206,12 @@
             }
         }
 
-        // 🆕 CALCULAR PUNTUACIÓN PROMEDIO
         function calcularPuntuacion(habitacionId) {
             const comentarios = comentariosData[habitacionId] || [];
             if (comentarios.length === 0) return null;
             
             const suma = comentarios.reduce((acc, c) => acc + c.puntuacion, 0);
             return (suma / comentarios.length).toFixed(1);
-        }
-
-        // 🆕 OBTENER COMENTARIOS DESTACADOS
-        function obtenerComentarioDestacado(habitacionId) {
-            const comentarios = comentariosData[habitacionId] || [];
-            if (comentarios.length === 0) return null;
-            
-            // Ordenar por puntuación y tomar el mejor
-            const mejores = comentarios.sort((a, b) => b.puntuacion - a.puntuacion);
-            return mejores[0];
         }
 
         function configurarFechas() {
@@ -351,7 +335,6 @@
             actualizarContador(habitacionesOriginal.length);
         }
 
-        // ⚡ RENDERIZADO OPTIMIZADO CON PUNTUACIONES
         function mostrarHabitaciones(habitaciones) {
             const container = document.getElementById('habitaciones-container');
             container.innerHTML = '';
@@ -378,12 +361,9 @@
                 const icono = experiencia.toLowerCase() === 'bosque' ? '🌲' : 
                              experiencia.toLowerCase() === 'mar' ? '🌊' : '🌾';
                 
-                // 🆕 Obtener puntuación y comentario
                 const puntuacion = calcularPuntuacion(hab.id);
-                const comentarioDestacado = obtenerComentarioDestacado(hab.id);
                 const totalComentarios = (comentariosData[hab.id] || []).length;
                 
-                // Renderizar estrellas
                 let estrellasHTML = '';
                 if (puntuacion) {
                     const estrellas = Math.round(parseFloat(puntuacion));
@@ -398,32 +378,26 @@
                 }
                 
                 card.innerHTML = `
-                    <div class="card-image-wrapper">
-                        <img ${CONFIG.LAZY_LOAD ? 'loading="lazy"' : ''} 
-                             src="${hab.imagen_principal || 'recursos/placeholder.jpg'}" 
-                             alt="${hab.nombre}">
-                    </div>
+                    <img ${CONFIG.LAZY_LOAD ? 'loading="lazy"' : ''} 
+                         src="${hab.imagen_principal || 'recursos/placeholder.jpg'}" 
+                         alt="${hab.nombre}">
                     <div class="habitacion-info">
                         <span class="experiencia-badge ${experiencia.toLowerCase()}">${icono} ${experiencia.toUpperCase()}</span>
                         <h3>${hab.nombre}</h3>
                         ${estrellasHTML}
-                        <p class="habitacion-descripcion">${hab.descripcion ? (hab.descripcion.substring(0, 100) + '...') : 'Descubre esta experiencia única en armonía con la naturaleza.'}</p>
+                        <p class="habitacion-descripcion">${hab.descripcion ? (hab.descripcion.substring(0, 80) + '...') : 'Descubre esta experiencia única'}</p>
+                        
                         <div class="habitacion-detalles">
                             <div class="detalle-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="9" cy="7" r="4"></circle>
-                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                </svg>
-                                <strong>${hab.capacidad}</strong>
+                                <strong>👥 ${hab.capacidad}</strong>
                                 <span>Personas</span>
                             </div>
-                            <div class="detalle-item detalle-precio">
+                            <div class="detalle-item">
                                 <strong>$${hab.precio_noche.toLocaleString('es-CO')}</strong>
-                                <span>/ noche</span>
+                                <span>por noche</span>
                             </div>
                         </div>
+                        
                         <button class="btn-reservar" onclick="event.stopPropagation(); reservar(${hab.id})">
                             Ver más detalles
                         </button>
@@ -469,6 +443,48 @@
                     </button>
                 </div>
             `;
+        }
+
+        // ===== MENÚ MÓVIL (IGUAL QUE INDEX) =====
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const authMobile = document.getElementById('auth-mobile');
+        
+        if (menuToggle && mobileMenu) {
+            menuToggle.addEventListener('click', function() {
+                menuToggle.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                document.body.classList.toggle('menu-open');
+                
+                const authContainer = document.getElementById('auth-container');
+                if (authContainer && authMobile) {
+                    authMobile.innerHTML = authContainer.innerHTML;
+                }
+            });
+
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', function() {
+                    menuToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    document.body.classList.remove('menu-open');
+                });
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!mobileMenu.contains(event.target) && !menuToggle.contains(event.target) && mobileMenu.classList.contains('active')) {
+                    menuToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    document.body.classList.remove('menu-open');
+                }
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    menuToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    document.body.classList.remove('menu-open');
+                }
+            });
         }
     </script>
 </body>
