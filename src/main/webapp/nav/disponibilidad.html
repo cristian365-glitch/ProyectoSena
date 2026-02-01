@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Alojamientos</title>
+    <title>Alojamientos - Armonía</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" sizes="16x16" href="../recursos/imagen icon/favicon-16x16.png">
     <link rel="stylesheet" href="../indexCSS.css">
     <link rel="stylesheet" href="disponibilidadCSS.css">
-    <link rel="stylesheet" href="../login/auth-ui.css">
     <link rel="stylesheet" href="../login/auth-ui.css">
     <script src="../login/auth-session.js"></script>
     <script src="../login/mobile-menu.js"></script>
@@ -48,14 +47,16 @@
             <li><a href="../nav/experiencias.html">Experiencias</a></li>
             <li><a href="../nav/servicios.html">Servicios</a></li>
         </ul>
+        <div id="auth-mobile"></div>
     </div>
     
     <br><br><br><br>
     
     <section id="habitaciones" class="habitaciones">
-        <h2>Nuestros Alojamientos</h2>
-        <p class="hab-subtitle">Descubre la paz</p>
+        <h2>Todos nuestros Alojamientos</h2>
+        <p class="hab-subtitle">Descubre tu refugio perfecto</p>
 
+        <!-- Barra de búsqueda -->
         <div class="barra-busqueda">
             <div class="input-group">
                 <label>Entrada</label>
@@ -87,11 +88,12 @@
             <button class="btn-buscar" onclick="aplicarFiltros()">Buscar</button>
         </div>
 
+        <!-- Filtros rápidos -->
         <div class="barra-filtros-rapidos">
             <button class="chip active" data-tipo="experiencia" data-valor="todas" onclick="toggleChip(this, 'experiencia', 'todas')">Todas</button>
-            <button class="chip" data-tipo="experiencia" data-valor="bosque" onclick="toggleChip(this, 'experiencia', 'bosque')">Bosque</button>
-            <button class="chip" data-tipo="experiencia" data-valor="mar" onclick="toggleChip(this, 'experiencia', 'mar')">Mar</button>
-            <button class="chip" data-tipo="experiencia" data-valor="campo" onclick="toggleChip(this, 'experiencia', 'campo')">Campo</button>
+            <button class="chip" data-tipo="experiencia" data-valor="bosque" onclick="toggleChip(this, 'experiencia', 'bosque')">🌲 Bosque</button>
+            <button class="chip" data-tipo="experiencia" data-valor="mar" onclick="toggleChip(this, 'experiencia', 'mar')">🌊 Mar</button>
+            <button class="chip" data-tipo="experiencia" data-valor="campo" onclick="toggleChip(this, 'experiencia', 'campo')">🌾 Campo</button>
             
             <span class="divisor">|</span>
             
@@ -106,6 +108,7 @@
             <button class="chip chip-reset" onclick="limpiarTodo()">Limpiar</button>
         </div>
 
+        <!-- Contador de resultados -->
         <div class="contador-resultados">
             <span id="contador">Cargando...</span>
         </div>
@@ -116,11 +119,16 @@
             <p>Cargando habitaciones...</p>
         </div>
 
-        <div class="habitaciones-grid" id="habitaciones-container style="display: none;"></div>
+        <!-- Grid de habitaciones -->
+        <div id="habitaciones-container" class="habitaciones-grid" style="display: none;"></div>
     </section>
 
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Armonía. Todos los derechos reservados.</p>
+    </footer>
+
     <style>
-        
         * {
             box-sizing: border-box;
             margin: 0;
@@ -212,12 +220,6 @@
             outline: none;
         }
 
-        .separador-vertical {
-            width: 1px;
-            background: #e0e0e0;
-            margin: 8px 0;
-        }
-
         .btn-buscar {
             background: linear-gradient(135deg, #d4af37, #b8860b);
             color: white;
@@ -265,6 +267,17 @@
             border-color: #d4af37;
         }
 
+        .chip-reset {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+
+        .chip-reset:hover {
+            background: #d32f2f;
+            border-color: #d32f2f;
+        }
+
         .divisor {
             color: #ddd;
             font-size: 1.5rem;
@@ -292,6 +305,8 @@
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
             transition: all 0.3s ease;
             cursor: pointer;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease forwards;
         }
 
         .habitacion-card:hover {
@@ -303,7 +318,6 @@
             width: 100%;
             height: 220px;
             object-fit: cover;
-            /* ✅ LAZY LOADING OPTIMIZADO */
             background: #f0f0f0;
         }
 
@@ -375,6 +389,32 @@
             transform: scale(1.02);
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .barra-busqueda {
+                flex-direction: column;
+                border-radius: 20px;
+            }
+
+            .input-group {
+                min-width: 100%;
+            }
+
+            .habitaciones-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 
     <script>
@@ -392,9 +432,7 @@
 
         // 🚀 CONFIGURACIÓN DE RENDIMIENTO
         const CONFIG = {
-            DEBUG: false, // ⚡ DESACTIVAR LOGS EN PRODUCCIÓN
-            LAZY_LOAD: true, // ✅ Activar lazy loading de imágenes
-            BATCH_SIZE: 12 // Mostrar habitaciones en lotes
+            DEBUG: false
         };
 
         // ⚡ INICIO OPTIMIZADO
@@ -417,11 +455,13 @@
             }
         });
 
+        // ✅ CARGAR TODAS LAS HABITACIONES - SIN LIMITACIÓN
         async function cargarHabitaciones() {
             try {
                 const response = await fetch('../ObtenerHabitacionesServlet');
                 const data = await response.json();
                 
+                // Cargar TODAS las habitaciones sin filtro
                 habitacionesOriginal = Array.isArray(data) ? data : [];
                 
                 document.getElementById('loader').style.display = 'none';
@@ -570,59 +610,61 @@
             actualizarContador(habitacionesOriginal.length);
         }
 
-        // ⚡ RENDERIZADO OPTIMIZADO CON LAZY LOADING
-function mostrarHabitaciones(habitaciones) {
-    const container = document.getElementById('habitaciones-container');
-    container.innerHTML = '';
+        // ⚡ RENDERIZADO OPTIMIZADO
+        function mostrarHabitaciones(habitaciones) {
+            const container = document.getElementById('habitaciones-container');
+            container.innerHTML = '';
 
-    habitaciones.forEach((hab, index) => {
-        const card = document.createElement('div');
-        card.className = 'habitacion-card';
-        card.style.animationDelay = `${index * 0.1}s`;
+            if (habitaciones.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #666; padding: 40px;">No hay habitaciones que coincidan con los filtros seleccionados</p>';
+                return;
+            }
 
-        const icono =
-            hab.experiencia === 'mar' ? '🌊' :
-            hab.experiencia === 'campo' ? '🌾' :
-            '🌲';
+            habitaciones.forEach((hab, index) => {
+                const card = document.createElement('div');
+                card.className = 'habitacion-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.onclick = () => verDetalle(hab.id);
 
-        card.innerHTML = `
-            <img src="${hab.imagen_principal}" alt="${hab.nombre}">
+                const icono =
+                    hab.experiencia === 'mar' ? '🌊' :
+                    hab.experiencia === 'campo' ? '🌾' :
+                    '🌲';
 
-            <div class="habitacion-info">
-                <span class="experiencia-badge ${hab.experiencia}">
-                    ${icono} ${hab.experiencia.toUpperCase()}
-                </span>
+                card.innerHTML = `
+                    <img loading="lazy" src="${hab.imagen_principal}" alt="${hab.nombre}">
 
-                <h3>${hab.nombre}</h3>
+                    <div class="habitacion-info">
+                        <span class="experiencia-badge ${hab.experiencia}">
+                            ${icono} ${hab.experiencia.toUpperCase()}
+                        </span>
 
-                <p class="habitacion-descripcion">
-                    ${hab.descripcion}
-                </p>
+                        <h3>${hab.nombre}</h3>
 
-                <div class="habitacion-detalles">
-                    <div class="detalle-item">
-                        <strong>👥 ${hab.capacidad}</strong>
-                        <span>Personas</span>
+                        <p class="habitacion-descripcion">
+                            ${hab.descripcion ? (hab.descripcion.substring(0, 100) + '...') : 'Descubre esta experiencia única'}
+                        </p>
+
+                        <div class="habitacion-detalles">
+                            <div class="detalle-item">
+                                <strong>👥 ${hab.capacidad}</strong>
+                                <span>Personas</span>
+                            </div>
+                            <div class="detalle-item">
+                                <strong>$${Number(hab.precio_noche).toLocaleString('es-CO')}</strong>
+                                <span>por noche</span>
+                            </div>
+                        </div>
+
+                        <button class="btn-reservar" onclick="event.stopPropagation(); reservar(${hab.id})">
+                            Ver más detalles
+                        </button>
                     </div>
-                    <div class="detalle-item">
-                        <strong>${Number(hab.precio_noche).toLocaleString('es-CO')}</strong>
-                        <span>por noche</span>
-                    </div>
-                </div>
+                `;
 
-                <button class="btn-reservar">
-                    Ver más detalles
-                </button>
-            </div>
-        `;
-
-        container.appendChild(card);
-    });
-}
-
-
-
-
+                container.appendChild(card);
+            });
+        }
 
         function actualizarContador(cantidad) {
             const texto = cantidad === 0 ? 'No hay resultados' :
@@ -637,7 +679,7 @@ function mostrarHabitaciones(habitaciones) {
             } else if (auth && auth.esAdmin) {
                 alert('Los administradores no pueden hacer reservas');
             } else {
-                alert('Debes iniciar sesión');
+                alert('Debes iniciar sesión para ver más detalles');
                 window.location.href = '../login/Login.html';
             }
         }
@@ -659,21 +701,23 @@ function mostrarHabitaciones(habitaciones) {
             `;
         }
 
-        // ========================================
-        // MENÚ MÓVIL - HAMBURGUESA (COMO EN INDEX)
-        // ========================================
+        // MENÚ MÓVIL
         const menuToggle = document.getElementById('menuToggle');
         const mobileMenu = document.getElementById('mobileMenu');
+        const authMobile = document.getElementById('auth-mobile');
         
         if (menuToggle && mobileMenu) {
-            // Toggle menú
             menuToggle.addEventListener('click', function() {
                 menuToggle.classList.toggle('active');
                 mobileMenu.classList.toggle('active');
                 document.body.classList.toggle('menu-open');
+                
+                const authContainer = document.getElementById('auth-container');
+                if (authContainer && authMobile) {
+                    authMobile.innerHTML = authContainer.innerHTML;
+                }
             });
 
-            // Cerrar menú al hacer clic en enlaces
             mobileMenu.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', function() {
                     menuToggle.classList.remove('active');
@@ -682,7 +726,6 @@ function mostrarHabitaciones(habitaciones) {
                 });
             });
 
-            // Cerrar menú al hacer clic fuera
             document.addEventListener('click', function(event) {
                 if (!mobileMenu.contains(event.target) && 
                     !menuToggle.contains(event.target) && 
@@ -693,7 +736,6 @@ function mostrarHabitaciones(habitaciones) {
                 }
             });
 
-            // Cerrar menú en pantallas grandes
             window.addEventListener('resize', function() {
                 if (window.innerWidth > 768) {
                     menuToggle.classList.remove('active');
