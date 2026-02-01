@@ -320,27 +320,27 @@ h2 {
 }
 
 /* ========================================
-   TÍTULO (EXACTO DEL INDEX)
+   TÍTULO (MÁS PEQUEÑO - 1REM = ~16PX)
 ======================================== */
 .habitacion-info h3 {
-    font-size: 1.15rem;
+    font-size: 1rem;
     color: #000000;
     margin-bottom: 8px;
     font-weight: 600;
-    line-height: 1.3;
+    line-height: 1.2;
     text-align: center;
 }
 
 /* ========================================
-   DESCRIPCIÓN (EXACTO DEL INDEX - 2 LÍNEAS FIJAS)
+   DESCRIPCIÓN (MÁS PEQUEÑA - 2 LÍNEAS FIJAS)
 ======================================== */
 .habitacion-descripcion {
     color: #6b6b6b;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     margin-bottom: 12px;
     line-height: 1.4;
     text-align: center;
-    min-height: 2.5em;
+    height: 2.4em;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -348,7 +348,7 @@ h2 {
 }
 
 /* ========================================
-   DETALLES (EXACTO DEL INDEX - UNA LÍNEA)
+   DETALLES (EXACTO DEL INDEX - TODO EN UNA LÍNEA)
 ======================================== */
 .habitacion-detalles {
     display: flex;
@@ -359,21 +359,26 @@ h2 {
     margin-bottom: 12px;
     font-size: 0.85rem;
     color: #6b6b6b;
+    flex-wrap: nowrap;
 }
 
 .detalle-item {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 5px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
 }
 
 .detalle-item strong {
     color: #000000;
     font-weight: 600;
+    display: inline;
 }
 
 .detalle-item span {
     color: #6b6b6b;
+    display: inline;
 }
 
 /* ========================================
