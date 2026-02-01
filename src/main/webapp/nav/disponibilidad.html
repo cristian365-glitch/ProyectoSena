@@ -571,66 +571,80 @@
         }
 
         // ⚡ RENDERIZADO OPTIMIZADO CON LAZY LOADING
-        function mostrarHabitaciones(habitaciones) {
-            const container = document.getElementById('habitaciones-container');
-            container.innerHTML = '';
-            
-            if (habitaciones.length === 0) {
-                container.innerHTML = `
-                    <p style="grid-column: 1/-1; text-align: center; color: #999; padding: 60px 20px;">
-                        No se encontraron habitaciones 😔<br>
-                        <small>Intenta ajustar los filtros</small>
-                    </p>
-                `;
-                return;
-            }
-            
-            // ✅ FRAGMENT para mejor rendimiento
-            const fragment = document.createDocumentFragment();
-            
-            habitaciones.forEach(hab => {
-                const card = document.createElement('div');
-                card.className = 'habitacion-card';
-                card.onclick = () => verDetalle(hab.id);
-                
-                const experiencia = hab.experiencia || 'campo';
-                const icono = experiencia.toLowerCase() === 'bosque' ? '🌲' : 
-                             experiencia.toLowerCase() === 'mar' ? '🌊' : '🌾';
-                
-                // Descripción limitada a 80 caracteres como en el index
-                const descripcion = hab.descripcion ? 
-                    (hab.descripcion.length > 80 ? hab.descripcion.substring(0, 80) + '...' : hab.descripcion) : 
-                    'Descubre esta experiencia única...';
-                
-                card.innerHTML = `
-                    <img ${CONFIG.LAZY_LOAD ? 'loading="lazy"' : ''} 
-                         src="${hab.imagen_principal || 'recursos/placeholder.jpg'}" 
-                         alt="${hab.nombre}">
-                    <div class="habitacion-info">
-                        <span class="experiencia-badge ${experiencia.toLowerCase()}">${icono} ${experiencia.toUpperCase()}</span>
-                        <h3>${hab.nombre}</h3>
-                        <p class="habitacion-descripcion">${descripcion}</p>
-                        <div class="habitacion-detalles">
-                            <div class="detalle-item">
-                                <strong>👥 ${hab.capacidad}</strong>
-                                <span>Personas</span>
-                            </div>
-                            <div class="detalle-item">
-                                <strong>${hab.precio_noche.toLocaleString('es-CO')}</strong>
-                                <span>por noche</span>
-                            </div>
-                        </div>
-                        <button class="btn-reservar" onclick="event.stopPropagation(); reservar(${hab.id})">
-                            Ver más detalles
-                        </button>
+function mostrarHabitaciones(habitaciones) {
+    const container = document.getElementById('habitaciones-container');
+    container.innerHTML = '';
+
+    if (!habitaciones || habitaciones.length === 0) {
+        container.innerHTML = `
+            <p style="grid-column: 1 / -1; text-align:center; color:#666;">
+                No hay habitaciones disponibles
+            </p>`;
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    habitaciones.forEach((hab, index) => {
+        const card = document.createElement('div');
+        card.className = 'habitacion-card';
+        card.style.animationDelay = `${index * 0.15}s`;
+
+        card.addEventListener('click', () => {
+            window.location.href = `../login/detalle-habitacion.html?id=${hab.id}`;
+        });
+
+        const icono =
+            hab.experiencia === 'bosque' ? '🌲' :
+            hab.experiencia === 'mar'    ? '🌊' :
+                                           '🌾';
+
+        card.innerHTML = `
+            <img 
+                loading="lazy"
+                src="${hab.imagen_principal || '../recursos/placeholder.jpg'}"
+                alt="${hab.nombre}"
+            >
+
+            <div class="habitacion-info">
+                <span class="experiencia-badge ${hab.experiencia}">
+                    ${icono} ${hab.experiencia.toUpperCase()}
+                </span>
+
+                <h3>${hab.nombre}</h3>
+
+                <p class="habitacion-descripcion">
+                    ${hab.descripcion
+                        ? hab.descripcion.substring(0, 90) + '...'
+                        : 'Descubre esta experiencia única'}
+                </p>
+
+                <div class="habitacion-detalles">
+                    <div class="detalle-item">
+                        <strong>👥 ${hab.capacidad}</strong>
+                        <span>Personas</span>
                     </div>
-                `;
-                
-                fragment.appendChild(card);
-            });
-            
-            container.appendChild(fragment);
-        }
+                    <div class="detalle-item">
+                        <strong>
+                            ${Number(hab.precio_noche).toLocaleString('es-CO')}
+                        </strong>
+                        <span>por noche</span>
+                    </div>
+                </div>
+
+                <button class="btn-reservar"
+                    onclick="event.stopPropagation(); reservarHabitacion(${hab.id})">
+                    Ver más detalles
+                </button>
+            </div>
+        `;
+
+        fragment.appendChild(card);
+    });
+
+    container.appendChild(fragment);
+}
+
 
         function actualizarContador(cantidad) {
             const texto = cantidad === 0 ? 'No hay resultados' :
