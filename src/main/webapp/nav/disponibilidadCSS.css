@@ -1,6 +1,6 @@
 /* ========================================
-   DISEÃ‘O ELEGANTE Y FUNCIONAL
-   Cards Optimizadas - Carga RÃ¡pida
+   DISEÑO ELEGANTE Y FUNCIONAL
+   Cards Optimizadas - Diseño Original
 ======================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Lato:wght@300;400;500&display=swap');
@@ -98,7 +98,7 @@ h2 {
 }
 
 /* ========================================
-   BÃšSQUEDA COMPACTA
+   BÚSQUEDA COMPACTA
 ======================================== */
 .barra-busqueda {
     display: flex;
@@ -224,7 +224,7 @@ h2 {
 }
 
 /* ========================================
-   GRID OPTIMIZADO - CARDS COMPACTAS
+   GRID OPTIMIZADO - COMO EN EL INDEX
 ======================================== */
 .habitaciones-grid {
     display: grid;
@@ -234,23 +234,23 @@ h2 {
 }
 
 /* ========================================
-   CARDS ELEGANTES Y COMPACTAS
+   CARDS - DISEÑO ORIGINAL DEL INDEX
 ======================================== */
 .habitacion-card {
-    background: var(--white);
-    border: none;
     border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    background: white;
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    transition: all 0.3s ease;
+    /* Animación */
     opacity: 0;
     animation: fadeInUp 0.6s ease forwards;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
 }
 
-/* AnimaciÃ³n escalonada */
+/* Animación escalonada */
 .habitacion-card:nth-child(1) { animation-delay: 0.05s; }
 .habitacion-card:nth-child(2) { animation-delay: 0.1s; }
 .habitacion-card:nth-child(3) { animation-delay: 0.15s; }
@@ -275,39 +275,26 @@ h2 {
 }
 
 /* ========================================
-   IMAGEN COMPACTA - 220PX
+   IMAGEN - 220PX
 ======================================== */
-.card-image-wrapper {
-    position: relative;
-    height: 220px;
-    overflow: hidden;
-    background: #f5f5f5;
-}
-
 .habitacion-card img {
     width: 100%;
-    height: 100%;
+    height: 220px;
     object-fit: cover;
-    transition: transform 0.4s ease;
-}
-
-.habitacion-card:hover img {
-    transform: scale(1.05);
 }
 
 /* ========================================
-   CONTENIDO COMPACTO
+   CONTENIDO DE LA CARD
 ======================================== */
 .habitacion-info {
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
     flex: 1;
 }
 
 /* ========================================
-   BADGE MINIMALISTA
+   BADGE DE EXPERIENCIA - CON EMOJI
 ======================================== */
 .experiencia-badge {
     display: inline-block;
@@ -332,52 +319,32 @@ h2 {
     background: #558b2f;
 }
 
-/* Iconos inline SVG */
-.experiencia-badge::before {
-    content: '';
-    width: 14px;
-    height: 14px;
-    display: inline-block;
-}
-
-.experiencia-badge.bosque::before {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232d5016' stroke-width='2'%3E%3Cpath d='M12 2L4 7v10c0 2.2 1.8 4 4 4h8c2.2 0 4-1.8 4-4V7l-8-5z'/%3E%3C/svg%3E") no-repeat center / contain;
-}
-
-.experiencia-badge.mar::before {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a4d7a' stroke-width='2'%3E%3Cpath d='M2 20c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1'/%3E%3C/svg%3E") no-repeat center / contain;
-}
-
-.experiencia-badge.campo::before {
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b6914' stroke-width='2'%3E%3Cpath d='M12 2L2 22h20L12 2z'/%3E%3C/svg%3E") no-repeat center / contain;
+/* ========================================
+   TÍTULO - MÁS GRANDE Y EN NEGRITA
+======================================== */
+.habitacion-info h3 {
+    font-size: 1.4rem;
+    color: #000000;
+    margin-bottom: 8px;
+    font-weight: 700;
+    line-height: 1.3;
 }
 
 /* ========================================
-   TÃTULO Y DESCRIPCIÃ“N COMPACTOS
+   DESCRIPCIÓN - CENTRADA
 ======================================== */
-.habitacion-card h3 {
-    font-family: var(--font-display);
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: #000000;
-    line-height: 1.3;
-    margin: 0 0 8px 0;
-}
-
 .habitacion-descripcion {
     color: #6b6b6b;
     font-size: 0.9rem;
     margin-bottom: 12px;
     line-height: 1.4;
     flex: 1;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    text-align: center;
 }
 
 /* ========================================
-   DETALLES EN UNA LÃNEA
+   DETALLES EN UNA SOLA LÍNEA
+   Personas | Precio (todo en una línea)
 ======================================== */
 .habitacion-detalles {
     display: flex;
@@ -396,31 +363,36 @@ h2 {
     gap: 5px;
 }
 
-.detalle-item svg {
-    width: 16px;
-    height: 16px;
-    stroke: #6b6b6b;
-    flex-shrink: 0;
-}
-
 .detalle-item strong {
-    font-size: 0.85rem;
+    color: #000000;
     font-weight: 600;
-    color: #6b6b6b;
 }
 
 .detalle-item span {
-    font-size: 0.75rem;
-    font-weight: 400;
-    color: #6b6b6b;
+    font-size: 0.8rem;
+}
+
+/* ========================================
+   BOTÓN - VER MÁS DETALLES
+======================================== */
+.btn-reservar {
+    padding: 10px 16px;
+    background: #d4af37;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    width: 100%;
 }
 
-.detalle-precio {
-    text-align: right;
+.btn-reservar:hover {
+    background: #b8860b;
 }
-
 
 /* ========================================
    RESPONSIVE - TABLETS
@@ -428,16 +400,16 @@ h2 {
 @media (max-width: 1024px) {
     .habitaciones-grid {
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 18px;
+        gap: 25px;
     }
     
-    .card-image-wrapper {
-        height: 180px;
+    .habitacion-card img {
+        height: 200px;
     }
 }
 
 /* ========================================
-   RESPONSIVE - MÃ“VIL
+   RESPONSIVE - MÓVIL
 ======================================== */
 @media (max-width: 768px) {
     body {
@@ -456,7 +428,7 @@ h2 {
         font-size: 0.85rem;
     }
 
-    /* BÃºsqueda vertical */
+    /* Búsqueda vertical */
     .barra-busqueda {
         flex-direction: column;
     }
@@ -490,13 +462,13 @@ h2 {
         display: none;
     }
 
-    /* Grid mÃ³vil */
+    /* Grid móvil */
     .habitaciones-grid {
         grid-template-columns: 1fr;
-        gap: 16px;
+        gap: 20px;
     }
 
-    .card-image-wrapper {
+    .habitacion-card img {
         height: 200px;
     }
 
@@ -504,17 +476,17 @@ h2 {
         padding: 14px;
     }
 
-    .habitacion-card h3 {
+    .habitacion-info h3 {
         font-size: 1.25rem;
     }
 
     .habitacion-descripcion {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
     }
 }
 
 /* ========================================
-   RESPONSIVE - MÃ“VIL PEQUEÃ‘O
+   RESPONSIVE - MÓVIL PEQUEÑO
 ======================================== */
 @media (max-width: 480px) {
     body {
@@ -529,11 +501,11 @@ h2 {
         font-size: 1.5rem;
     }
 
-    .card-image-wrapper {
+    .habitacion-card img {
         height: 180px;
     }
 
-    .habitacion-card h3 {
+    .habitacion-info h3 {
         font-size: 1.15rem;
     }
 }
@@ -682,44 +654,4 @@ body.menu-open::before {
     header ul li.registro {
         display: none;
     }
-}
-/* ========================================
-   PRECIO Y BOTÓN EN LA MISMA LÍNEA
-======================================== */
-.precio-reserva-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.precio-noche {
-    font-size: 1.25rem;
-    color: #000000;
-    font-weight: 700;
-}
-
-.precio-noche small {
-    font-size: 0.75rem;
-    color: #6b6b6b;
-    font-weight: 400;
-}
-
-/* ========================================
-   BOTÓN COMPACTO
-======================================== */
-.btn-reservar {
-    padding: 10px 16px;
-    background: #d4af37;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-}
-
-.btn-reservar:hover {
-    background: #b8860b;
 }
