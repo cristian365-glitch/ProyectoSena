@@ -116,7 +116,7 @@
             <p>Cargando habitaciones...</p>
         </div>
 
-        <div id="habitaciones-container" class="habitaciones-grid" style="display: none;"></div>
+        <div class="habitaciones-grid" id="habitaciones-container style="display: none;"></div>
     </section>
 
     <style>
@@ -575,35 +575,18 @@ function mostrarHabitaciones(habitaciones) {
     const container = document.getElementById('habitaciones-container');
     container.innerHTML = '';
 
-    if (!habitaciones || habitaciones.length === 0) {
-        container.innerHTML = `
-            <p style="grid-column:1/-1; text-align:center; color:#666;">
-                No hay habitaciones disponibles
-            </p>`;
-        return;
-    }
-
-    const fragment = document.createDocumentFragment();
-
     habitaciones.forEach((hab, index) => {
         const card = document.createElement('div');
         card.className = 'habitacion-card';
         card.style.animationDelay = `${index * 0.1}s`;
 
-        card.onclick = () => {
-            window.location.href = `login/detalle-habitacion.html?id=${hab.id}`;
-        };
-
         const icono =
-            hab.experiencia === 'bosque' ? '🌲' :
-            hab.experiencia === 'mar'    ? '🌊' : '🌾';
+            hab.experiencia === 'mar' ? '🌊' :
+            hab.experiencia === 'campo' ? '🌾' :
+            '🌲';
 
         card.innerHTML = `
-            <img 
-                loading="lazy"
-                src="${hab.imagen_principal || 'recursos/placeholder.jpg'}"
-                alt="${hab.nombre}"
-            >
+            <img src="${hab.imagen_principal}" alt="${hab.nombre}">
 
             <div class="habitacion-info">
                 <span class="experiencia-badge ${hab.experiencia}">
@@ -613,9 +596,7 @@ function mostrarHabitaciones(habitaciones) {
                 <h3>${hab.nombre}</h3>
 
                 <p class="habitacion-descripcion">
-                    ${hab.descripcion
-                        ? hab.descripcion.substring(0, 90) + '...'
-                        : 'Descubre esta experiencia única'}
+                    ${hab.descripcion}
                 </p>
 
                 <div class="habitacion-detalles">
@@ -629,18 +610,16 @@ function mostrarHabitaciones(habitaciones) {
                     </div>
                 </div>
 
-                <button class="btn-reservar"
-                    onclick="event.stopPropagation(); reservarHabitacion(${hab.id}, '${hab.nombre}')">
+                <button class="btn-reservar">
                     Ver más detalles
                 </button>
             </div>
         `;
 
-        fragment.appendChild(card);
+        container.appendChild(card);
     });
-
-    container.appendChild(fragment);
 }
+
 
 
 
