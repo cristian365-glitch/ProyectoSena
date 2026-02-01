@@ -577,7 +577,7 @@ function mostrarHabitaciones(habitaciones) {
 
     if (!habitaciones || habitaciones.length === 0) {
         container.innerHTML = `
-            <p style="grid-column: 1 / -1; text-align:center; color:#666;">
+            <p style="grid-column:1/-1; text-align:center; color:#666;">
                 No hay habitaciones disponibles
             </p>`;
         return;
@@ -588,21 +588,20 @@ function mostrarHabitaciones(habitaciones) {
     habitaciones.forEach((hab, index) => {
         const card = document.createElement('div');
         card.className = 'habitacion-card';
-        card.style.animationDelay = `${index * 0.15}s`;
+        card.style.animationDelay = `${index * 0.1}s`;
 
-        card.addEventListener('click', () => {
-            window.location.href = `../login/detalle-habitacion.html?id=${hab.id}`;
-        });
+        card.onclick = () => {
+            window.location.href = `login/detalle-habitacion.html?id=${hab.id}`;
+        };
 
         const icono =
             hab.experiencia === 'bosque' ? '🌲' :
-            hab.experiencia === 'mar'    ? '🌊' :
-                                           '🌾';
+            hab.experiencia === 'mar'    ? '🌊' : '🌾';
 
         card.innerHTML = `
             <img 
                 loading="lazy"
-                src="${hab.imagen_principal || '../recursos/placeholder.jpg'}"
+                src="${hab.imagen_principal || 'recursos/placeholder.jpg'}"
                 alt="${hab.nombre}"
             >
 
@@ -625,15 +624,13 @@ function mostrarHabitaciones(habitaciones) {
                         <span>Personas</span>
                     </div>
                     <div class="detalle-item">
-                        <strong>
-                            ${Number(hab.precio_noche).toLocaleString('es-CO')}
-                        </strong>
+                        <strong>${Number(hab.precio_noche).toLocaleString('es-CO')}</strong>
                         <span>por noche</span>
                     </div>
                 </div>
 
                 <button class="btn-reservar"
-                    onclick="event.stopPropagation(); reservarHabitacion(${hab.id})">
+                    onclick="event.stopPropagation(); reservarHabitacion(${hab.id}, '${hab.nombre}')">
                     Ver más detalles
                 </button>
             </div>
@@ -644,6 +641,8 @@ function mostrarHabitaciones(habitaciones) {
 
     container.appendChild(fragment);
 }
+
+
 
 
         function actualizarContador(cantidad) {
