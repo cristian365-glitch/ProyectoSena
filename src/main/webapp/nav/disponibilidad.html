@@ -597,6 +597,11 @@
                 const icono = experiencia.toLowerCase() === 'bosque' ? '🌲' : 
                              experiencia.toLowerCase() === 'mar' ? '🌊' : '🌾';
                 
+                // Descripción limitada a 80 caracteres como en el index
+                const descripcion = hab.descripcion ? 
+                    (hab.descripcion.length > 80 ? hab.descripcion.substring(0, 80) + '...' : hab.descripcion) : 
+                    'Descubre esta experiencia única...';
+                
                 card.innerHTML = `
                     <img ${CONFIG.LAZY_LOAD ? 'loading="lazy"' : ''} 
                          src="${hab.imagen_principal || 'recursos/placeholder.jpg'}" 
@@ -604,7 +609,7 @@
                     <div class="habitacion-info">
                         <span class="experiencia-badge ${experiencia.toLowerCase()}">${icono} ${experiencia.toUpperCase()}</span>
                         <h3>${hab.nombre}</h3>
-                        <p class="habitacion-descripcion">${hab.descripcion || 'Descubre esta experiencia única en armonía con la naturaleza.'}</p>
+                        <p class="habitacion-descripcion">${descripcion}</p>
                         <div class="habitacion-detalles">
                             <div class="detalle-item">
                                 <strong>👥 ${hab.capacidad}</strong>

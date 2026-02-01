@@ -275,7 +275,7 @@ h2 {
 }
 
 /* ========================================
-   IMAGEN - 220PX PARA CARD COMPACTA
+   IMAGEN - 220PX (EXACTO DEL INDEX)
 ======================================== */
 .habitacion-card img {
     width: 100%;
@@ -284,17 +284,17 @@ h2 {
 }
 
 /* ========================================
-   CONTENIDO DE LA CARD - MUY COMPACTO
+   CONTENIDO DE LA CARD (EXACTO DEL INDEX)
 ======================================== */
 .habitacion-info {
-    padding: 10px 14px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
     flex: 1;
 }
 
 /* ========================================
-   BADGE DE EXPERIENCIA - CON EMOJI
+   BADGE DE EXPERIENCIA (EXACTO DEL INDEX)
 ======================================== */
 .experiencia-badge {
     display: inline-block;
@@ -302,7 +302,7 @@ h2 {
     border-radius: 4px;
     font-size: 0.75rem;
     font-weight: 600;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
     color: white;
     width: fit-content;
 }
@@ -320,81 +320,76 @@ h2 {
 }
 
 /* ========================================
-   TÍTULO - MÁS GRANDE, EN NEGRITA Y CENTRADO
+   TÍTULO (EXACTO DEL INDEX)
 ======================================== */
 .habitacion-info h3 {
-    font-size: 1.4rem;
+    font-size: 1.15rem;
     color: #000000;
-    margin-bottom: 4px;
-    font-weight: 700;
-    line-height: 1.2;
+    margin-bottom: 8px;
+    font-weight: 600;
+    line-height: 1.3;
     text-align: center;
 }
 
 /* ========================================
-   DESCRIPCIÓN - CENTRADA Y MUY COMPACTA
+   DESCRIPCIÓN (EXACTO DEL INDEX - 2 LÍNEAS FIJAS)
 ======================================== */
 .habitacion-descripcion {
     color: #6b6b6b;
     font-size: 0.9rem;
-    margin-bottom: 6px;
-    line-height: 1.3;
-    flex: 1;
+    margin-bottom: 12px;
+    line-height: 1.4;
     text-align: center;
+    min-height: 2.5em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 /* ========================================
-   DETALLES EN UNA SOLA LÍNEA
-   👥 4 Personas  |  $280.000 por noche
+   DETALLES (EXACTO DEL INDEX - UNA LÍNEA)
 ======================================== */
 .habitacion-detalles {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 6px 0;
+    gap: 15px;
+    padding: 12px 0;
     border-top: 1px solid #e7e7e7;
-    margin-bottom: 6px;
+    margin-bottom: 12px;
     font-size: 0.85rem;
     color: #6b6b6b;
-    flex-wrap: nowrap;
 }
 
 .detalle-item {
     display: flex;
-    align-items: baseline;
-    gap: 4px;
-    flex-wrap: nowrap;
-    white-space: nowrap;
+    align-items: center;
+    gap: 5px;
 }
 
 .detalle-item strong {
     color: #000000;
     font-weight: 600;
-    font-size: 0.9rem;
 }
 
 .detalle-item span {
-    font-size: 0.8rem;
     color: #6b6b6b;
 }
 
 /* ========================================
-   BOTÓN - VER MÁS DETALLES
+   BOTÓN (EXACTO DEL INDEX)
 ======================================== */
 .btn-reservar {
-    padding: 8px 16px;
+    padding: 10px 16px;
     background: #d4af37;
     color: white;
     border: none;
     border-radius: 6px;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
-    text-transform: uppercase;
-    width: 100%;
 }
 
 .btn-reservar:hover {
