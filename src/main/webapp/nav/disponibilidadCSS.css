@@ -224,7 +224,7 @@ h2 {
 }
 
 /* ========================================
-   GRID OPTIMIZADO - COMO EN EL INDEX
+   GRID OPTIMIZADO (EXACTO DEL INDEX)
 ======================================== */
 .habitaciones-grid {
     display: grid;
@@ -234,7 +234,7 @@ h2 {
 }
 
 /* ========================================
-   CARDS - DISEÑO ORIGINAL DEL INDEX
+   CARDS (EXACTO DEL INDEX)
 ======================================== */
 .habitacion-card {
     border-radius: 12px;
@@ -245,28 +245,8 @@ h2 {
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    /* Animación */
     opacity: 0;
     animation: fadeInUp 0.6s ease forwards;
-}
-
-/* Animación escalonada */
-.habitacion-card:nth-child(1) { animation-delay: 0.05s; }
-.habitacion-card:nth-child(2) { animation-delay: 0.1s; }
-.habitacion-card:nth-child(3) { animation-delay: 0.15s; }
-.habitacion-card:nth-child(4) { animation-delay: 0.2s; }
-.habitacion-card:nth-child(5) { animation-delay: 0.25s; }
-.habitacion-card:nth-child(6) { animation-delay: 0.3s; }
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 .habitacion-card:hover {
@@ -274,18 +254,12 @@ h2 {
     transform: translateY(-4px);
 }
 
-/* ========================================
-   IMAGEN - 220PX (EXACTO DEL INDEX)
-======================================== */
 .habitacion-card img {
     width: 100%;
     height: 220px;
     object-fit: cover;
 }
 
-/* ========================================
-   CONTENIDO DE LA CARD (EXACTO DEL INDEX)
-======================================== */
 .habitacion-info {
     padding: 16px;
     display: flex;
@@ -293,9 +267,14 @@ h2 {
     flex: 1;
 }
 
-/* ========================================
-   BADGE DE EXPERIENCIA (EXACTO DEL INDEX)
-======================================== */
+.habitacion-info h3 {
+    font-size: 1.15rem;
+    color: #000000;
+    margin-bottom: 8px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
 .experiencia-badge {
     display: inline-block;
     padding: 4px 10px;
@@ -319,37 +298,14 @@ h2 {
     background: #558b2f;
 }
 
-/* ========================================
-   TÍTULO (MÁS PEQUEÑO - 1REM = ~16PX)
-======================================== */
-.habitacion-info h3 {
-    font-size: 1rem;
-    color: #000000;
-    margin-bottom: 8px;
-    font-weight: 600;
-    line-height: 1.2;
-    text-align: center;
-}
-
-/* ========================================
-   DESCRIPCIÓN (MÁS PEQUEÑA - 2 LÍNEAS FIJAS)
-======================================== */
 .habitacion-descripcion {
     color: #6b6b6b;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     margin-bottom: 12px;
     line-height: 1.4;
-    text-align: center;
-    height: 2.4em;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    flex: 1;
 }
 
-/* ========================================
-   DETALLES (EXACTO DEL INDEX - TODO EN UNA LÍNEA)
-======================================== */
 .habitacion-detalles {
     display: flex;
     align-items: center;
@@ -359,31 +315,32 @@ h2 {
     margin-bottom: 12px;
     font-size: 0.85rem;
     color: #6b6b6b;
-    flex-wrap: nowrap;
 }
 
 .detalle-item {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 5px;
-    flex-wrap: nowrap;
-    white-space: nowrap;
 }
 
-.detalle-item strong {
+.precio-reserva-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.precio-noche {
+    font-size: 1.25rem;
     color: #000000;
-    font-weight: 600;
-    display: inline;
+    font-weight: 700;
 }
 
-.detalle-item span {
+.precio-noche small {
+    font-size: 0.75rem;
     color: #6b6b6b;
-    display: inline;
+    font-weight: 400;
 }
 
-/* ========================================
-   BOTÓN (EXACTO DEL INDEX)
-======================================== */
 .btn-reservar {
     padding: 10px 16px;
     background: #d4af37;
@@ -399,6 +356,25 @@ h2 {
 
 .btn-reservar:hover {
     background: #b8860b;
+}
+
+/* Animación escalonada */
+.habitacion-card:nth-child(1) { animation-delay: 0.05s; }
+.habitacion-card:nth-child(2) { animation-delay: 0.1s; }
+.habitacion-card:nth-child(3) { animation-delay: 0.15s; }
+.habitacion-card:nth-child(4) { animation-delay: 0.2s; }
+.habitacion-card:nth-child(5) { animation-delay: 0.25s; }
+.habitacion-card:nth-child(6) { animation-delay: 0.3s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ========================================
