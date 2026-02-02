@@ -355,6 +355,15 @@
             height: 220px;
             object-fit: cover;
             background: #f0f0f0;
+            transition: opacity 0.3s ease;
+        }
+
+        .habitacion-card img.lazy-image {
+            opacity: 0.5;
+        }
+
+        .habitacion-card img.lazy-image.loaded {
+            opacity: 1;
         }
 
         .habitacion-info {
@@ -480,7 +489,13 @@
     </style>
 
     <script>
-        // ✅ VARIABLES GLOBALES OPTIMIZADAS
+        // 🚀 CONFIGURACIÓN DE RENDIMIENTO
+        const CONFIG = {
+            DEBUG: false,
+            BATCH_SIZE: 6, // Cargar 6 habitaciones a la vez
+            LAZY_LOAD_THRESHOLD: 200 // px antes de que la imagen sea visible
+        };
+        
         let habitacionesOriginal = [];
         let reservasExistentes = [];
         let filtros = {
@@ -492,21 +507,23 @@
             precioMax: Infinity
         };
 
-        // 🚀 CONFIGURACIÓN DE RENDIMIENTO
-        const CONFIG = {
-            DEBUG: false
-        };
+        // ⚡ Cache de imágenes
+        const imageCache = new Map();
 
-        // ⚡ INICIO OPTIMIZADO
+        // ⚡ INICIO OPTIMIZADO CON CARGA PARALELA
         window.addEventListener('DOMContentLoaded', async () => {
             const startTime = performance.now();
             
             try {
-                // Cargar habitaciones y reservas en paralelo
-                await Promise.all([
-                    cargarHabitaciones(),
-                    cargarReservas()
-                ]);
+                // Ocultar loader inicial
+                const loader = document.getElementById('loader');
+                const container = document.getElementById('habitaciones-container');
+                
+                // Cargar habitaciones y reservas en paralelo (sin esperar reservas)
+                const habitacionesPromise = cargarHabitaciones();
+                cargarReservas(); // No esperamos las reservas para mostrar habitaciones
+                
+                await habitacionesPromise;
                 
                 const loadTime = performance.now() - startTime;
                 if (CONFIG.DEBUG) console.log(`✅ Carga completada en ${loadTime.toFixed(0)}ms`);
@@ -517,19 +534,29 @@
             }
         });
 
-        // ✅ CARGAR TODAS LAS HABITACIONES - SIN LIMITACIÓN
+        // ✅ CARGA ULTRA RÁPIDA DE HABITACIONES
         async function cargarHabitaciones() {
             try {
-                const response = await fetch('../ObtenerHabitacionesServlet');
-                const data = await response.json();
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout de 5s
                 
-                // Cargar TODAS las habitaciones sin filtro
+                const response = await fetch('../ObtenerHabitacionesServlet', {
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) throw new Error('Error en la respuesta del servidor');
+                
+                const data = await response.json();
                 habitacionesOriginal = Array.isArray(data) ? data : [];
                 
+                // Ocultar loader y mostrar container inmediatamente
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('habitaciones-container').style.display = 'grid';
                 
-                mostrarHabitaciones(habitacionesOriginal);
+                // Renderizar en lotes para mejor rendimiento
+                renderizarPorLotes(habitacionesOriginal);
                 actualizarContador(habitacionesOriginal.length);
                 
             } catch (error) {
@@ -542,15 +569,140 @@
             try {
                 const response = await fetch('../ObtenerReservaServlet');
                 const data = await response.json();
-                
                 reservasExistentes = Array.isArray(data) ? data : [];
-                
                 if (CONFIG.DEBUG) console.log(`📊 ${reservasExistentes.length} reservas cargadas`);
-                
             } catch (error) {
                 console.error('Error al cargar reservas:', error);
                 reservasExistentes = [];
             }
+        }
+
+        // ⚡ RENDERIZADO POR LOTES PARA MEJOR RENDIMIENTO
+        function renderizarPorLotes(habitaciones) {
+            const container = document.getElementById('habitaciones-container');
+            container.innerHTML = '';
+
+            if (habitaciones.length === 0) {
+                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #666; padding: 40px;">No hay habitaciones que coincidan con los filtros seleccionados</p>';
+                return;
+            }
+
+            let index = 0;
+            const total = habitaciones.length;
+
+            function renderizarLote() {
+                const fragment = document.createDocumentFragment();
+                const limite = Math.min(index + CONFIG.BATCH_SIZE, total);
+
+                for (let i = index; i < limite; i++) {
+                    const card = crearCard(habitaciones[i], i);
+                    fragment.appendChild(card);
+                }
+
+                container.appendChild(fragment);
+                index = limite;
+
+                // Si hay más habitaciones, renderizar el siguiente lote
+                if (index < total) {
+                    requestAnimationFrame(renderizarLote);
+                } else {
+                    // Activar lazy loading después de renderizar todo
+                    activarLazyLoading();
+                }
+            }
+
+            renderizarLote();
+        }
+
+        // ⚡ CREAR CARD OPTIMIZADO
+        function crearCard(hab, index) {
+            const card = document.createElement('div');
+            card.className = 'habitacion-card';
+            card.style.animationDelay = `${index * 0.05}s`; // Animación más rápida
+            card.onclick = () => verDetalle(hab.id);
+
+            const icono =
+                hab.experiencia === 'mar' ? '🌊' :
+                hab.experiencia === 'campo' ? '🌾' :
+                '🌲';
+
+            // Limitar descripción
+            let descripcion = hab.descripcion || 'Descubre esta experiencia única';
+            if (descripcion.length > 80) {
+                descripcion = descripcion.substring(0, 80) + '...';
+            }
+
+            // ⚡ LAZY LOADING: Usar data-src en lugar de src
+            card.innerHTML = `
+                <img class="lazy-image" data-src="${hab.imagen_principal}" alt="${hab.nombre}" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23f0f0f0' width='400' height='300'/%3E%3C/svg%3E">
+
+                <div class="habitacion-info">
+                    <span class="experiencia-badge ${hab.experiencia}">
+                        ${icono} ${hab.experiencia.toUpperCase()}
+                    </span>
+
+                    <h3>${hab.nombre}</h3>
+
+                    <p class="habitacion-descripcion">${descripcion}</p>
+
+                    <div class="habitacion-detalles">
+                        <div class="detalle-item">
+                            <strong>👥 ${hab.capacidad} Personas</strong>
+                        </div>
+                        <div class="detalle-item">
+                            <strong>$${Number(hab.precio_noche).toLocaleString('es-CO')}</strong> <span>por noche</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-reservar" onclick="event.stopPropagation(); reservar(${hab.id})">
+                        Ver más detalles
+                    </button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // ⚡ LAZY LOADING DE IMÁGENES CON INTERSECTION OBSERVER
+        function activarLazyLoading() {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        const src = img.getAttribute('data-src');
+                        
+                        if (src && !imageCache.has(src)) {
+                            // Precargar imagen
+                            const tempImg = new Image();
+                            tempImg.onload = () => {
+                                img.src = src;
+                                img.classList.add('loaded');
+                                imageCache.set(src, true);
+                            };
+                            tempImg.onerror = () => {
+                                img.src = 'recursos/placeholder.jpg';
+                            };
+                            tempImg.src = src;
+                        } else if (imageCache.has(src)) {
+                            img.src = src;
+                            img.classList.add('loaded');
+                        }
+                        
+                        observer.unobserve(img);
+                    }
+                });
+            }, {
+                rootMargin: `${CONFIG.LAZY_LOAD_THRESHOLD}px`
+            });
+
+            document.querySelectorAll('.lazy-image').forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+
+        // ⚡ RENDERIZADO OPTIMIZADO (para filtros)
+        function mostrarHabitaciones(habitaciones) {
+            renderizarPorLotes(habitaciones);
         }
 
         function aplicarFiltros() {
