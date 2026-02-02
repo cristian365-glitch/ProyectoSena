@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="../indexCSS.css">
-<!--    <link rel="stylesheet" href="disponibilidadCSS.css">-->
+    <link rel="stylesheet" href="disponibilidadCSS.css">
     <link rel="stylesheet" href="../login/auth-ui.css">
     <script src="../login/auth-session.js"></script>
     <script src="../login/mobile-menu.js"></script>
@@ -368,11 +368,13 @@
             font-size: 0.75rem;
             font-weight: 600;
             margin-bottom: 10px;
+            font-family: 'Lato', sans-serif;
+            text-align: left;
         }
 
         .experiencia-badge.bosque { background: #2d5016; color: white; }
-        .experiencia-badge.mar { background: #1e5a8e; color: white; }
-        .experiencia-badge.campo { background: #8b7355; color: white; }
+        .experiencia-badge.mar { background: #1e88e5; color: white; }
+        .experiencia-badge.campo { background: #558b2f; color: white; }
 
         /* Requisito 3: Tamaños específicos y centrado */
         .habitacion-info h3 {
@@ -403,11 +405,11 @@
         /* Requisito 4 y 5: Sin saltos de línea, todo en la misma línea, alineado a la izquierda */
         .habitacion-detalles {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             margin: 12px 0;
             padding-top: 12px;
             border-top: 1px solid #e7e7e7;
+            gap: 30px; /* Espacio entre personas y precio */
         }
 
         .detalle-item {
