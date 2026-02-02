@@ -46,28 +46,27 @@
             max-width: 1300px;
             margin: 100px auto 60px;
             padding: 0 30px;
-            animation: fadeIn 0.5s ease-out;
         }
 
         .back-btn {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            color: #8b7355;
+            color: #d4af37;
             text-decoration: none;
             font-weight: 600;
             margin-bottom: 30px;
             padding: 10px 20px;
             border-radius: 50px;
-            background: rgba(139, 115, 85, 0.08);
-            border: 1px solid rgba(139, 115, 85, 0.2);
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.2);
             transition: all 0.3s ease;
             font-size: 0.9rem;
         }
 
         .back-btn:hover {
-            background: rgba(139, 115, 85, 0.15);
-            border-color: #8b7355;
+            background: rgba(212, 175, 55, 0.15);
+            border-color: #d4af37;
             transform: translateX(-5px);
         }
 
@@ -82,7 +81,6 @@
             grid-template-columns: 2fr 1fr;
             gap: 15px;
             margin-bottom: 40px;
-            animation: fadeInUp 0.6s ease-out 0.1s both;
         }
 
         .imagen-principal {
@@ -140,16 +138,16 @@
             padding: 8px 18px;
             border-radius: 50px;
             font-weight: 600;
-            color: #8b7355;
+            color: #d4af37;
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             font-size: 0.85rem;
-            border: 1px solid rgba(139, 115, 85, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.2);
         }
 
         .ver-todas:hover {
-            background: #8b7355;
+            background: #d4af37;
             color: white;
             transform: translateY(-2px);
         }
@@ -163,8 +161,7 @@
             padding: 40px;
             border-radius: 16px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(139, 115, 85, 0.1);
-            animation: fadeInUp 0.6s ease-out 0.2s both;
+            border: 1px solid rgba(0, 0, 0, 0.08);
         }
 
         .info-principal h1 {
@@ -215,23 +212,24 @@
             gap: 15px;
             padding: 25px 0;
             margin: 25px 0;
-            border-top: 1px solid rgba(139, 115, 85, 0.15);
-            border-bottom: 1px solid rgba(139, 115, 85, 0.15);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .detalle-quick {
             text-align: center;
             padding: 18px 10px;
-            background: rgba(139, 115, 85, 0.05);
+            background: #f8f9fa;
             border-radius: 10px;
             transition: all 0.3s;
-            border: 1px solid rgba(139, 115, 85, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.08);
         }
 
         .detalle-quick:hover {
             transform: translateY(-4px);
-            background: rgba(139, 115, 85, 0.1);
-            box-shadow: 0 4px 12px rgba(139, 115, 85, 0.2);
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #d4af37;
         }
 
         .detalle-quick .icono {
@@ -241,13 +239,13 @@
         }
 
         .detalle-quick .icono i {
-            color: #8b7355;
+            color: #d4af37;
         }
 
         .detalle-quick .valor {
             font-size: 1.6rem;
             font-weight: 700;
-            color: #8b7355;
+            color: #d4af37;
             margin-bottom: 4px;
             display: block;
         }
@@ -266,10 +264,10 @@
             align-items: center;
             gap: 12px;
             padding: 15px;
-            background: rgba(139, 115, 85, 0.05);
+            background: #f8f9fa;
             border-radius: 10px;
             margin-bottom: 25px;
-            border: 1px solid rgba(139, 115, 85, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.06);
         }
 
         .camas-info .icono {
@@ -277,7 +275,7 @@
         }
 
         .camas-info .icono i {
-            color: #8b7355;
+            color: #d4af37;
         }
 
         .camas-info .texto {
@@ -305,15 +303,17 @@
             align-items: center;
             gap: 10px;
             padding: 12px;
-            background: rgba(139, 115, 85, 0.04);
+            background: #f8f9fa;
             border-radius: 8px;
             transition: all 0.3s;
-            border: 1px solid rgba(139, 115, 85, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.06);
         }
 
         .comodidad-item:hover {
-            background: rgba(139, 115, 85, 0.1);
+            background: #ffffff;
             transform: translateX(4px);
+            border-color: #d4af37;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .comodidad-item span:first-child {
@@ -321,7 +321,7 @@
         }
 
         .comodidad-item span:first-child i {
-            color: #8b7355;
+            color: #d4af37;
         }
 
         .comodidad-item span:last-child {
@@ -333,11 +333,11 @@
         .tarjeta-reserva {
             position: sticky;
             top: 110px;
-            background: linear-gradient(135deg, rgba(139, 115, 85, 0.06), rgba(139, 115, 85, 0.03));
+            background: #ffffff;
             padding: 30px 25px;
             border-radius: 16px;
-            box-shadow: 0 6px 20px rgba(139, 115, 85, 0.15);
-            border: 1px solid rgba(139, 115, 85, 0.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            border: 2px solid #f0f0f0;
             height: fit-content;
         }
 
@@ -345,16 +345,22 @@
             text-align: center;
             margin-bottom: 25px;
             padding-bottom: 25px;
-            border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+            border-bottom: 2px solid #f0f0f0;
         }
 
         .precio-valor {
             font-family: 'Playfair Display', serif;
             font-size: 3rem;
             font-weight: 700;
-            color: #8b7355;
+            color: #1a1a1a;
             margin-bottom: 8px;
             line-height: 1;
+        }
+        
+        .precio-valor::before {
+            content: '$';
+            color: #d4af37;
+            margin-right: 4px;
         }
 
         .precio-periodo {
@@ -368,9 +374,9 @@
         .btn-reservar {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, #8b7355, #6d5a45);
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
             color: white;
-            border: none;
+            border: 2px solid #d4af37;
             border-radius: 10px;
             font-size: 1rem;
             font-weight: 700;
@@ -378,13 +384,15 @@
             transition: all 0.3s;
             text-transform: uppercase;
             letter-spacing: 1px;
-            box-shadow: 0 4px 12px rgba(139, 115, 85, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             margin-bottom: 20px;
         }
 
         .btn-reservar:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(139, 115, 85, 0.4);
+            background: linear-gradient(135deg, #d4af37, #b8860b);
+            border-color: #d4af37;
+            box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
         }
 
         .garantias {
@@ -403,7 +411,7 @@
 
         .garantia-item::before {
             content: '✓';
-            color: #8b7355;
+            color: #d4af37;
             font-size: 1.1rem;
             font-weight: bold;
         }
@@ -460,7 +468,7 @@
 
         .cerrar-modal:hover {
             transform: rotate(90deg);
-            background: rgba(139, 115, 85, 0.9);
+            background: rgba(212, 175, 55, 0.9);
         }
 
         .navegacion-galeria {
@@ -492,7 +500,7 @@
         }
 
         .nav-btn:hover {
-            background: #8b7355;
+            background: #d4af37;
             color: white;
             transform: scale(1.1);
         }
@@ -501,14 +509,14 @@
         .error-message {
             text-align: center;
             padding: 60px 30px;
-            background: rgba(139, 115, 85, 0.05);
+            background: rgba(212, 175, 55, 0.05);
             border-radius: 16px;
-            border: 1px solid rgba(139, 115, 85, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.2);
         }
 
         .error-message h3 {
             font-size: 1.8rem;
-            color: #8b7355;
+            color: #d4af37;
             margin-bottom: 15px;
         }
 
@@ -520,7 +528,7 @@
 
         .error-message button {
             padding: 12px 28px;
-            background: linear-gradient(135deg, #8b7355, #6d5a45);
+            background: linear-gradient(135deg, #d4af37, #b8860b);
             color: white;
             border: none;
             border-radius: 10px;
@@ -532,7 +540,7 @@
 
         .error-message button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139, 115, 85, 0.3);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
         }
 
         /* RESPONSIVE */
@@ -664,7 +672,7 @@
 
             <div class="tarjeta-reserva">
                 <div class="precio-container">
-                    <div class="precio-valor">$<span id="precio">0</span></div>
+                    <div class="precio-valor"><span id="precio">0</span></div>
                     <div class="precio-periodo">por noche</div>
                 </div>
 
@@ -714,12 +722,7 @@
 
         async function cargarHabitacion(id) {
             try {
-                console.log('🔍 Cargando habitación con ID:', id);
-                
                 const response = await fetch(`../DetalleHabitacionServlet?id=${id}`);
-                
-                console.log('📡 Response status:', response.status);
-                console.log('📋 Content-Type:', response.headers.get('content-type'));
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -727,13 +730,10 @@
 
                 const contentType = response.headers.get("content-type");
                 if (!contentType || !contentType.includes("application/json")) {
-                    const text = await response.text();
-                    console.error('❌ Respuesta recibida (no es JSON):', text.substring(0, 500));
                     throw new TypeError("El servidor no devolvió JSON válido");
                 }
 
                 habitacion = await response.json();
-                console.log('✅ Habitación cargada:', habitacion);
 
                 if (!habitacion || habitacion.error) {
                     throw new Error(habitacion?.error || 'Habitación no encontrada');
@@ -742,7 +742,6 @@
                 mostrarHabitacion();
                 
             } catch (error) {
-                console.error('❌ Error completo:', error);
                 mostrarError('Error al cargar la habitación: ' + error.message);
             }
         }
@@ -783,8 +782,8 @@
 
             const iconoMap = {
                 'bosque': '<i class="fas fa-tree"></i>',
-                'mar': '<i class="fas fa-water"></i>',
-                'campo': '<i class="fas fa-seedling"></i>'
+                'mar': '<i class="fas fa-ship"></i>',
+                'campo': '<i class="fas fa-leaf"></i>'
             };
             
             const badge = document.getElementById('experiencia-badge');
