@@ -1,4 +1,4 @@
-/* auth-ui.css - Integración con diseño existente - VERSIÓN MEJORADA */
+/* auth-ui.css - Integración con diseño existente - VERSIÓN CORREGIDA */
 
 #auth-container {
     display: flex;
@@ -301,9 +301,19 @@
         font-size: 0.75rem;
     }
 
-    /* Dropdown en móvil se oculta - se usa el menú móvil en su lugar */
+    /* IMPORTANTE: Ocultar dropdown en móvil - se usa el menú móvil en su lugar */
     .dropdown-menu {
         display: none !important;
+    }
+    
+    /* NO mostrar el dropdown al hacer click en móvil */
+    .user-menu.active .dropdown-menu {
+        display: none !important;
+    }
+    
+    /* En móvil, el click en el avatar abre el menú hamburguesa */
+    .user-menu .user-name {
+        pointer-events: none; /* Deshabilitar click en el nombre/avatar en móvil */
     }
 }
 

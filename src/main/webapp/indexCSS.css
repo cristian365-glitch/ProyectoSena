@@ -70,6 +70,50 @@ header ul li:not(.logo):not(.registro):not(.menu-toggle-li) {
 .registro {
   margin-left: auto;
   padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espacio entre auth y hamburguesa */
+}
+
+/* ========================================
+   MENÚ HAMBURGUESA (Solo móvil)
+======================================== */
+.menu-toggle-li {
+  display: none;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.menu-toggle {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 10px;
+  z-index: 1001;
+  position: relative;
+}
+
+.menu-toggle span {
+  width: 25px;
+  height: 2px;
+  background: #1a1a1a;
+  margin: 4px 0;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+.menu-toggle.active span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.menu-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
 }
 
 /* ========================================
@@ -243,41 +287,8 @@ footer {
 }
 
 /* ========================================
-   MENÚ HAMBURGUESA (Solo móvil)
+   MENÚ MÓVIL DESPLEGABLE
 ======================================== */
-.menu-toggle {
-  display: none;
-  flex-direction: column;
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 10px;
-  z-index: 1001;
-  position: relative;
-}
-
-.menu-toggle span {
-  width: 25px;
-  height: 2px;
-  background: #1a1a1a;
-  margin: 4px 0;
-  transition: all 0.3s ease;
-  border-radius: 2px;
-}
-
-.menu-toggle.active span:nth-child(1) {
-  transform: rotate(45deg) translate(8px, 8px);
-}
-
-.menu-toggle.active span:nth-child(2) {
-  opacity: 0;
-}
-
-.menu-toggle.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(7px, -7px);
-}
-
-/* Contenedor del menú móvil */
 .nav-mobile-menu {
   display: none;
 }
@@ -302,29 +313,36 @@ footer {
 
 @media (max-width: 768px) {
   /* Mostrar botón hamburguesa */
-  .menu-toggle {
-    display: flex;
+  .menu-toggle-li {
+    display: flex !important;
+    order: 3; /* Asegurar que esté después del auth */
   }
 
-  /* Ajustar header para móvil */
+  /* Reorganizar el header para móvil */
   header ul {
     min-height: 70px;
     padding: 0 15px;
+    gap: 10px;
+  }
+
+  .logo {
+    order: 1;
   }
 
   .logo img {
     height: 50px;
   }
 
+  /* El registro (auth) debe estar ANTES del hamburguesa */
+  .registro {
+    order: 2;
+    margin-left: auto;
+    margin-right: 0;
+  }
+
   /* IMPORTANTE: Ocultar elementos del menú EXCEPTO logo, hamburguesa y auth */
   header ul li:not(.logo):not(.menu-toggle-li):not(.registro) {
     display: none;
-  }
-
-  /* Mantener visible el auth-container en desktop dentro de .registro */
-  .registro {
-    display: flex;
-    align-items: center;
   }
 
   /* Mostrar menú desplegable móvil */

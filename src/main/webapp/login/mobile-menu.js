@@ -32,7 +32,10 @@ class MobileMenuManager {
         }
 
         // Event listeners
-        this.menuToggle.addEventListener('click', () => this.toggle());
+        this.menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggle();
+        });
         
         // Cerrar menú al hacer clic en un enlace
         const menuLinks = this.mobileMenu.querySelectorAll('a');
@@ -69,23 +72,26 @@ class MobileMenuManager {
         const header = document.querySelector('header ul');
         if (!header) return;
 
-        // Agregar botón hamburguesa
-        const menuToggleLi = document.createElement('li');
-        menuToggleLi.className = 'menu-toggle-li';
-        menuToggleLi.innerHTML = `
-            <button class="menu-toggle" aria-label="Menú">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        `;
-
-        // Insertar antes del elemento de registro
+        // Agregar botón hamburguesa DENTRO del li.registro
         const registroLi = header.querySelector('.registro');
         if (registroLi) {
-            header.insertBefore(menuToggleLi, registroLi);
-        } else {
-            header.appendChild(menuToggleLi);
+            // Crear el elemento del menú toggle
+            const menuToggleBtn = document.createElement('button');
+            menuToggleBtn.className = 'menu-toggle';
+            menuToggleBtn.setAttribute('aria-label', 'Menú');
+            menuToggleBtn.innerHTML = `
+                <span></span>
+                <span></span>
+                <span></span>
+            `;
+            
+            // Crear li para el toggle
+            const menuToggleLi = document.createElement('li');
+            menuToggleLi.className = 'menu-toggle-li';
+            menuToggleLi.appendChild(menuToggleBtn);
+            
+            // Insertar DESPUÉS del .registro para que esté a la derecha
+            registroLi.parentNode.insertBefore(menuToggleLi, registroLi.nextSibling);
         }
 
         // Crear menú móvil desplegable
@@ -97,9 +103,11 @@ class MobileMenuManager {
         
         let mobileMenuHTML = '<ul>';
         mainMenuLinks.forEach(link => {
-            const href = link.getAttribute('href');
+            const href = link.getAttribute('href') || '#';
             const text = link.textContent.trim();
-            mobileMenuHTML += `<li><a href="${href}">${text}</a></li>`;
+            if (text) { // Solo agregar si hay texto
+                mobileMenuHTML += `<li><a href="${href}">${text}</a></li>`;
+            }
         });
         mobileMenuHTML += '</ul>';
 
