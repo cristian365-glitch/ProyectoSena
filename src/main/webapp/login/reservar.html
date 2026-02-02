@@ -148,27 +148,7 @@
             margin-bottom: 30px;
         }
 
-        /* DEBUG INFO */
-        .debug-info {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-            font-size: 0.85rem;
-            font-family: monospace;
-        }
-
-        .debug-info h4 {
-            margin: 0 0 10px 0;
-            color: #856404;
-        }
-
-        .debug-info pre {
-            margin: 5px 0;
-            white-space: pre-wrap;
-            color: #856404;
-        }
+        /* Estilos optimizados - debug removido */
 
         /* CALENDARIO VISUAL RETRAÍBLE */
         .calendario-container {
@@ -551,11 +531,7 @@
                 <h2>Completa tu Reserva</h2>
                 <p class="subtitulo">Selecciona tus fechas en el calendario</p>
 
-                <!-- DEBUG INFO -->
-                <div class="debug-info" id="debugInfo" style="display: none;">
-                    <h4>🔍 Información de Debug</h4>
-                    <pre id="debugContent"></pre>
-                </div>
+                <!-- Debug info removido para producción -->
 
                 <!-- CALENDARIO VISUAL RETRAÍBLE -->
                 <div class="calendario-container">
@@ -698,22 +674,17 @@
         let mesActual = new Date();
         let fechaCheckin = null;
         let fechaCheckout = null;
-        let DEBUG_MODE = true; // Cambiar a false en producción
+        let DEBUG_MODE = false; // Modo producción - sin debug visual
 
         const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         const DIAS_SEMANA = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
-        // Función para mostrar debug
+        // Función optimizada para debug solo en consola
         function mostrarDebug(mensaje) {
-            if (!DEBUG_MODE) return;
-            
-            const debugInfo = document.getElementById('debugInfo');
-            const debugContent = document.getElementById('debugContent');
-            
-            debugInfo.style.display = 'block';
-            debugContent.textContent += mensaje + '\n';
-            console.log('🔍 DEBUG:', mensaje);
+            if (DEBUG_MODE) {
+                console.log('🔍 DEBUG:', mensaje);
+            }
         }
 
         // Función para abrir/cerrar calendario
@@ -726,7 +697,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 Iniciando carga de reservar.html');
             mostrarDebug('🚀 Iniciando aplicación');
             
             const params = new URLSearchParams(window.location.search);
