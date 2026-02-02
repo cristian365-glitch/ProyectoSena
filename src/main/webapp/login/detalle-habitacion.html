@@ -46,6 +46,7 @@
             max-width: 1300px;
             margin: 100px auto 60px;
             padding: 0 30px;
+            animation: fadeIn 0.5s ease-out;
         }
 
         .back-btn {
@@ -81,6 +82,7 @@
             grid-template-columns: 2fr 1fr;
             gap: 15px;
             margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
         }
 
         .imagen-principal {
@@ -161,7 +163,8 @@
             padding: 40px;
             border-radius: 16px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            animation: fadeInUp 0.6s ease-out 0.2s both;
         }
 
         .info-principal h1 {
@@ -212,8 +215,8 @@
             gap: 15px;
             padding: 25px 0;
             margin: 25px 0;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         .detalle-quick {
@@ -222,13 +225,13 @@
             background: #f8f9fa;
             border-radius: 10px;
             transition: all 0.3s;
-            border: 1px solid rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
         }
 
         .detalle-quick:hover {
             transform: translateY(-4px);
             background: #ffffff;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             border-color: #d4af37;
         }
 
@@ -267,7 +270,7 @@
             background: #f8f9fa;
             border-radius: 10px;
             margin-bottom: 25px;
-            border: 1px solid rgba(0, 0, 0, 0.06);
+            border: 1px solid #e0e0e0;
         }
 
         .camas-info .icono {
@@ -306,14 +309,14 @@
             background: #f8f9fa;
             border-radius: 8px;
             transition: all 0.3s;
-            border: 1px solid rgba(0, 0, 0, 0.06);
+            border: 1px solid #e0e0e0;
         }
 
         .comodidad-item:hover {
             background: #ffffff;
             transform: translateX(4px);
             border-color: #d4af37;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .comodidad-item span:first-child {
@@ -336,7 +339,7 @@
             background: #ffffff;
             padding: 30px 25px;
             border-radius: 16px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
             border: 2px solid #f0f0f0;
             height: fit-content;
         }
@@ -384,7 +387,7 @@
             transition: all 0.3s;
             text-transform: uppercase;
             letter-spacing: 1px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             margin-bottom: 20px;
         }
 
@@ -722,7 +725,12 @@
 
         async function cargarHabitacion(id) {
             try {
+                console.log('🔍 Cargando habitación con ID:', id);
+                
                 const response = await fetch(`../DetalleHabitacionServlet?id=${id}`);
+                
+                console.log('📡 Response status:', response.status);
+                console.log('📋 Content-Type:', response.headers.get('content-type'));
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -730,10 +738,13 @@
 
                 const contentType = response.headers.get("content-type");
                 if (!contentType || !contentType.includes("application/json")) {
+                    const text = await response.text();
+                    console.error('❌ Respuesta recibida (no es JSON):', text.substring(0, 500));
                     throw new TypeError("El servidor no devolvió JSON válido");
                 }
 
                 habitacion = await response.json();
+                console.log('✅ Habitación cargada:', habitacion);
 
                 if (!habitacion || habitacion.error) {
                     throw new Error(habitacion?.error || 'Habitación no encontrada');
@@ -742,6 +753,7 @@
                 mostrarHabitacion();
                 
             } catch (error) {
+                console.error('❌ Error completo:', error);
                 mostrarError('Error al cargar la habitación: ' + error.message);
             }
         }
