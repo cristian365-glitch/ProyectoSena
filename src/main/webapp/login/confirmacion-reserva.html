@@ -10,8 +10,35 @@
     <link rel="stylesheet" href="../indexCSS.css">
     <link rel="stylesheet" href="auth-ui.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600&family=Lato:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Scripts de autenticación -->
     <script src="auth-session.js"></script>
-    <script src="../login/mobile-menu.js"></script>
+    <script src="mobile-menu.js"></script>
+    
+    <!-- IMPORTANTE: Script para corregir rutas del menú de usuario -->
+    <script>
+        // Esperar a que el DOM y auth-session.js hayan terminado
+        window.addEventListener('load', function() {
+            // Esperar a que auth-session.js genere el menú
+            setTimeout(function() {
+                // Corregir rutas absolutas a relativas
+                const dropdownLinks = document.querySelectorAll('.dropdown-menu a');
+                dropdownLinks.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href && href.startsWith('/')) {
+                        // Convertir rutas absolutas a relativas
+                        if (href.includes('/usuario/')) {
+                            link.setAttribute('href', href.replace('/usuario/', 'usuario/'));
+                        } else if (href.includes('/habitacionesCRUD/')) {
+                            link.setAttribute('href', href.replace('/habitacionesCRUD/', '../habitacionesCRUD/'));
+                        }
+                    }
+                });
+                console.log('✅ Rutas del menú de usuario corregidas');
+            }, 600); // Esperar a que el menú se genere
+        });
+    </script>
+    
     <style>
         /* ========================================
            ESTILOS GENERALES RENOVADOS
@@ -476,43 +503,6 @@
     </style>
 </head>
 <body>
-
-<!-- ========================================
-     HEADER CON NAVEGACIÓN Y MENÚ DE USUARIO
-======================================== -->
-<header>
-    <ul>
-        <li class="logo">
-            <a href="../index.html">
-                <img src="../recursos/logo armonia n1.png" width="89px" alt="logo">
-            </a>
-        </li>
-        
-        <li class="menu-toggle-li">
-            <button class="menu-toggle" id="menuToggle" aria-label="Menú">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </li>
-        
-        <li><a href="../nav/disponibilidad.html">Habitaciones</a></li>
-        <li><a href="../nav/experiencias.html">EXPERIENCIAS</a></li>
-        <li><a href="../nav/servicios.html">SERVICIOS</a></li>         
-        <li class="registro" id="auth-container"></li>
-    </ul>
-</header>
-
-<!-- Menú móvil desplegable -->
-<div class="nav-mobile-menu" id="mobileMenu">
-    <ul>
-        <li><a href="../nav/disponibilidad.html">Habitaciones</a></li>
-        <li><a href="../nav/experiencias.html">Experiencias</a></li>
-        <li><a href="../nav/servicios.html">Servicios</a></li>
-    </ul>
-    <!-- El contenido de autenticación se agregará dinámicamente aquí -->
-    <div id="auth-mobile"></div>
-</div>
 
 <!-- LOADING INICIAL -->
 <div id="loading" class="loading">
