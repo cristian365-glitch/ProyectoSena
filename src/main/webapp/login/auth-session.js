@@ -318,12 +318,34 @@ actualizarUI() {
         if (userName) {
             userName.addEventListener('click', function(e) {
                 e.stopPropagation();
-                userMenu.classList.toggle('active');
+                
+                // Verificar si estamos en móvil (768px o menos)
+                if (window.innerWidth <= 768) {
+                    // En móvil: abrir el menú hamburguesa
+                    const menuToggle = document.getElementById('menuToggle');
+                    const mobileMenu = document.getElementById('mobileMenu');
+                    
+                    if (menuToggle && mobileMenu) {
+                        menuToggle.classList.toggle('active');
+                        mobileMenu.classList.toggle('active');
+                        document.body.classList.toggle('menu-open');
+                        
+                        // Clonar contenido de autenticación al menú móvil
+                        const authMobile = document.getElementById('auth-mobile');
+                        if (authMobile && typeof cloneAuthToMobile === 'function') {
+                            cloneAuthToMobile();
+                        }
+                    }
+                } else {
+                    // En desktop: toggle del dropdown normal
+                    userMenu.classList.toggle('active');
+                }
             });
         }
         
+        // Cerrar dropdown en desktop cuando se hace click fuera
         document.addEventListener('click', function(event) {
-            if (userMenu && !userMenu.contains(event.target)) {
+            if (userMenu && !userMenu.contains(event.target) && window.innerWidth > 768) {
                 userMenu.classList.remove('active');
             }
         });

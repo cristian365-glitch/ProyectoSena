@@ -311,9 +311,16 @@
         display: none !important;
     }
     
-    /* En móvil, el click en el avatar abre el menú hamburguesa */
+    /* IMPORTANTE: En móvil, el click en el avatar abre el menú hamburguesa */
     .user-menu .user-name {
-        pointer-events: none; /* Deshabilitar click en el nombre/avatar en móvil */
+        cursor: pointer; /* Habilitar click en el avatar en móvil */
+        pointer-events: auto; /* Permitir clicks */
+    }
+    
+    /* El avatar es clickeable en móvil */
+    .user-avatar {
+        cursor: pointer;
+        pointer-events: auto;
     }
 }
 

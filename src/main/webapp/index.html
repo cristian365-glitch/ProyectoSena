@@ -531,7 +531,9 @@
         <li><a href="nav/disponibilidad.html">Habitaciones</a></li>
         <li><a href="nav/experiencias.html">Experiencias</a></li>
         <li><a href="nav/servicios.html">Servicios</a></li>
-        <li class="registro" id="auth-container"></li>
+    </ul>
+    <!-- Contenedor para autenticación en menú móvil -->
+    <div id="auth-mobile"></div>
     </ul>
 </div>
 
@@ -1011,47 +1013,7 @@
         `;
     }
 
-    // Menú móvil
-    const menuToggle = document.getElementById('menuToggle');
-    const mobileMenu = document.getElementById('mobileMenu');
-    const authMobile = document.getElementById('auth-mobile');
-    
-    if (menuToggle && mobileMenu) {
-        menuToggle.addEventListener('click', function() {
-            menuToggle.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
-            document.body.classList.toggle('menu-open');
-            
-            const authContainer = document.getElementById('auth-container');
-            if (authContainer && authMobile) {
-                authMobile.innerHTML = authContainer.innerHTML;
-            }
-        });
-
-        mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', function() {
-                menuToggle.classList.remove('active');
-                mobileMenu.classList.remove('active');
-                document.body.classList.remove('menu-open');
-            });
-        });
-
-        document.addEventListener('click', function(event) {
-            if (!mobileMenu.contains(event.target) && !menuToggle.contains(event.target) && mobileMenu.classList.contains('active')) {
-                menuToggle.classList.remove('active');
-                mobileMenu.classList.remove('active');
-                document.body.classList.remove('menu-open');
-            }
-        });
-
-        window.addEventListener('resize', function() {
-            if (window.innerWidth > 768) {
-                menuToggle.classList.remove('active');
-                mobileMenu.classList.remove('active');
-                document.body.classList.remove('menu-open');
-            }
-        });
-    }
+    // El menú móvil ahora es manejado por mobile-menu.js
 </script>
 </body>
 </html>
