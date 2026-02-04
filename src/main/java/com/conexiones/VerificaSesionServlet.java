@@ -71,9 +71,12 @@ public class VerificaSesionServlet extends HttpServlet {
                     json.append(",\"userId\": ").append(userId);
                 }
                 
-                // Incluir URL de foto si existe
-if (fotoUrl != null && !fotoUrl.isEmpty()) {
-    json.append(",\"googlePhotoUrl\": \"").append(escapeJson(fotoUrl)).append("\"");
+                // ⭐ CRÍTICO: Incluir foto como "googlePhotoUrl" para que el frontend la reciba
+                if (fotoUrl != null && !fotoUrl.isEmpty()) {
+                    json.append(",\"googlePhotoUrl\": \"").append(escapeJson(fotoUrl)).append("\"");
+                    System.out.println("📸 Foto enviada al frontend: " + fotoUrl);
+                } else {
+                    System.out.println("ℹ️ Usuario sin foto de Google, usará Gravatar");
                 }
                 
                 // Incluir método de login si existe

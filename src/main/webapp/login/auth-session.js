@@ -261,11 +261,9 @@ class AuthManager {
         const container = document.getElementById('auth-container');
         if (!container) return;
         
+        // UN SOLO BOTÓN que redirige a Login.html
         container.innerHTML = `
-            <div class="auth-buttons">
-                <a href="../login/login.html" class="btn-auth login">Iniciar Sesión</a>
-                <a href="../login/registro.html" class="btn-auth register">Registrarse</a>
-            </div>
+            <a href="/login/Login.html" class="btn-auth login">Iniciar Sesión</a>
         `;
     }
     
@@ -294,9 +292,9 @@ class AuthManager {
                     <span class="user-text">${this.usuario}</span>
                 </div>
                 <div class="dropdown-menu">
-                    <a href="../perfil/perfilUser.html" class="menu-item">Mi Perfil</a>
-                    <a href="../booking/mis-reservas.html" class="menu-item">Mis Reservas</a>
-                    ${this.esAdmin ? '<hr><a href="../admin/admin.html" class="menu-item">Panel Admin</a>' : ''}
+                    <a href="/perfil/perfilUser.html" class="menu-item">Mi Perfil</a>
+                    <a href="/booking/mis-reservas.html" class="menu-item">Mis Reservas</a>
+                    ${this.esAdmin ? '<hr><a href="/admin/admin.html" class="menu-item">Panel Admin</a>' : ''}
                     <hr>
                     <a href="#" class="menu-item logout" onclick="auth.logout(); return false;">Cerrar Sesión</a>
                 </div>
@@ -330,11 +328,11 @@ class AuthManager {
             });
             
             if (response.ok) {
-                window.location.href = '../index.html?logout=exitoso';
+                window.location.href = '/index.html?logout=exitoso';
             }
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
-            window.location.href = '../index.html';
+            window.location.href = '/index.html';
         }
     }
 }
