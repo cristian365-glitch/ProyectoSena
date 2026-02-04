@@ -1,5 +1,5 @@
 // auth-session.js
-// Gestiona la sesión del usuario (admin o normal) con avatares y notificaciones elegantes
+// Gestiona la sesión del usuario (admin o normal) con avatares de Google/Gravatar y notificaciones elegantes
 
 class AuthManager {
     constructor() {
@@ -8,6 +8,7 @@ class AuthManager {
         this.userId = null;
         this.email = null;
         this.avatarUrl = null;
+        this.googlePhotoUrl = null; // Nueva propiedad para foto de Google
         this.init();
     }
     
@@ -31,7 +32,10 @@ class AuthManager {
                 this.userId = data.userId;
                 this.email = data.email;
                 
-                // Cargar avatar del usuario
+                // NUEVO: Obtener foto de Google si existe
+                this.googlePhotoUrl = data.googlePhotoUrl || null;
+                
+                // Cargar avatar (Google tiene prioridad sobre Gravatar)
                 await this.cargarAvatar();
                 
                 this.actualizarUI();
@@ -39,7 +43,8 @@ class AuthManager {
                 console.log('✅ Sesión activa:', {
                     usuario: this.usuario,
                     esAdmin: this.esAdmin,
-                    avatar: this.avatarUrl
+                    avatar: this.avatarUrl,
+                    googlePhoto: this.googlePhotoUrl
                 });
             } else {
                 this.mostrarBotonesLogin();
@@ -51,18 +56,28 @@ class AuthManager {
     }
     
     /**
-     * Carga la URL del avatar desde Gravatar a través del servlet
+     * Carga la URL del avatar con prioridad: Google > Gravatar
      */
     async cargarAvatar() {
         try {
+            // PRIORIDAD 1: Si hay foto de Google, usarla directamente
+            if (this.googlePhotoUrl) {
+                this.avatarUrl = this.googlePhotoUrl;
+                console.log('✅ Usando foto de Google:', this.avatarUrl);
+                return;
+            }
+            
+            // PRIORIDAD 2: Cargar desde Gravatar
             const response = await fetch('/LoginServlet?action=getAvatarUrl&size=200');
             
             if (response.ok) {
                 const data = await response.json();
                 this.avatarUrl = data.avatarUrl;
+                console.log('✅ Usando avatar de Gravatar:', this.avatarUrl);
             } else {
                 // Fallback: generar URL localmente si el servlet falla
                 this.avatarUrl = this.generarAvatarLocal(this.email);
+                console.log('⚠️ Usando Gravatar fallback:', this.avatarUrl);
             }
         } catch (error) {
             console.error('Error al cargar avatar:', error);
@@ -242,136 +257,90 @@ class AuthManager {
         return (wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d)).toLowerCase();
     }
     
-actualizarUI() {
-    const authContainer = document.getElementById('auth-container');
-    
-    if (!authContainer) {
-        console.warn('No se encontró #auth-container en el HTML');
-        return;
-    }
-    
-    authContainer.innerHTML = '';
-    
-    // Generar HTML del avatar
-    const avatarHTML = this.avatarUrl 
-        ? `<img src="${this.avatarUrl}" alt="${this.usuario}" class="user-avatar" onerror="this.src='https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200'">`
-        : `<img src="/recursos/icons/usuario.svg" alt="${this.usuario}" class="icon" width="23px">`;
-    
-    if (this.esAdmin) {
-        // Admin logueado
-        authContainer.innerHTML = `
-            <div class="user-menu admin-menu">
-                <span class="user-name">
-                    ${avatarHTML}
-                    <span class="user-text">⭐ ${this.usuario}</span>
-                </span>
-                <div class="dropdown-menu">
-                    <a href="/habitacionesCRUD/gestionar-habitaciones.html" class="menu-item">Gestionar Habitaciones</a>
-                    <a href="/usuario/reservas.html" class="menu-item">Ver Reservas</a>
-                    <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
-                    <hr>
-                    <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
-                </div>
-            </div>
-        `;
-    } else {
-        // Usuario normal logueado
-        authContainer.innerHTML = `
-            <div class="user-menu client-menu">
-                <span class="user-name">
-                    ${avatarHTML}
-                    <span class="user-text">${this.usuario}</span>
-                </span>
-                <div class="dropdown-menu">
-                    <a href="/usuario/reservas.html" class="menu-item">Ver Reservas</a>
-                    <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
-                    <hr>
-                    <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
-                </div>
-            </div>
-        `;
-    }
-    
-    this.agregarEventosDropdown();
-}
-    
     mostrarBotonesLogin() {
-        const authContainer = document.getElementById('auth-container');
+        const container = document.getElementById('auth-container');
+        if (!container) return;
         
-        if (!authContainer) {
-            console.warn('No se encontró #auth-container en el HTML');
-            return;
-        }
-        
-        authContainer.innerHTML = `
-            <a href="/login/Login.html" id="login-link" class="btn-auth login">
-                <img src="/recursos/icons/usuario.svg" class="icon" width="23px" alt="icon usuario" onerror="this.style.display='none'">
-                INICIAR SESIÓN
-            </a>
+        container.innerHTML = `
+            <div class="auth-buttons">
+                <a href="../login/login.html" class="btn-auth login">Iniciar Sesión</a>
+                <a href="../login/registro.html" class="btn-auth register">Registrarse</a>
+            </div>
         `;
     }
     
-    agregarEventosDropdown() {
-        const userMenu = document.querySelector('.user-menu');
-        const userName = document.querySelector('.user-name');
+    actualizarUI() {
+        const container = document.getElementById('auth-container');
+        if (!container) return;
         
-        if (userName) {
-            userName.addEventListener('click', function(e) {
+        // Icono SVG de usuario por defecto
+        const iconoUsuario = `
+            <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        `;
+        
+        // Crear elemento de avatar (si existe URL)
+        const avatarHTML = this.avatarUrl 
+            ? `<img src="${this.avatarUrl}" alt="${this.usuario}" class="user-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">`
+            : '';
+        
+        container.innerHTML = `
+            <div class="user-menu">
+                <div class="user-name">
+                    ${avatarHTML}
+                    ${!this.avatarUrl ? iconoUsuario : ''}
+                    <span class="user-text">${this.usuario}</span>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="../perfil/perfilUser.html" class="menu-item">Mi Perfil</a>
+                    <a href="../booking/mis-reservas.html" class="menu-item">Mis Reservas</a>
+                    ${this.esAdmin ? '<hr><a href="../admin/admin.html" class="menu-item">Panel Admin</a>' : ''}
+                    <hr>
+                    <a href="#" class="menu-item logout" onclick="auth.logout(); return false;">Cerrar Sesión</a>
+                </div>
+            </div>
+        `;
+        
+        // Agregar event listener para el menú desplegable
+        const userMenu = container.querySelector('.user-menu');
+        const userName = container.querySelector('.user-name');
+        
+        if (userName && userMenu) {
+            userName.addEventListener('click', (e) => {
                 e.stopPropagation();
-                
-                // Verificar si estamos en móvil (768px o menos)
-                if (window.innerWidth <= 768) {
-                    // En móvil: abrir el menú hamburguesa
-                    const menuToggle = document.getElementById('menuToggle');
-                    const mobileMenu = document.getElementById('mobileMenu');
-                    
-                    if (menuToggle && mobileMenu) {
-                        menuToggle.classList.toggle('active');
-                        mobileMenu.classList.toggle('active');
-                        document.body.classList.toggle('menu-open');
-                        
-                        // Clonar contenido de autenticación al menú móvil
-                        const authMobile = document.getElementById('auth-mobile');
-                        if (authMobile && typeof cloneAuthToMobile === 'function') {
-                            cloneAuthToMobile();
-                        }
-                    }
-                } else {
-                    // En desktop: toggle del dropdown normal
-                    userMenu.classList.toggle('active');
+                userMenu.classList.toggle('active');
+            });
+            
+            // Cerrar menú al hacer clic fuera
+            document.addEventListener('click', (e) => {
+                if (!userMenu.contains(e.target)) {
+                    userMenu.classList.remove('active');
                 }
             });
         }
-        
-        // Cerrar dropdown en desktop cuando se hace click fuera
-        document.addEventListener('click', function(event) {
-            if (userMenu && !userMenu.contains(event.target) && window.innerWidth > 768) {
-                userMenu.classList.remove('active');
+    }
+    
+    async logout() {
+        try {
+            const response = await fetch('/LoginServlet?action=logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                window.location.href = '../index.html?logout=exitoso';
             }
-        });
-    }
-    
-    cerrarSesion() {
-        notify.confirm(
-            '¿Cerrar sesión?',
-            '¿Estás seguro de que deseas cerrar tu sesión?',
-            () => {
-                window.location.href = '/LoginServlet?action=cerrarSesion';
-            }
-        );
-    }
-    
-    estaLogueado() {
-        return this.usuario !== null;
-    }
-    
-    esAdministrador() {
-        return this.esAdmin === true;
+        } catch (error) {
+            console.error('Error al cerrar sesión:', error);
+            window.location.href = '../index.html';
+        }
     }
 }
 
 // ============================================
-// SISTEMA DE NOTIFICACIONES ELEGANTES
+// GESTOR DE NOTIFICACIONES
 // ============================================
 
 class NotificationManager {
@@ -380,165 +349,30 @@ class NotificationManager {
     }
     
     injectStyles() {
-        if (document.getElementById('notification-styles')) return;
-        
         const style = document.createElement('style');
-        style.id = 'notification-styles';
         style.textContent = `
-            /* NOTIFICACIONES TOAST */
             .armonia-notification {
                 position: fixed;
                 top: 100px;
                 right: 30px;
-                min-width: 320px;
-                max-width: 420px;
                 background: white;
                 border-radius: 12px;
                 box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+                min-width: 320px;
+                max-width: 450px;
                 z-index: 10000;
                 overflow: hidden;
-                animation: slideInRight 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                border: 1px solid rgba(212, 175, 55, 0.2);
             }
             
             .armonia-notification.hiding {
-                animation: slideOutRight 0.3s ease-in forwards;
-            }
-            
-            /* MODAL DE CONFIRMACIÓN */
-            .armonia-modal-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(4px);
-                z-index: 9999;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                animation: fadeIn 0.2s ease;
-            }
-            
-            .armonia-modal {
-                background: white;
-                border-radius: 16px;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-                max-width: 420px;
-                width: calc(100% - 40px);
-                overflow: hidden;
-                animation: modalSlideIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            }
-            
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
-            
-            @keyframes modalSlideIn {
-                from {
-                    transform: scale(0.8) translateY(-20px);
-                    opacity: 0;
-                }
-                to {
-                    transform: scale(1) translateY(0);
-                    opacity: 1;
-                }
-            }
-            
-            .armonia-modal.closing {
-                animation: modalSlideOut 0.2s ease forwards;
-            }
-            
-            @keyframes modalSlideOut {
-                from {
-                    transform: scale(1) translateY(0);
-                    opacity: 1;
-                }
-                to {
-                    transform: scale(0.8) translateY(-20px);
-                    opacity: 0;
-                }
-            }
-            
-            .modal-header {
-                padding: 24px 24px 16px;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-            }
-            
-            .modal-icon {
-                width: 48px;
-                height: 48px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, #ed8936, #dd6b20);
-                color: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 24px;
-                margin: 0 auto 16px;
-            }
-            
-            .modal-title {
-                font-size: 20px;
-                font-weight: 600;
-                color: #1a202c;
-                text-align: center;
-                margin: 0;
-            }
-            
-            .modal-body {
-                padding: 20px 24px 24px;
-            }
-            
-            .modal-message {
-                color: #4a5568;
-                font-size: 15px;
-                line-height: 1.6;
-                text-align: center;
-            }
-            
-            .modal-actions {
-                display: flex;
-                gap: 12px;
-                padding: 0 24px 24px;
-            }
-            
-            .modal-btn {
-                flex: 1;
-                padding: 12px 24px;
-                border-radius: 8px;
-                border: none;
-                font-size: 14px;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.2s;
-                font-family: inherit;
-            }
-            
-            .modal-btn-cancel {
-                background: #edf2f7;
-                color: #4a5568;
-            }
-            
-            .modal-btn-cancel:hover {
-                background: #e2e8f0;
-            }
-            
-            .modal-btn-confirm {
-                background: linear-gradient(135deg, #d4af37, #b8860b);
-                color: white;
-            }
-            
-            .modal-btn-confirm:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+                animation: slideOutRight 0.3s ease forwards;
             }
             
             @keyframes slideInRight {
                 from {
-                    transform: translateX(450px);
+                    transform: translateX(500px);
                     opacity: 0;
                 }
                 to {
@@ -553,104 +387,239 @@ class NotificationManager {
                     opacity: 1;
                 }
                 to {
-                    transform: translateX(450px);
+                    transform: translateX(500px);
                     opacity: 0;
                 }
             }
             
             .notification-header {
-                padding: 20px 24px 16px;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
                 display: flex;
                 align-items: center;
+                padding: 16px 20px;
                 gap: 12px;
+                border-bottom: 1px solid #f0f0f0;
             }
             
             .notification-icon {
-                width: 40px;
-                height: 40px;
+                width: 28px;
+                height: 28px;
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 20px;
+                font-size: 16px;
+                font-weight: bold;
                 flex-shrink: 0;
             }
             
             .notification-icon.success {
-                background: linear-gradient(135deg, #d4af37, #b8860b);
-                color: white;
-            }
-            
-            .notification-icon.info {
-                background: linear-gradient(135deg, #4299e1, #3182ce);
-                color: white;
-            }
-            
-            .notification-icon.warning {
-                background: linear-gradient(135deg, #ed8936, #dd6b20);
+                background: linear-gradient(135deg, #4ade80, #22c55e);
                 color: white;
             }
             
             .notification-icon.error {
-                background: linear-gradient(135deg, #f56565, #c53030);
+                background: linear-gradient(135deg, #f87171, #ef4444);
+                color: white;
+            }
+            
+            .notification-icon.warning {
+                background: linear-gradient(135deg, #fbbf24, #f59e0b);
+                color: white;
+            }
+            
+            .notification-icon.info {
+                background: linear-gradient(135deg, #60a5fa, #3b82f6);
                 color: white;
             }
             
             .notification-title {
                 flex: 1;
-                font-size: 16px;
                 font-weight: 600;
-                color: #1a202c;
-                letter-spacing: 0.3px;
+                font-size: 15px;
+                color: #1a1a1a;
             }
             
             .notification-close {
-                width: 28px;
-                height: 28px;
-                border-radius: 50%;
                 background: transparent;
                 border: none;
+                font-size: 24px;
+                color: #999;
                 cursor: pointer;
+                padding: 0;
+                width: 24px;
+                height: 24px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                color: #a0aec0;
                 transition: all 0.2s;
-                font-size: 18px;
-                line-height: 1;
+                border-radius: 4px;
             }
             
             .notification-close:hover {
-                background: #edf2f7;
-                color: #4a5568;
+                background: #f5f5f5;
+                color: #666;
             }
             
             .notification-body {
-                padding: 16px 24px 20px;
+                padding: 12px 20px 16px;
             }
             
             .notification-message {
-                color: #4a5568;
+                color: #666;
                 font-size: 14px;
-                line-height: 1.6;
+                line-height: 1.5;
             }
             
             .notification-progress {
-                position: absolute;
-                bottom: 0;
-                left: 0;
                 height: 3px;
                 background: linear-gradient(90deg, #d4af37, #b8860b);
+                transform-origin: left;
                 animation: progressBar 4s linear forwards;
             }
             
             @keyframes progressBar {
-                from { width: 100%; }
-                to { width: 0%; }
+                from {
+                    transform: scaleX(1);
+                }
+                to {
+                    transform: scaleX(0);
+                }
             }
             
-            /* Responsive */
+            /* MODAL DE CONFIRMACIÓN */
+            .armonia-modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10001;
+                animation: fadeIn 0.2s ease;
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            .armonia-modal {
+                background: white;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                max-width: 450px;
+                width: 90%;
+                overflow: hidden;
+                animation: modalSlideIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            }
+            
+            .armonia-modal.closing {
+                animation: modalSlideOut 0.2s ease forwards;
+            }
+            
+            @keyframes modalSlideIn {
+                from {
+                    transform: scale(0.7);
+                    opacity: 0;
+                }
+                to {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes modalSlideOut {
+                from {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+                to {
+                    transform: scale(0.7);
+                    opacity: 0;
+                }
+            }
+            
+            .modal-header {
+                padding: 24px;
+                text-align: center;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .modal-icon {
+                width: 60px;
+                height: 60px;
+                background: linear-gradient(135deg, #fbbf24, #f59e0b);
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 28px;
+                margin: 0 auto 16px;
+            }
+            
+            .modal-title {
+                font-size: 20px;
+                font-weight: 600;
+                color: #1a1a1a;
+                margin: 0;
+            }
+            
+            .modal-body {
+                padding: 20px 24px;
+            }
+            
+            .modal-message {
+                color: #666;
+                font-size: 15px;
+                line-height: 1.6;
+                margin: 0;
+                text-align: center;
+            }
+            
+            .modal-actions {
+                display: flex;
+                gap: 12px;
+                padding: 20px 24px;
+                border-top: 1px solid #f0f0f0;
+            }
+            
+            .modal-btn {
+                flex: 1;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 8px;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            
+            .modal-btn-cancel {
+                background: #f5f5f5;
+                color: #666;
+            }
+            
+            .modal-btn-cancel:hover {
+                background: #e5e5e5;
+            }
+            
+            .modal-btn-confirm {
+                background: linear-gradient(135deg, #d4af37, #b8860b);
+                color: white;
+            }
+            
+            .modal-btn-confirm:hover {
+                background: linear-gradient(135deg, #b8860b, #9a7209);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3);
+            }
+            
             @media (max-width: 768px) {
                 .armonia-notification {
                     right: 15px;

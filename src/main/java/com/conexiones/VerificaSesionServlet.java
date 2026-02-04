@@ -72,8 +72,8 @@ public class VerificaSesionServlet extends HttpServlet {
                 }
                 
                 // Incluir URL de foto si existe
-                if (fotoUrl != null && !fotoUrl.isEmpty()) {
-                    json.append(",\"fotoUrl\": \"").append(escapeJson(fotoUrl)).append("\"");
+if (fotoUrl != null && !fotoUrl.isEmpty()) {
+    json.append(",\"googlePhotoUrl\": \"").append(escapeJson(fotoUrl)).append("\"");
                 }
                 
                 // Incluir método de login si existe
