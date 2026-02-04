@@ -10,6 +10,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="../recursos/imagen icon/favicon-16x16.png">
     <link rel="stylesheet" href="../login/auth-ui.css">
     <script src="../login/auth-session.js"></script>
+        <script src="mobile-menu.js"></script>
     
     <style>
         .reservas-container {
@@ -352,6 +353,7 @@
     </style>
 </head>
 <body>
+    <!-- HEADER DE NAVEGACIÓN -->
     <header>
         <ul>
             <li class="logo">
@@ -359,12 +361,32 @@
                     <img src="../recursos/logo armonia n1.png" width="89px" alt="logo">
                 </a>
             </li>
+
             <li><a href="../nav/disponibilidad.html">Habitaciones</a></li>
             <li><a href="../nav/experiencias.html">Experiencias</a></li>
             <li><a href="../nav/servicios.html">Servicios</a></li>
+            
+            <li class="menu-toggle-li">
+                <button class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </li>
+            
             <li class="registro" id="auth-container"></li>
         </ul>
     </header>
+
+    <!-- MENÚ MÓVIL -->
+    <div class="nav-mobile-menu" id="mobileMenu">
+        <ul>
+            <li><a href="../nav/disponibilidad.html">Habitaciones</a></li>
+            <li><a href="../nav/experiencias.html">Experiencias</a></li>
+            <li><a href="../nav/servicios.html">Servicios</a></li>
+        </ul>
+        <div id="auth-mobile"></div>
+    </div>
 
     <section class="reservas-container">
         <h1 class="reservas-title">Mis Reservas</h1>
