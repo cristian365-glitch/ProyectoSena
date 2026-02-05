@@ -292,9 +292,9 @@ class AuthManager {
                         <span class="user-text">⭐ ${nombreCorto}</span>
                     </span>
                     <div class="dropdown-menu">
-                        <a href="${window.location.origin}/habitacionesCRUD/gestionar-habitaciones.html" class="menu-item">Gestionar Habitaciones</a>
-                        <a href="${window.location.origin}/usuario/reservas.html" class="menu-item">Ver Reservas</a>
-                        <a href="${window.location.origin}/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
+                        <a href="#" onclick="window.location.href='/habitacionesCRUD/gestionar-habitaciones.html'; return false;" class="menu-item">Gestionar Habitaciones</a>
+                        <a href="#" onclick="window.location.href='/usuario/reservas.html'; return false;" class="menu-item">Ver Reservas</a>
+                        <a href="#" onclick="window.location.href='/usuario/perfilUser.html'; return false;" class="menu-item">Mi Perfil</a>
                         <hr>
                         <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
                     </div>
@@ -309,8 +309,8 @@ class AuthManager {
                         <span class="user-text">${nombreCorto}</span>
                     </span>
                     <div class="dropdown-menu">
-                        <a href="${window.location.origin}/usuario/reservas.html" class="menu-item">Ver Reservas</a>
-                        <a href="${window.location.origin}/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
+                        <a href="#" onclick="window.location.href='/usuario/reservas.html'; return false;" class="menu-item">Ver Reservas</a>
+                        <a href="#" onclick="window.location.href='/usuario/perfilUser.html'; return false;" class="menu-item">Mi Perfil</a>
                         <hr>
                         <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
                     </div>
