@@ -292,9 +292,9 @@ class AuthManager {
                     <span class="user-text">${this.usuario}</span>
                 </div>
                 <div class="dropdown-menu">
-                    <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
-                    <a href="/usuario/reservas.html" class="menu-item">Mis Reservas</a>
-                    ${this.esAdmin ? '<hr><a href="/habitacionesCRUD/admin-habitaciones.html" class="menu-item">Panel Admin</a>' : ''}
+                    <a href="/perfil/perfilUser.html" class="menu-item">Mi Perfil</a>
+                    <a href="/booking/mis-reservas.html" class="menu-item">Mis Reservas</a>
+                    ${this.esAdmin ? '<hr><a href="/admin/admin.html" class="menu-item">Panel Admin</a>' : ''}
                     <hr>
                     <a href="#" class="menu-item logout" onclick="auth.logout(); return false;">Cerrar Sesión</a>
                 </div>
