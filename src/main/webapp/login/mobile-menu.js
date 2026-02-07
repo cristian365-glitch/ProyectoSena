@@ -1,13 +1,11 @@
-// mobile-menu.js
+// mobile-menu.js - VERSION DEBUG
 // Maneja el menú móvil desplegable
 
-// Hacer la función disponible globalmente
 window.cloneAuthToMobile = null;
 
 (function() {
     'use strict';
     
-    // Esperar a que el DOM esté listo
     document.addEventListener('DOMContentLoaded', function() {
         initMobileMenu();
     });
@@ -21,7 +19,6 @@ window.cloneAuthToMobile = null;
             return;
         }
         
-        // Toggle del menú al hacer click en hamburguesa
         menuToggle.addEventListener('click', function(e) {
             e.stopPropagation();
             const isActive = mobileMenu.classList.contains('active');
@@ -33,19 +30,15 @@ window.cloneAuthToMobile = null;
             }
         });
         
-        // ====== NUEVO: Click en avatar móvil abre el menú ======
         function setupAvatarClick() {
-            // Verificar si estamos en móvil
             if (window.innerWidth <= 768) {
                 const userMenu = document.querySelector('.user-menu');
                 const userAvatar = document.querySelector('.user-avatar');
                 
                 if (userMenu && userAvatar) {
-                    // Remover listeners previos si existen
                     userMenu.onclick = null;
                     userAvatar.onclick = null;
                     
-                    // Click en el contenedor del usuario (incluye avatar y nombre oculto)
                     userMenu.addEventListener('click', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
@@ -58,7 +51,6 @@ window.cloneAuthToMobile = null;
                         }
                     });
                     
-                    // También en el avatar directamente por si acaso
                     userAvatar.addEventListener('click', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
@@ -74,25 +66,20 @@ window.cloneAuthToMobile = null;
             }
         }
         
-        // Configurar click del avatar al cargar
         setupAvatarClick();
         
-        // Reconfigurar cuando cambie el tamaño de pantalla
         let resizeTimer;
         window.addEventListener('resize', function() {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(function() {
                 setupAvatarClick();
                 
-                // Cerrar menú si cambiamos a desktop
                 if (window.innerWidth > 768 && mobileMenu.classList.contains('active')) {
                     closeMobileMenu();
                 }
             }, 250);
         });
-        // ====== FIN NUEVO ======
         
-        // Cerrar menú al hacer click en enlaces
         const mobileMenuLinks = mobileMenu.querySelectorAll('a');
         mobileMenuLinks.forEach(link => {
             link.addEventListener('click', function() {
@@ -100,11 +87,9 @@ window.cloneAuthToMobile = null;
             });
         });
         
-        // Cerrar menú al hacer click fuera
         document.addEventListener('click', function(event) {
             if (mobileMenu.classList.contains('active')) {
                 if (!mobileMenu.contains(event.target) && !menuToggle.contains(event.target)) {
-                    // No cerrar si hicieron click en el avatar/user-menu
                     const userMenu = document.querySelector('.user-menu');
                     if (userMenu && !userMenu.contains(event.target)) {
                         closeMobileMenu();
@@ -113,7 +98,6 @@ window.cloneAuthToMobile = null;
             }
         });
         
-        // Cerrar con tecla Escape
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
                 closeMobileMenu();
@@ -129,7 +113,6 @@ window.cloneAuthToMobile = null;
         mobileMenu.classList.add('active');
         document.body.classList.add('menu-open');
         
-        // Clonar contenido de autenticación al menú móvil
         if (typeof window.cloneAuthToMobile === 'function') {
             window.cloneAuthToMobile();
         }
@@ -145,19 +128,26 @@ window.cloneAuthToMobile = null;
     }
     
     function cloneAuthToMobile() {
+        console.log('🔍 DEBUG: cloneAuthToMobile ejecutándose...');
+        
         const authContainer = document.getElementById('auth-container');
         const authMobile = document.getElementById('auth-mobile');
         
-        if (!authContainer || !authMobile) return;
+        if (!authContainer || !authMobile) {
+            console.error('❌ No se encontró auth-container o auth-mobile');
+            return;
+        }
         
-        // Verificar si hay un menú de usuario
         const userMenu = authContainer.querySelector('.user-menu');
         
         if (userMenu) {
-            // Usuario logueado - crear versión móvil del menú de usuario
+            console.log('✅ Usuario logueado detectado');
+            
             const userName = authContainer.querySelector('.user-name .user-text')?.textContent || 'Usuario';
             const userAvatar = authContainer.querySelector('.user-avatar')?.src || '';
             const isAdmin = userMenu.classList.contains('admin-menu');
+            
+            console.log('👤 Datos del usuario:', { userName, isAdmin });
             
             let menuLinks = '';
             if (isAdmin) {
@@ -175,6 +165,8 @@ window.cloneAuthToMobile = null;
                 `;
             }
             
+            console.log('🔗 Enlaces generados:', menuLinks);
+            
             authMobile.innerHTML = `
                 <div class="user-menu-mobile">
                     <div class="user-info">
@@ -186,19 +178,29 @@ window.cloneAuthToMobile = null;
                     </div>
                 </div>
             `;
+            
+            console.log('✅ Menú móvil de usuario creado');
+            
+            // NUEVO: Verificar los href generados
+            const generatedLinks = authMobile.querySelectorAll('a[href]');
+            console.log('🔍 VERIFICACIÓN DE HREFS:');
+            generatedLinks.forEach((link, index) => {
+                console.log(`  ${index + 1}. ${link.textContent.trim()} -> ${link.getAttribute('href')}`);
+            });
+            
         } else {
-            // No logueado - mostrar botones de login/registro
+            console.log('❌ No hay usuario logueado, mostrando botones de login');
+            
             authMobile.innerHTML = `
                 <div class="auth-mobile-section">
                     <div class="auth-buttons">
-                        <a href="login/Login.html" class="btn-auth login">Iniciar Sesión</a>
-                        <a href="login/Login.html" class="btn-auth register">Registrarse</a>
+                        <a href="/login/Login.html" class="btn-auth login">Iniciar Sesión</a>
+                        <a href="/login/Login.html" class="btn-auth register">Registrarse</a>
                     </div>
                 </div>
             `;
         }
     }
     
-    // Exponer la función globalmente
     window.cloneAuthToMobile = cloneAuthToMobile;
 })();
