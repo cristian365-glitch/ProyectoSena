@@ -103,9 +103,9 @@ actualizarUI() {
                     <span class="user-text">⭐ ${nombreCorto}</span>
                 </span>
                 <div class="dropdown-menu">
-                    <a href="#" onclick="window.location.href='/habitacionesCRUD/gestionar-habitaciones.html'; return false;" class="menu-item">Gestionar Habitaciones</a>
-                    <a href="#" onclick="window.location.href='/usuario/reservas.html'; return false;" class="menu-item">Ver Reservas</a>
-                    <a href="#" onclick="window.location.href='/usuario/perfilUser.html'; return false;" class="menu-item">Mi Perfil</a>
+                    <a href="/habitacionesCRUD/gestionar-habitaciones.html" class="menu-item">Gestionar Habitaciones</a>
+                    <a href="/usuario/reservas.html" class="menu-item">Ver Reservas</a>
+                    <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
                     <hr>
                     <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
                 </div>
@@ -120,8 +120,8 @@ actualizarUI() {
                     <span class="user-text">${nombreCorto}</span>
                 </span>
                 <div class="dropdown-menu">
-                    <a href="#" onclick="window.location.href='/usuario/reservas.html'; return false;" class="menu-item">Ver Reservas</a>
-                    <a href="#" onclick="window.location.href='/usuario/perfilUser.html'; return false;" class="menu-item">Mi Perfil</a>
+                    <a href="/usuario/reservas.html" class="menu-item">Ver Reservas</a>
+                    <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
                     <hr>
                     <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
                 </div>
