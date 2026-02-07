@@ -104,8 +104,8 @@ actualizarUI() {
                 </span>
                 <div class="dropdown-menu">
                     <a href="/habitacionesCRUD/gestionar-habitaciones.html" class="menu-item">Gestionar Habitaciones</a>
-                    <a href="/usuario/reservas.html" class="menu-item">Ver Reservas</a>
-                    <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
+                    <a href="/nav/usuario/reservas.html" class="menu-item">Ver Reservas</a>
+                    <a href="/nav/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
                     <hr>
                     <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
                 </div>
@@ -120,8 +120,8 @@ actualizarUI() {
                     <span class="user-text">${nombreCorto}</span>
                 </span>
                 <div class="dropdown-menu">
-                    <a href="/usuario/reservas.html" class="menu-item">Ver Reservas</a>
-                    <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
+                    <a href="/nav/usuario/reservas.html" class="menu-item">Ver Reservas</a>
+                    <a href="/nav/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
                     <hr>
                     <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
                 </div>

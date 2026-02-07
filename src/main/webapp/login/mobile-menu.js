@@ -163,14 +163,14 @@ window.cloneAuthToMobile = null;
             if (isAdmin) {
                 menuLinks = `
                     <a href="/habitacionesCRUD/gestionar-habitaciones.html" class="menu-item">Gestionar Habitaciones</a>
-                    <a href="/usuario/reservas.html" class="menu-item">Ver Reservas</a>
-                    <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
+                    <a href="/nav/usuario/reservas.html" class="menu-item">Ver Reservas</a>
+                    <a href="/nav/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
                     <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
                 `;
             } else {
                 menuLinks = `
-                    <a href="/usuario/reservas.html" class="menu-item">Ver Reservas</a>
-                    <a href="/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
+                    <a href="/nav/usuario/reservas.html" class="menu-item">Ver Reservas</a>
+                    <a href="/nav/usuario/perfilUser.html" class="menu-item">Mi Perfil</a>
                     <a href="javascript:auth.cerrarSesion()" class="menu-item logout">Cerrar Sesión</a>
                 `;
             }
