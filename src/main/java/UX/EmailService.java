@@ -1,120 +1,142 @@
 package UX;
 
-import java.util.Properties;
-import javax.mail.*;
-import javax.mail.internet.*;
+import java.io.OutputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import org.json.JSONObject;
+import org.json.JSONArray;
 
 /**
- * Servicio de email usando Gmail SMTP con variables de entorno de Render
- * 100% GRATIS - Configurado para producción en Render
+ * Servicio de email usando Resend API (funciona perfecto en Render)
+ * 3,000 emails/mes GRATIS para siempre - Sin SMTP, usa API REST
  * @author Calixto
  */
 public class EmailService {
     
     // 🔧 CONFIGURACIÓN CON VARIABLES DE ENTORNO
-    // Estas variables se configuran en Render.com en el dashboard
-    private static final String GMAIL_USERNAME;
-    private static final String GMAIL_APP_PASSWORD;
+    private static final String RESEND_API_KEY;
+    private static final String EMAIL_FROM;
     private static final String EMAIL_FROM_NAME = "Hotel Armonía";
     
     // Bloque estático para cargar variables de entorno
     static {
-        // Obtener credenciales desde variables de entorno de Render
-        GMAIL_USERNAME = System.getenv("GMAIL_USERNAME");
-        GMAIL_APP_PASSWORD = System.getenv("GMAIL_APP_PASSWORD");
+        // Obtener API key desde variables de entorno de Render
+        RESEND_API_KEY = System.getenv("RESEND_API_KEY");
+        EMAIL_FROM = System.getenv("EMAIL_FROM"); // ej: noreply@tudominio.com
         
         // Verificar que las variables estén configuradas
-        if (GMAIL_USERNAME == null || GMAIL_USERNAME.trim().isEmpty()) {
-            System.err.println("❌ ERROR: Variable de entorno GMAIL_USERNAME no configurada en Render");
+        if (RESEND_API_KEY == null || RESEND_API_KEY.trim().isEmpty()) {
+            System.err.println("❌ ERROR: Variable de entorno RESEND_API_KEY no configurada en Render");
             System.err.println("⚠️ Ve al dashboard de Render → Environment → Add Environment Variable");
         }
         
-        if (GMAIL_APP_PASSWORD == null || GMAIL_APP_PASSWORD.trim().isEmpty()) {
-            System.err.println("❌ ERROR: Variable de entorno GMAIL_APP_PASSWORD no configurada en Render");
-            System.err.println("⚠️ Ve al dashboard de Render → Environment → Add Environment Variable");
+        if (EMAIL_FROM == null || EMAIL_FROM.trim().isEmpty()) {
+            System.err.println("❌ ERROR: Variable de entorno EMAIL_FROM no configurada en Render");
+            System.err.println("⚠️ Ejemplo: onboarding@resend.dev (para pruebas) o tu-email@tudominio.com");
         }
         
-        if (GMAIL_USERNAME != null && GMAIL_APP_PASSWORD != null) {
-            System.out.println("✅ Variables de entorno de Gmail cargadas correctamente");
-            System.out.println("📧 Email configurado: " + GMAIL_USERNAME);
+        if (RESEND_API_KEY != null && EMAIL_FROM != null) {
+            System.out.println("✅ Variables de entorno de Resend cargadas correctamente");
+            System.out.println("📧 Email configurado: " + EMAIL_FROM);
         }
     }
     
     /**
-     * Enviar código de recuperación por email usando Gmail SMTP
+     * Enviar código de recuperación por email usando Resend API
      */
     public static boolean enviarCodigoRecuperacion(String emailDestino, String codigo) {
         
         // Verificar que las credenciales estén configuradas
-        if (GMAIL_USERNAME == null || GMAIL_APP_PASSWORD == null) {
+        if (RESEND_API_KEY == null || EMAIL_FROM == null) {
             System.err.println("❌ No se puede enviar email: credenciales no configuradas");
-            System.err.println("⚠️ Configura GMAIL_USERNAME y GMAIL_APP_PASSWORD en Render");
+            System.err.println("⚠️ Configura RESEND_API_KEY y EMAIL_FROM en Render");
             return false;
         }
         
         try {
             System.out.println("📧 Enviando email a: " + emailDestino);
-            System.out.println("📤 Desde: " + GMAIL_USERNAME);
+            System.out.println("📤 Desde: " + EMAIL_FROM);
             
-            // Configurar propiedades de Gmail SMTP con SSL (puerto 465)
-            Properties props = new Properties();
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.host", "smtp.gmail.com");
-            props.put("mail.smtp.port", "465");
-            props.put("mail.smtp.socketFactory.port", "465");
-            props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-            props.put("mail.smtp.socketFactory.fallback", "false");
-            props.put("mail.smtp.ssl.enable", "true");
-            props.put("mail.smtp.ssl.protocols", "TLSv1.2 TLSv1.3");
+            // Crear la URL de la API de Resend
+            URL url = new URL("https://api.resend.com/emails");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             
-            // Configuración adicional para Render
-            props.put("mail.smtp.connectiontimeout", "15000"); // 15 segundos
-            props.put("mail.smtp.timeout", "15000");
-            props.put("mail.smtp.writetimeout", "15000");
+            // Configurar la conexión
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Authorization", "Bearer " + RESEND_API_KEY);
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
             
-            // Crear sesión con autenticación
-            Session session = Session.getInstance(props, new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(GMAIL_USERNAME, GMAIL_APP_PASSWORD);
-                }
-            });
+            // Crear el JSON del email
+            JSONObject email = new JSONObject();
+            email.put("from", EMAIL_FROM_NAME + " <" + EMAIL_FROM + ">");
             
-            // Habilitar debug solo si hay problemas (comentar en producción)
-            // session.setDebug(true);
+            // Array de destinatarios
+            JSONArray to = new JSONArray();
+            to.put(emailDestino);
+            email.put("to", to);
             
-            // Crear el mensaje
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(GMAIL_USERNAME, EMAIL_FROM_NAME));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailDestino));
-            message.setSubject("Código de Recuperación - Hotel Armonía");
+            email.put("subject", "Código de Recuperación - Hotel Armonía");
+            email.put("html", crearHTMLEmail(codigo));
             
-            // Contenido HTML
-            message.setContent(crearHTMLEmail(codigo), "text/html; charset=utf-8");
-            
-            // Enviar
-            Transport.send(message);
-            
-            System.out.println("✅ Email enviado exitosamente a: " + emailDestino);
-            return true;
-            
-        } catch (MessagingException e) {
-            System.err.println("❌ Error al enviar email: " + e.getMessage());
-            e.printStackTrace();
-            
-            // Mostrar ayuda según el error
-            if (e.getMessage().contains("Username and Password not accepted")) {
-                System.err.println("⚠️ SOLUCIÓN: Verifica la contraseña de aplicación en Render");
-                System.err.println("⚠️ Debe ser una 'Contraseña de aplicación' de 16 caracteres");
-            } else if (e.getMessage().contains("Could not connect")) {
-                System.err.println("⚠️ SOLUCIÓN: Problema de conexión desde Render");
-                System.err.println("⚠️ Render puede estar bloqueando el puerto 465");
-                System.err.println("⚠️ Considera usar un servicio API REST como Resend o Brevo");
+            // Enviar la petición
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = email.toString().getBytes("utf-8");
+                os.write(input, 0, input.length);
             }
             
-            return false;
+            // Leer la respuesta
+            int responseCode = conn.getResponseCode();
+            
+            if (responseCode == 200 || responseCode == 201) {
+                // Leer respuesta exitosa
+                BufferedReader br = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream(), "utf-8")
+                );
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+                
+                System.out.println("✅ Email enviado exitosamente a: " + emailDestino);
+                System.out.println("📬 Respuesta Resend: " + response.toString());
+                return true;
+            } else {
+                // Leer error
+                BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                        conn.getErrorStream() != null ? conn.getErrorStream() : conn.getInputStream(), 
+                        "utf-8"
+                    )
+                );
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+                
+                System.err.println("❌ Error al enviar email. Código HTTP: " + responseCode);
+                System.err.println("❌ Respuesta: " + response.toString());
+                
+                // Mensajes de ayuda según el error
+                if (responseCode == 401) {
+                    System.err.println("⚠️ SOLUCIÓN: API Key incorrecta. Verifica RESEND_API_KEY en Render");
+                } else if (responseCode == 422) {
+                    System.err.println("⚠️ SOLUCIÓN: Email FROM incorrecto. Verifica EMAIL_FROM en Render");
+                    System.err.println("⚠️ Para pruebas usa: onboarding@resend.dev");
+                    System.err.println("⚠️ Para producción verifica tu dominio en Resend");
+                }
+                
+                return false;
+            }
+            
         } catch (Exception e) {
-            System.err.println("❌ Error inesperado: " + e.getMessage());
+            System.err.println("❌ Error al enviar email: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -170,43 +192,40 @@ public class EmailService {
     
     /**
      * Método de prueba para verificar la configuración
-     * Se puede llamar desde RecuperarPasswordServlet al inicializar
      */
     public static boolean verificarConfiguracion() {
-        System.out.println("🔍 Verificando configuración de email...");
+        System.out.println("🔍 Verificando configuración de Resend...");
         
-        if (GMAIL_USERNAME == null || GMAIL_USERNAME.trim().isEmpty()) {
-            System.err.println("❌ GMAIL_USERNAME no configurado");
+        if (RESEND_API_KEY == null || RESEND_API_KEY.trim().isEmpty()) {
+            System.err.println("❌ RESEND_API_KEY no configurado");
             return false;
         }
         
-        if (GMAIL_APP_PASSWORD == null || GMAIL_APP_PASSWORD.trim().isEmpty()) {
-            System.err.println("❌ GMAIL_APP_PASSWORD no configurado");
+        if (EMAIL_FROM == null || EMAIL_FROM.trim().isEmpty()) {
+            System.err.println("❌ EMAIL_FROM no configurado");
             return false;
         }
         
         System.out.println("✅ Configuración correcta");
-        System.out.println("📧 Email: " + GMAIL_USERNAME);
+        System.out.println("📧 Email FROM: " + EMAIL_FROM);
         return true;
     }
     
     /**
-     * Método main para pruebas locales
-     * En producción esto no se ejecuta
+     * Método main para pruebas
      */
     public static void main(String[] args) {
-        System.out.println("🧪 Probando configuración de Gmail SMTP...");
-        System.out.println("📍 Entorno: " + (GMAIL_USERNAME != null ? "Render/Producción" : "Local"));
+        System.out.println("🧪 Probando configuración de Resend API...");
         
         if (!verificarConfiguracion()) {
             System.err.println("❌ Configuración incompleta");
-            System.err.println("💡 Para pruebas locales, configura las variables de entorno:");
-            System.err.println("   export GMAIL_USERNAME='tu-email@gmail.com'");
-            System.err.println("   export GMAIL_APP_PASSWORD='xxxx xxxx xxxx xxxx'");
+            System.err.println("💡 Configura las variables de entorno:");
+            System.err.println("   RESEND_API_KEY = re_xxxxxxxxxxxx");
+            System.err.println("   EMAIL_FROM = onboarding@resend.dev (para pruebas)");
             return;
         }
         
-        // Prueba de envío (solo si las variables están configuradas)
+        // Prueba de envío
         String emailPrueba = "tu-email@ejemplo.com"; // Cambia esto
         String codigoPrueba = "123456";
         
