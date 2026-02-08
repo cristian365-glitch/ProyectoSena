@@ -75,6 +75,98 @@
         .registro {
             margin-left: auto;
             padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        /* Avatar en el header */
+        .header-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #d4af37;
+            object-fit: cover;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+        
+        /* Menu toggle hamburguesa */
+        .menu-toggle-li {
+            display: none;
+            margin-left: 15px;
+        }
+        
+        .menu-toggle {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 5px;
+            z-index: 1001;
+        }
+        
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: #1a1a1a;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
+        }
+        
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+        
+        /* Estilos para el menú de usuario en header */
+        .user-menu {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-menu .user-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .user-menu .user-name:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        .user-menu .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #d4af37;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-menu .user-text {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 14px;
+            white-space: nowrap;
         }
 
         header a {
@@ -604,33 +696,53 @@
         ======================================== */
         @media (max-width: 768px) {
             body {
-                padding-top: 140px;
+                padding-top: 100px;
             }
             
             header ul {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 12px;
-                padding: 15px;
+                padding: 0 15px;
+                min-height: 70px;
+            }
+            
+            /* Ocultar links de navegación en móvil */
+            header ul li:not(.logo):not(.registro):not(.menu-toggle-li) {
+                display: none;
+            }
+            
+            /* Mostrar hamburguesa en móvil */
+            .menu-toggle-li {
+                display: block;
+                order: 3;
             }
 
             .logo {
-                order: -1;
-                flex-basis: 100%;
-                text-align: center;
-                margin: 0 0 10px 0;
+                order: 1;
+                margin-right: 0;
+            }
+            
+            .logo img {
+                height: 50px;
             }
             
             .registro {
-                order: 1;
-                margin: 10px 0 0 0;
-                flex-basis: 100%;
-                text-align: center;
+                order: 2;
+                margin-left: auto;
+                margin-right: 10px;
             }
-
-            header a {
-                padding: 8px 12px;
-                font-size: 0.75rem;
+            
+            /* Avatar más pequeño en móvil */
+            .user-menu .user-avatar {
+                width: 38px;
+                height: 38px;
+            }
+            
+            /* Ocultar texto del nombre en móvil */
+            .user-menu .user-text {
+                display: none;
+            }
+            
+            .user-menu .user-name {
+                padding: 5px;
             }
             
             .profile-header {
@@ -676,37 +788,53 @@
                 padding: 10px 16px;
                 font-size: 13px;
             }
+            
+            header ul {
+                padding: 0 10px;
+            }
+            
+            .logo img {
+                height: 45px;
+            }
+            
+            .user-menu .user-avatar {
+                width: 36px;
+                height: 36px;
+            }
         }
     </style>
 </head>
 <body>
     <!-- HEADER CONSISTENTE -->
- <header>
-    <ul>
-        <li class="logo">
-            <a href="/index.html">
-                <img src="/recursos/logo armonia n1.png" width="89px" alt="logo">
-            </a>
-        </li>
+    <header>
+        <ul>
+            <!-- Logo a la izquierda -->
+            <li class="logo">
+                <a href="/index.html">
+                    <img src="/recursos/logo armonia n1.png" width="89px" alt="logo">
+                </a>
+            </li>
 
-        <li><a href="/nav/disponibilidad.html">Habitaciones</a></li>
-        <li><a href="/nav/experiencias.html">Experiencias</a></li>
-        <li><a href="/nav/servicios.html">Servicios</a></li>
+            <!-- Links de navegación (ocultos en móvil) -->
+            <li><a href="/nav/disponibilidad.html">Habitaciones</a></li>
+            <li><a href="/nav/experiencias.html">Experiencias</a></li>
+            <li><a href="/nav/servicios.html">Servicios</a></li>
 
-        <!-- Botón hamburguesa para móvil -->
-        <li class="menu-toggle-li">
-            <div class="menu-toggle" id="menuToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </li>
-        
-        <!-- 🔴 AQUÍ SE INYECTA TODO -->
-        <li class="registro" id="auth-container"></li>
-    </ul>
-</header>
-        <!-- MENÚ MÓVIL -->
+            <!-- Avatar / Auth (se inyecta aquí con JS) -->
+            <li class="registro" id="auth-container"></li>
+            
+            <!-- Botón hamburguesa (solo móvil) -->
+            <li class="menu-toggle-li">
+                <div class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </li>
+        </ul>
+    </header>
+    
+    <!-- MENÚ MÓVIL -->
     <div class="nav-mobile-menu" id="mobileMenu">
         <ul>
             <li><a href="/nav/disponibilidad.html">Habitaciones</a></li>
